@@ -20,11 +20,11 @@ step() { # step <action> <json> -> prints response, fails on ok:false
   local out
   out=$(curl -sS -X POST "$BASE/?action=$1" -H 'Content-Type: application/json' -d "$2")
   echo "[$1] ${out:0:400}"
-  echo "$out" | grep -q '"ok":true' || { echo "::error::installer step $1 failed"; exit 1; }
+  grep -qF '"ok":true' <<< "$out" || { echo "::error::installer step $1 failed"; exit 1; }
 }
 
 echo "== 1. installer page is shown before install"
-curl -sS "$BASE/" | grep -q "Installer" || { echo "::error::installer page not shown"; exit 1; }
+PAGE=$(curl -sS "$BASE/"); grep -qF "Installer" <<< "$PAGE" || { echo "::error::installer page not shown"; exit 1; }
 
 echo "== 2. installer steps"
 step requirements '{}'
@@ -40,19 +40,19 @@ test -f storage/installed.json || { echo "::error::installed.json missing"; exit
 
 echo "== 3. home page renders"
 HTML=$(curl -sS -w '\n%{http_code}' "$BASE/")
-CODE=$(echo "$HTML" | tail -n1)
+CODE=${HTML##*$'\n'}
 [ "$CODE" = "200" ] || { echo "::error::home page returned $CODE"; echo "$HTML" | head -c 3000; exit 1; }
 for text in "Brown Fox IT" "Full Stack Digital Visualizer" "Elizabeth K." "Why Every Business Needs" "Project Planning" "hello@pabitra.net"; do
-  echo "$HTML" | grep -q "$text" || { echo "::error::home page is missing: $text"; exit 1; }
+  grep -qF "$text" <<< "$HTML" || { echo "::error::home page is missing: $text"; exit 1; }
 done
-echo "home page OK ($(echo "$HTML" | wc -c) bytes)"
+echo "home page OK (${#HTML} bytes)"
 
 echo "== 4. admin user"
 php artisan tinker --execute='$u = App\Models\User::where("email","admin@example.com")->first(); echo $u && $u->isAdmin() && Hash::check("Secret@12345", $u->password) ? "admin OK" : "ADMIN BAD";' | tee /tmp/admin.txt
-grep -q "admin OK" /tmp/admin.txt || { echo "::error::admin user not created correctly"; exit 1; }
+grep -qF "admin OK" /tmp/admin.txt || { echo "::error::admin user not created correctly"; exit 1; }
 
 echo "== 5. installer is locked after install"
-curl -sS "$BASE/" | grep -q "Installer" && { echo "::error::installer still visible"; exit 1; } || true
+PAGE=$(curl -sS "$BASE/"); if grep -qF "Brown Fox IT – Installer" <<< "$PAGE"; then echo "::error::installer still visible"; exit 1; fi
 
 echo "== 6. deploy hook"
 TOKEN=$(grep '^DEPLOY_TOKEN=' .env | cut -d= -f2)
@@ -60,9 +60,9 @@ BAD=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/_deploy" -H "X-Deplo
 [ "$BAD" = "404" ] || { echo "::error::deploy hook accepted a wrong token ($BAD)"; exit 1; }
 OUT=$(curl -sS -X POST "$BASE/_deploy" -H "X-Deploy-Token: $TOKEN" -H 'Accept: application/json')
 echo "$OUT" | head -c 600; echo
-echo "$OUT" | grep -q '"ok":true' || { echo "::error::deploy hook failed"; exit 1; }
+grep -qF '"ok":true' <<< "$OUT" || { echo "::error::deploy hook failed"; exit 1; }
 
 echo "== 7. site still works with cached config/routes/views"
-curl -sS -o /dev/null -w '%{http_code}\n' "$BASE/" | grep -q 200 || { echo "::error::home broken after optimize"; exit 1; }
+[ "$(curl -sS -o /dev/null -w '%{http_code}' "$BASE/")" = "200" ] || { echo "::error::home broken after optimize"; exit 1; }
 
 echo "ALL CHECKS PASSED"
