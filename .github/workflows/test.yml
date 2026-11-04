@@ -1,0 +1,46 @@
+# ------------------------------------------------------------------
+# Full test on a fresh server: runs the web installer against a real
+# MySQL, checks the home page, the admin account and the deploy hook.
+# Runs before every deploy (deploy.yml) and can be started by hand.
+# ------------------------------------------------------------------
+name: Test
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: brownfoxit
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -proot"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'   # the lowest version we support
+          extensions: mbstring, pdo_mysql, intl, fileinfo, curl, dom
+          tools: composer:v2
+          coverage: none
+
+      - name: Install PHP libraries
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: PHP syntax check
+        run: find app bootstrap config database routes installer public -name "*.php" -print0 | xargs -0 -n1 php -l > /dev/null
+
+      - name: Installer + home page + deploy hook
+        run: bash tests/e2e-install.sh

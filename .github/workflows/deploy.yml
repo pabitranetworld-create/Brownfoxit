@@ -1,6 +1,7 @@
 # ------------------------------------------------------------------
 # Auto-deploy: every push to "main" goes live on the cPanel hosting.
 #
+#   0. runs the full test (test.yml) – nothing is deployed if it fails
 #   1. installs the PHP libraries (vendor/) on GitHub's server
 #   2. uploads only the changed files to the hosting over FTP
 #   3. calls https://your-site/_deploy so the site runs new database
@@ -29,7 +30,12 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Never deploy code that fails the full installer/home page test.
+  test:
+    uses: ./.github/workflows/test.yml
+
   deploy:
+    needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
