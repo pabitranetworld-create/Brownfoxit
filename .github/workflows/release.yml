@@ -1,0 +1,53 @@
+# ------------------------------------------------------------------
+# Builds "brownfoxit-install.zip": the whole site INCLUDING vendor/,
+# ready to upload to any cPanel, extract, and open in the browser
+# (the web installer starts automatically).
+#
+# Run it: GitHub → Actions → "Build install zip" → Run workflow
+#   → download the zip from the run's "Artifacts".
+# Pushing a tag like v1.0.0 also attaches the zip to a GitHub Release.
+# ------------------------------------------------------------------
+name: Build install zip
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo_mysql, intl, fileinfo, curl, dom
+          tools: composer:v2
+          coverage: none
+
+      - name: Install PHP libraries (vendor)
+        run: composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
+
+      - name: Make the zip
+        run: |
+          rm -f .env bootstrap/cache/*.php storage/installed.json
+          zip -qr brownfoxit-install.zip . \
+            -x ".git/*" ".github/*" "node_modules/*" "tests/*" ".env" "*.DS_Store"
+          ls -lh brownfoxit-install.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: brownfoxit-install
+          path: brownfoxit-install.zip
+          retention-days: 30
+
+      - name: Attach to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: brownfoxit-install.zip

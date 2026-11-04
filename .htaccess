@@ -1,0 +1,9 @@
+# Use this file ONLY on cPanel hosting where the domain's document root
+# cannot be pointed at the /public folder. It sends every request into /public,
+# so files like .env, composer.json and /storage are never served directly.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(\.env|composer\.(json|lock)|artisan)$ - [F,L]
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
