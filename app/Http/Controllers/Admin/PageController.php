@@ -282,9 +282,12 @@ class PageController extends Controller
         ];
     }
 
+    /** "Services / AI Automation" → "services/ai-automation" (up to 3 levels). */
     protected function slug(string $text): string
     {
-        return Str::slug($text) ?: 'page';
+        $parts = array_values(array_filter(array_map(fn ($p) => Str::slug($p), explode('/', $text))));
+
+        return implode('/', array_slice($parts, 0, 3)) ?: 'page';
     }
 
     /** A free slug for new pages and copies: "about", "about-2", … */
@@ -302,7 +305,9 @@ class PageController extends Controller
 
     protected function slugProblem(string $slug): ?string
     {
-        return in_array($slug, Page::RESERVED, true) ? "\"{$slug}\" URL-টা সাইটের নিজের কাজে সংরক্ষিত, অন্য নাম দিন।" : null;
+        $first = explode('/', $slug)[0];
+
+        return in_array($slug, Page::RESERVED, true) || in_array($first, Page::RESERVED, true) ? "\"{$first}\" URL-টা সাইটের নিজের কাজে সংরক্ষিত, অন্য নাম দিন।" : null;
     }
 
     protected function revision(Page $page, array $layout, string $note): void

@@ -267,4 +267,51 @@
       });
     });
   }
+
+  /* ---------- forms (contact / quote): send without reloading, show errors and success ---------- */
+  document.querySelectorAll("form[data-pb-form]").forEach(function (form) {
+    if (editor) return;
+    var wrap = form.closest(".pb-form-wrap"), btn = form.querySelector(".pb-form-btn"), status = form.querySelector(".pb-form-status");
+    function setErr(name, msg) {
+      var el = form.elements[name]; if (!el) return;
+      var field = (el.length && !el.tagName ? el[0] : el).closest(".pb-field"); if (!field) return;
+      field.classList.toggle("has-err", !!msg);
+      var s = field.querySelector(".pb-err"); if (s) s.textContent = msg || "";
+    }
+    function clientCheck() {
+      var ok = true;
+      ["name", "email", "message", "service", "consent"].forEach(function (n) {
+        var el = form.elements[n]; if (!el) return;
+        var bad = el.type === "checkbox" ? !el.checked : !el.value.trim();
+        if (!bad && n === "email") bad = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value.trim());
+        if (!bad && n === "message") bad = el.value.trim().length < 10;
+        setErr(n, bad ? ({ name: "Please enter your name.", email: "Please enter a valid email address.", message: "Please write at least a sentence (10 characters or more).", service: "Please choose a service.", consent: "Please confirm that we may store your details to answer you." })[n] : "");
+        if (bad) ok = false;
+      });
+      return ok;
+    }
+    form.addEventListener("input", function (e) { if (e.target.name) setErr(e.target.name, ""); });
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      status.textContent = ""; status.className = "pb-form-status";
+      if (!clientCheck()) { var f = form.querySelector(".has-err input, .has-err select, .has-err textarea"); if (f) f.focus(); form.classList.remove("shake"); void form.offsetWidth; form.classList.add("shake"); return; }
+      btn.disabled = true; form.classList.add("is-busy");
+      fetch(form.action, { method: "POST", body: new FormData(form), headers: { "Accept": "application/json", "X-Requested-With": "XMLHttpRequest" }, credentials: "same-origin" })
+        .then(function (r) { return r.json().catch(function () { return { ok: false, message: r.status === 419 ? "The page was open for a long time. Please reload it and send again." : "Something went wrong. Please try again." }; }); })
+        .then(function (res) {
+          if (res.ok) {
+            wrap.classList.add("is-sent");
+            var done = wrap.querySelector(".pb-form-done"); done.hidden = false;
+            form.reset();
+            done.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
+            return;
+          }
+          if (res.errors) Object.keys(res.errors).forEach(function (k) { setErr(k, res.errors[k][0]); });
+          status.textContent = res.message || "Please check the form."; status.className = "pb-form-status err";
+          form.classList.remove("shake"); void form.offsetWidth; form.classList.add("shake");
+        })
+        .catch(function () { status.textContent = "No connection. Please check your internet and try again."; status.className = "pb-form-status err"; })
+        .then(function () { btn.disabled = false; form.classList.remove("is-busy"); });
+    });
+  });
 })();

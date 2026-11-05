@@ -4,6 +4,15 @@
         ->when((int) $d['count'] > 0, fn ($q) => $q->take((int) $d['count']))->get();
     $cats = $items->flatMap(fn ($p) => array_map('trim', explode(',', (string) $p->category)))->filter()->unique()->values();
 @endphp
+@if ($items->isEmpty())
+    @if (! empty($editor))<div class="pb-placeholder"><i class="fa-solid fa-briefcase"></i> এই ক্যাটাগরিতে এখনো কোনো প্রজেক্ট নেই — সাইটে এই অংশটা দেখাবে না।</div>@endif
+@else
+@if (filled($d['heading'] ?? ''))
+    <div class="pb-projects-head">
+        @if (filled($d['eyebrow'] ?? ''))<span class="pb-eyebrow">{{ $d['eyebrow'] }}</span>@endif
+        <h2 class="pb-h size-xl" data-words>{{ $d['heading'] }}</h2>
+    </div>
+@endif
 <div class="pb-projects" data-filter-group>
     @if ($d['filter'] && $cats->count() > 1)
         <div class="pb-filter" role="toolbar" aria-label="Filter projects">
@@ -24,3 +33,4 @@
         @endforeach
     </div>
 </div>
+@endif

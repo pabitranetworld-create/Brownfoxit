@@ -23,8 +23,10 @@
 
             <a href="{{ route('admin.pages.index') }}" @class(['on' => request()->routeIs('admin.pages.*')])><i class="fa-solid fa-file-lines"></i> Pages (Page Builder)</a>
             <a href="{{ route('admin.media.index') }}" @class(['on' => request()->routeIs('admin.media.*')])><i class="fa-solid fa-photo-film"></i> Media library</a>
+            @php($newMsgs = rescue(fn () => \App\Models\FormSubmission::where('status', 'new')->count(), 0, false))
+            <a href="{{ route('admin.messages.index') }}" @class(['on' => request()->routeIs('admin.messages.*')])><i class="fa-solid fa-inbox"></i> Messages @if ($newMsgs)<span class="adm-count">{{ $newMsgs }}</span>@endif</a>
 
-            <p class="adm-nav-h">Home Page</p>
+            <p class="adm-nav-h">Home Page ও সেটিংস</p>
             @foreach (\App\Admin\Schema::sections() as $sKey => $s)
                 <a href="{{ route('admin.settings.edit', $sKey) }}" @class(['on' => request()->route('section') === $sKey])><i class="{{ $s['icon'] }}"></i> {{ $s['title'] }}</a>
             @endforeach

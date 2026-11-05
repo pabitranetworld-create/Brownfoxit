@@ -19,5 +19,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectUsersTo(fn () => route('admin.dashboard'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Public 404: show the editable "page-not-found" builder page when it exists.
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, \Illuminate\Http\Request $request) {
+            if ($request->expectsJson() || $request->is('admin', 'admin/*', '_deploy')) {
+                return null;
+            }
+
+            return rescue(fn () => app(\App\Http\Controllers\PageController::class)->notFound(), null, false);
+        });
     })->create();

@@ -6,10 +6,10 @@
 
         <nav class="main-nav" id="mainNav">
             <ul>
-                @foreach (setting('menu', []) as $item)
+                @foreach (array_filter(setting('menu', []), fn ($i) => link_visible($i['url'] ?? null)) as $item)
                     @php
-                        $children = $item['children'] ?? [];
-                        $isActive = ($item['url'] ?? '') === '/' ? request()->is('/') : false;
+                        $children = array_filter($item['children'] ?? [], fn ($c) => link_visible($c['url'] ?? null));
+                        $isActive = ($item['url'] ?? '') === '/' ? request()->is('/') : (str_starts_with($item['url'] ?? '', '/') && strlen(trim($item['url'], '/')) && ! str_contains($item['url'], '#') && request()->is(trim($item['url'], '/').'*'));
                     @endphp
                     <li @class(['has-sub' => count($children), 'active' => $isActive])>
                         <a href="{{ link_to_url($item['url'] ?? '#') }}">

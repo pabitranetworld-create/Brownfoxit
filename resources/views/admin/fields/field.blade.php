@@ -30,6 +30,10 @@
             <input id="{{ $id }}" type="text" inputmode="url" name="{{ $name }}" value="{{ $value }}" placeholder="https://">
             @break
 
+        @case('password')
+            <input id="{{ $id }}" type="password" name="{{ $name }}" value="" autocomplete="new-password" placeholder="{{ filled($value) ? '•••••••• (সেভ করা আছে)' : '' }}">
+            @break
+
         @case('email')
             <input id="{{ $id }}" type="email" name="{{ $name }}" value="{{ $value }}">
             @break

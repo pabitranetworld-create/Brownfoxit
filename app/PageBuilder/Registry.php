@@ -96,7 +96,8 @@ class Registry
                         ['key' => 'title', 'label' => 'টাইটেল', 'type' => 'text', 'default' => 'Feature title'],
                         ['key' => 'text', 'label' => 'লেখা', 'type' => 'textarea', 'default' => ''],
                         ['key' => 'url', 'label' => 'লিংক (ঐচ্ছিক)', 'type' => 'url', 'default' => ''],
-                    ], 'default' => [['icon' => 'fa-solid fa-bolt', 'title' => 'Feature title', 'text' => 'Short description.', 'url' => '']]],
+                        ['key' => 'link_text', 'label' => 'লিংকের লেখা', 'type' => 'text', 'default' => 'Learn more'],
+                    ], 'default' => [['icon' => 'fa-solid fa-bolt', 'title' => 'Feature title', 'text' => 'Short description.', 'url' => '', 'link_text' => 'Learn more']]],
                     ['key' => 'columns', 'label' => 'প্রতি সারিতে', 'type' => 'select', 'options' => $cols, 'default' => '3', 'group' => 'style'],
                     ['key' => 'style', 'label' => 'ধরন', 'type' => 'select', 'options' => ['card' => 'কার্ড', 'glass' => 'কাচের মতো', 'plain' => 'সাধারণ'], 'default' => 'card', 'group' => 'style'],
                     ['key' => 'icon_color', 'label' => 'আইকনের রং', 'type' => 'select', 'options' => $colors, 'default' => 'cycle', 'group' => 'style'],
@@ -247,14 +248,20 @@ class Registry
                 'label' => 'Services তালিকা', 'icon' => 'fa-solid fa-laptop-code', 'category' => 'dynamic',
                 'fields' => [
                     ['key' => 'count', 'label' => 'কতগুলো (০ = সব)', 'type' => 'number', 'min' => 0, 'max' => 60, 'default' => 0],
+                    ['key' => 'eyebrow', 'label' => 'ছোট লেখা (ঐচ্ছিক)', 'type' => 'text', 'default' => ''],
+                    ['key' => 'heading', 'label' => 'হেডিং (ঐচ্ছিক — কোনো Service না থাকলে পুরো অংশ লুকানো থাকে)', 'type' => 'text', 'default' => ''],
+                    ['key' => 'group', 'label' => 'শুধু এই গ্রুপ', 'type' => 'select', 'options' => ['' => 'সব গ্রুপ', 'main' => 'প্রধান ৪টা গ্রুপ'] + \App\Models\Service::GROUPS + ['none' => 'গ্রুপ দেওয়া হয়নি এমন'], 'default' => ''],
+                    ['key' => 'exclude', 'label' => 'এই লিংকের Service বাদ দিন (যেমন বর্তমান পেজ)', 'type' => 'text', 'default' => ''],
                     ['key' => 'columns', 'label' => 'প্রতি সারিতে', 'type' => 'select', 'options' => $cols, 'default' => '3', 'group' => 'style'],
-                    ['key' => 'note', 'label' => '', 'type' => 'note', 'text' => 'Admin → Services থেকে আসে।'],
+                    ['key' => 'note', 'label' => '', 'type' => 'note', 'text' => 'Admin → Services থেকে আসে (যেগুলোতে "Services পেজ / তালিকায় দেখাবে" টিক আছে)।'],
                 ],
             ],
 
             'projects_grid' => [
                 'label' => 'Portfolio গ্রিড', 'icon' => 'fa-solid fa-briefcase', 'category' => 'dynamic',
                 'fields' => [
+                    ['key' => 'eyebrow', 'label' => 'ছোট লেখা (ঐচ্ছিক)', 'type' => 'text', 'default' => ''],
+                    ['key' => 'heading', 'label' => 'হেডিং (ঐচ্ছিক — প্রজেক্ট না থাকলে পুরো অংশটা লুকানো থাকে)', 'type' => 'text', 'default' => ''],
                     ['key' => 'count', 'label' => 'কতগুলো (০ = সব)', 'type' => 'number', 'min' => 0, 'max' => 120, 'default' => 0],
                     ['key' => 'filter', 'label' => 'ক্যাটাগরি ফিল্টার বাটন', 'type' => 'checkbox', 'default' => true],
                     ['key' => 'category', 'label' => 'শুধু এই ক্যাটাগরি (খালি = সব)', 'type' => 'text', 'default' => ''],
@@ -275,6 +282,30 @@ class Registry
                 'fields' => [
                     ['key' => 'style', 'label' => 'ধরন', 'type' => 'select', 'options' => ['space' => 'শুধু ফাঁকা', 'line' => 'দাগ', 'gradient' => 'Gradient দাগ', 'glow' => 'চলমান আলো'], 'default' => 'gradient'],
                     ['key' => 'height', 'label' => 'উচ্চতা (px)', 'type' => 'number', 'min' => 0, 'max' => 400, 'default' => 40],
+                ],
+            ],
+
+            'form' => [
+                'label' => 'ফর্ম (Contact / Quote)', 'icon' => 'fa-solid fa-envelope-open-text', 'category' => 'interactive',
+                'fields' => [
+                    ['key' => 'form_type', 'label' => 'ফর্মের ধরন', 'type' => 'select', 'options' => ['contact' => 'Contact (নাম, ইমেইল, বিষয়, বার্তা)', 'quote' => 'Quote / Start a project (Service, বাজেট, সময়সীমা…)'], 'default' => 'contact'],
+                    ['key' => 'title', 'label' => 'ফর্মের টাইটেল (ঐচ্ছিক)', 'type' => 'text', 'default' => ''],
+                    ['key' => 'button', 'label' => 'বাটনের লেখা', 'type' => 'text', 'default' => 'Send message'],
+                    ['key' => 'success_title', 'label' => 'পাঠানোর পরে টাইটেল', 'type' => 'text', 'default' => 'Thank you — message received'],
+                    ['key' => 'success_text', 'label' => 'পাঠানোর পরে লেখা', 'type' => 'textarea', 'default' => 'We have your message and will reply to the email address you gave us.'],
+                    ['key' => 'budgets', 'label' => 'বাজেটের অপশন (প্রতি লাইনে একটা, Quote ফর্মে)', 'type' => 'textarea', 'default' => "Not sure yet\nUnder $1,000\n$1,000 – $5,000\n$5,000 – $15,000\n$15,000 or more"],
+                    ['key' => 'timelines', 'label' => 'সময়সীমার অপশন (প্রতি লাইনে একটা, Quote ফর্মে)', 'type' => 'textarea', 'default' => "Flexible\nAs soon as possible\nWithin 1 month\n1 – 3 months\n3 months or more"],
+                    ['key' => 'consent', 'label' => 'সম্মতির লেখা', 'type' => 'text', 'default' => 'I agree that my details are stored so you can answer my enquiry.'],
+                    ['key' => 'privacy_url', 'label' => 'Privacy Policy লিংক', 'type' => 'url', 'default' => '/privacy-policy'],
+                    ['key' => 'note', 'label' => '', 'type' => 'note', 'text' => 'বার্তাগুলো Admin → Messages-এ জমা হয়। Settings → ইমেইল (SMTP) সেট করা থাকলে ইমেইলেও আসে।'],
+                ],
+            ],
+
+            'search' => [
+                'label' => 'সার্চ বক্স', 'icon' => 'fa-solid fa-magnifying-glass', 'category' => 'interactive',
+                'fields' => [
+                    ['key' => 'placeholder', 'label' => 'বক্সের ভেতরের লেখা', 'type' => 'text', 'default' => 'Search the website…'],
+                    ['key' => 'button', 'label' => 'বাটন', 'type' => 'text', 'default' => 'Search'],
                 ],
             ],
 

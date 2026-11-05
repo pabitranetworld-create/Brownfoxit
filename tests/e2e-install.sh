@@ -77,4 +77,7 @@ php tests/builder-e2e.php "$BASE" admin@example.com 'Secret@12345'
 echo "== 9. admin panel"
 php tests/admin-e2e.php "$BASE" admin@example.com 'Secret@12345'
 
+echo "== 10. content pages, forms, search, 404"
+php tests/content-e2e.php "$BASE" admin@example.com 'Secret@12345'
+
 echo "ALL CHECKS PASSED"

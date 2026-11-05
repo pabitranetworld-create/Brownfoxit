@@ -118,7 +118,7 @@ set($f['fields'], 'data[icon]', 'fa-solid fa-bolt');
 set($f['fields'], 'data[short_description]', 'Created by the test');
 $r = submit($f['action'], $f['fields']);
 ok($r['code'] === 302 && preg_match('#/admin/content/services/(\d+)/edit#', (string) $r['location'], $sm) === 1, 'service created');
-ok(str_contains(get('/')['body'], 'E2E Service'), 'home page shows new service');
+ok(str_contains(get('/services')['body'], 'E2E Service'), 'Services page shows new service (catalogue)');
 
 // required field check
 $p = get('/admin/content/services/create');

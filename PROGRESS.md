@@ -36,3 +36,23 @@ Every push runs `tests/e2e-install.sh` on a fresh server with MySQL 8. It covers
 | Pure custom HTML (Canvas) | ✅ | A Canvas page that only holds HTML widgets is sent without any theme CSS/JS, so the code looks exactly as written. A whole HTML document (`<!DOCTYPE html>…`) is output as it is. |
 | Broken / cut-off HTML can't break a page | ✅ | Unclosed `<style>`, `<script>`, comments and `<div>`s in an HTML widget are closed automatically; the builder warns when pasted code looks incomplete. (Old 20,000-character limit removed.) |
 | Very tall blocks always appear | ✅ | Entrance animations start as soon as any part is on screen (before, blocks taller than ~8 screens never appeared). New HTML widgets have no entrance animation. |
+
+---
+
+## Phase 2 – Content pages, services, forms (this phase)
+
+| Requirement | Status | Notes |
+|---|---|---|
+| 22 dedicated service pages (`/services/…`) | ✅ | Unique copy per service: hero, overview, who it is for, problems, benefits, deliverables, features, use cases, tools, process, client requirements, notes, FAQ (with FAQ schema), related services, CTA, SEO title + description. Automation/n8n pages cover integrations, error handling, monitoring, human approval and maintenance; software pages separate prototypes from production; video pages cover deliverables, formats, footage and revisions without a fixed policy. All are normal builder pages (editable). |
+| Related portfolio projects on service pages | 🟡 | Portfolio grid filtered by category; it hides itself while there are no matching projects. Full portfolio migration is Phase 3. |
+| Service catalogue | ✅ | Admin → Services: group, page link, "show on home", "show in catalogue". Home page keeps its 4 cards (now linked to service pages). Main menu prioritises AI Automation, Website, Software, Motion & Video. |
+| About, Services overview, Our Process, FAQ, Tools & Technologies, Contact, Start a Project | ✅ | Complete English copy, only verified facts from the existing site (founder, 15+ years, location, contact details). |
+| Contact + quote forms | ✅ | Builder widget "Form". Server validation, honeypot, minimum fill time, rate limit; no-reload sending with field errors, loading and success animation. Messages stored in Admin → Messages (status, notes). Service pre-selected from `?service=`. |
+| Email notifications | ⛔ needs SMTP | Admin → Settings → Email (SMTP): enter the cPanel mailbox, password stored encrypted, "send test email" button. Until then messages are only stored in the admin. |
+| Search results page | ✅ | `/search` over published pages and services, highlighted excerpts. Blog/portfolio/products join in later phases. |
+| Custom 404 page | ✅ | Editable builder page `page-not-found` (with search box), shown with HTTP 404. |
+| Legal starter drafts | 🟡 owner review | Privacy, Terms, Refund, Digital delivery, Shipping — created **unpublished** with a "requires review" notice and [bracketed] items. Footer links to them appear automatically once published. Not legal advice. |
+| Pricing / packages page | ⬜ not created | Spec: only with genuine pricing information. |
+| Content seeding on deploy | ✅ | `ContentSeeder` runs on every deploy but only creates what is missing; never overwrites edits and never re-creates a page you deleted. |
+| Tools lists | 🟡 owner review | Tool lists on service pages are typical choices — please remove any you do not want to offer. |
+| Pabitra.net install (About the Expert etc.) | ⬜ | Will be added when the second install is set up. |

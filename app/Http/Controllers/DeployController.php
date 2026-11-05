@@ -40,6 +40,7 @@ class DeployController extends Controller
         try {
             foreach ([
                 ['migrate', ['--force' => true]],
+                ['db:seed', ['--class' => 'Database\\Seeders\\ContentSeeder', '--force' => true]], // adds new pages only, never overwrites
                 ['optimize:clear', []],
                 ['optimize', []],
             ] as [$command, $args]) {

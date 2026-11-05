@@ -12,13 +12,25 @@ class Service extends Model
     /** Colour names used by the icon boxes in style.css (.ic-blue, .ic-orange …). */
     public const ICON_COLORS = ['blue', 'orange', 'green', 'purple'];
 
+    /** Service groups (the first four are the main ones in navigation). */
+    public const GROUPS = [
+        'ai' => 'AI Automation',
+        'web' => 'Website Development',
+        'software' => 'Software Development',
+        'media' => 'Motion Graphics & Video',
+        'design' => 'Design',
+        'growth' => 'Marketing, Data & Support',
+    ];
+
     protected $fillable = [
-        'title', 'slug', 'icon', 'icon_color', 'short_description',
-        'description', 'image', 'sort_order', 'is_active',
+        'title', 'slug', 'icon', 'icon_color', 'group', 'url', 'short_description',
+        'description', 'image', 'sort_order', 'is_active', 'show_on_home', 'show_in_catalog',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'show_on_home' => 'boolean',
+        'show_in_catalog' => 'boolean',
         'sort_order' => 'integer',
     ];
 

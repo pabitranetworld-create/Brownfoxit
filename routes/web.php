@@ -17,6 +17,9 @@ Route::get('/', HomeController::class)->name('home');
 // GitHub auto-deploy hook (see .github/workflows/deploy.yml). Protected by DEPLOY_TOKEN.
 Route::post('/_deploy', DeployController::class)->name('deploy.hook');
 
+Route::post('/forms/{type}', [\App\Http\Controllers\FormController::class, 'submit'])->where('type', 'contact|quote')->name('forms.submit');
+Route::get('/search', [\App\Http\Controllers\SearchController::class, 'index'])->name('search');
+
 /*
 |--------------------------------------------------------------------------
 | Admin panel  (/admin)
@@ -59,6 +62,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         });
 
         // Media library
+        Route::get('messages', [Admin\MessageController::class, 'index'])->name('messages.index');
+        Route::get('messages/{message}', [Admin\MessageController::class, 'show'])->name('messages.show');
+        Route::put('messages/{message}', [Admin\MessageController::class, 'update'])->name('messages.update');
+        Route::delete('messages/{message}', [Admin\MessageController::class, 'destroy'])->name('messages.destroy');
+        Route::post('settings/mail/test', [Admin\SettingsController::class, 'testMail'])->name('settings.mail-test');
+
         Route::get('media', [Admin\MediaController::class, 'index'])->name('media.index');
         Route::get('media/list', [Admin\MediaController::class, 'list'])->name('media.list');
         Route::post('media', [Admin\MediaController::class, 'store'])->name('media.store');
@@ -83,4 +92,4 @@ Route::prefix('admin')->name('admin.')->group(function () {
 | Builder pages: /about, /contact … (keep this LAST)
 |--------------------------------------------------------------------------
 */
-Route::get('/{slug}', [PageController::class, 'show'])->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')->name('page');
+Route::get('/{slug}', [PageController::class, 'show'])->where('slug', \App\Models\Page::SLUG_PATTERN)->name('page');

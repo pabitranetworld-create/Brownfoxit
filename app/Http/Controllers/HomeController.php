@@ -14,7 +14,7 @@ class HomeController extends Controller
     public function __invoke(): View
     {
         return view('home', [
-            'services' => Service::active()->ordered()->get(),
+            'services' => Service::active()->where('show_on_home', true)->ordered()->get(),
             'clients' => Client::active()->ordered()->get(),
             'projects' => Project::active()->featured()->ordered()->get(),
             'testimonials' => Testimonial::active()->ordered()->get(),

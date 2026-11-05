@@ -25,7 +25,7 @@
         <div class="f-col">
             <h5>Links</h5>
             <ul class="f-links">
-                @foreach ($footer['links'] ?? [] as $link)
+                @foreach (array_filter($footer['links'] ?? [], fn ($l) => link_visible($l['url'] ?? null)) as $link)
                     <li><a href="{{ link_to_url($link['url']) }}">{{ $link['label'] }}</a></li>
                 @endforeach
             </ul>
@@ -34,7 +34,7 @@
         <div class="f-col">
             <h5>Support</h5>
             <ul class="f-links">
-                @foreach ($footer['support'] ?? [] as $link)
+                @foreach (array_filter($footer['support'] ?? [], fn ($l) => link_visible($l['url'] ?? null)) as $link)
                     <li><a href="{{ link_to_url($link['url']) }}">{{ $link['label'] }}</a></li>
                 @endforeach
             </ul>

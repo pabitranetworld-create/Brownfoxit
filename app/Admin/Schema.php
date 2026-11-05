@@ -203,6 +203,22 @@ class Schema
                     ['key' => 'copyright_link', 'label' => 'কপিরাইট লিংকের লেখা', 'type' => 'text'],
                 ],
             ],
+
+            'mail' => [
+                'title' => 'ইমেইল (SMTP)', 'icon' => 'fa-solid fa-envelope', 'mail_test' => true,
+                'intro' => 'Contact/Quote ফর্মের বার্তা (আর পরে অর্ডারের ইমেইল) পাঠাতে cPanel-এর একটা ইমেইল অ্যাকাউন্ট দিন। cPanel → Email Accounts → Connect Devices-এ Host, Port দেখা যায়। সেট না করলে বার্তা শুধু Admin → Messages-এ জমা হবে।',
+                'fields' => [
+                    ['key' => 'mailer', 'label' => 'ইমেইল পাঠানো', 'type' => 'select', 'options' => ['off' => 'বন্ধ (শুধু Admin-এ জমা হবে)', 'smtp' => 'SMTP (সুপারিশকৃত)', 'sendmail' => 'সার্ভারের sendmail'], 'default' => 'off'],
+                    ['key' => 'host', 'label' => 'SMTP Host', 'type' => 'text', 'help' => 'যেমন mail.brownfoxit.com'],
+                    ['key' => 'port', 'label' => 'Port', 'type' => 'number', 'min' => 1, 'max' => 65535, 'default' => 465],
+                    ['key' => 'encryption', 'label' => 'Encryption', 'type' => 'select', 'options' => ['ssl' => 'SSL (Port 465)', 'tls' => 'TLS / STARTTLS (Port 587)'], 'default' => 'ssl'],
+                    ['key' => 'username', 'label' => 'Username (পুরো ইমেইল ঠিকানা)', 'type' => 'text'],
+                    ['key' => 'password', 'label' => 'Password', 'type' => 'password', 'help' => 'এনক্রিপ্ট করে রাখা হয়। খালি রাখলে আগেরটা থাকবে।'],
+                    ['key' => 'from_address', 'label' => 'যে ঠিকানা থেকে যাবে', 'type' => 'email', 'help' => 'সাধারণত Username-এর মতোই'],
+                    ['key' => 'from_name', 'label' => 'পাঠানোর নাম', 'type' => 'text', 'help' => 'যেমন Brown Fox IT'],
+                    ['key' => 'notify_email', 'label' => 'নতুন বার্তা কোন ইমেইলে আসবে', 'type' => 'email', 'help' => 'খালি রাখলে "সাইট ও যোগাযোগ"-এর ইমেইলে'],
+                ],
+            ],
         ];
     }
 
@@ -218,14 +234,17 @@ class Schema
             'services' => [
                 'model' => Service::class, 'title' => 'Services', 'singular' => 'Service', 'icon' => 'fa-solid fa-laptop-code',
                 'slug_from' => 'title', 'sortable' => true,
-                'columns' => [['key' => 'icon', 'type' => 'icon'], ['key' => 'title', 'label' => 'নাম'], ['key' => 'sort_order', 'label' => 'ক্রম'], ['key' => 'is_active', 'label' => 'সক্রিয়', 'type' => 'bool']],
+                'columns' => [['key' => 'icon', 'type' => 'icon'], ['key' => 'title', 'label' => 'নাম'], ['key' => 'url', 'label' => 'পেজ'], ['key' => 'show_on_home', 'label' => 'Home', 'type' => 'bool'], ['key' => 'sort_order', 'label' => 'ক্রম'], ['key' => 'is_active', 'label' => 'সক্রিয়', 'type' => 'bool']],
                 'fields' => [
                     ['key' => 'title', 'label' => 'নাম', 'type' => 'text', 'required' => true],
                     ['key' => 'icon', 'label' => 'আইকন', 'type' => 'icon', 'help' => 'Font Awesome class, যেমন fa-solid fa-laptop-code'],
                     ['key' => 'icon_color', 'label' => 'আইকনের রং', 'type' => 'select', 'options' => self::colors()],
                     ['key' => 'short_description', 'label' => 'ছোট বিবরণ', 'type' => 'textarea'],
-                    ['key' => 'description', 'label' => 'বিস্তারিত (Service পেজের জন্য)', 'type' => 'html'],
+                    ['key' => 'group', 'label' => 'গ্রুপ', 'type' => 'select', 'options' => ['' => '—'] + Service::GROUPS],
+                    ['key' => 'url', 'label' => 'Service পেজের লিংক', 'type' => 'url', 'help' => 'যেমন /services/ai-automation — পেজটা Pages থেকে Builder দিয়ে এডিট করুন'],
                     ['key' => 'image', 'label' => 'ছবি', 'type' => 'image'],
+                    ['key' => 'show_on_home', 'label' => 'Home page-এর স্লাইডারে দেখাবে', 'type' => 'checkbox', 'default' => false],
+                    ['key' => 'show_in_catalog', 'label' => 'Services পেজ / তালিকায় দেখাবে', 'type' => 'checkbox', 'default' => true],
                     $order, $active,
                 ],
             ],

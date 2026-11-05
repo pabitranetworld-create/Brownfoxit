@@ -23,8 +23,11 @@ class Page extends Model
         'dark' => 'গাঢ় (Dark) — Home page-এর মতো',
     ];
 
+    /** Allowed page URL: up to three "a-b-c" parts separated by "/" (e.g. services/ai-automation). */
+    public const SLUG_PATTERN = '[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*){0,2}';
+
     /** Slugs that cannot be used because a real route lives there. */
-    public const RESERVED = ['admin', 'up', '_deploy', 'install', 'vendor', 'assets', 'uploads', 'storage', 'login', 'logout', 'register', 'shop', 'cart', 'checkout', 'account', 'blog', 'portfolio', 'services', 'search', 'sitemap.xml', 'robots.txt'];
+    public const RESERVED = ['admin', 'up', '_deploy', 'install', 'vendor', 'assets', 'uploads', 'storage', 'login', 'logout', 'register', 'shop', 'cart', 'checkout', 'account', 'blog', 'portfolio', 'search', 'forms', 'sitemap.xml', 'robots.txt'];
 
     protected $fillable = [
         'title', 'slug', 'status', 'is_template', 'template', 'color_scheme', 'layout', 'draft_layout',

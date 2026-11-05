@@ -52,3 +52,26 @@ if (! function_exists('link_to_url')) {
         return url($url);
     }
 }
+
+if (! function_exists('link_visible')) {
+    /**
+     * Menu links to a builder page that exists but is not published (e.g. a legal draft
+     * still under review) are hidden instead of sending visitors to a 404.
+     */
+    function link_visible(?string $url): bool
+    {
+        static $hidden = null;
+        if (! is_string($url) || ! str_starts_with($url, '/') || str_starts_with($url, '//')) {
+            return true;
+        }
+        $slug = trim((string) parse_url($url, PHP_URL_PATH), '/');
+        if ($slug === '') {
+            return true;
+        }
+        if ($hidden === null) {
+            $hidden = rescue(fn () => \App\Models\Page::where('is_template', false)->where('status', '!=', \App\Models\Page::STATUS_PUBLISHED)->pluck('slug')->flip()->all(), [], false);
+        }
+
+        return ! isset($hidden[$slug]);
+    }
+}

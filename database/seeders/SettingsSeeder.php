@@ -18,7 +18,7 @@ class SettingsSeeder extends Seeder
         }
     }
 
-    protected function settings(): array
+    public function settings(): array
     {
         return [
 

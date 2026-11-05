@@ -8,7 +8,7 @@
                     @foreach ($services as $service)
                         <div class="swiper-slide sbox">
                             <div class="sbox-icon ic-{{ $service->icon_color }}"><i class="{{ $service->icon }}"></i></div>
-                            <h3>{{ $service->title }}</h3>
+                            <h3>@if ($service->url)<a href="{{ link_to_url($service->url) }}">{{ $service->title }}</a>@else{{ $service->title }}@endif</h3>
                             <p>{{ $service->short_description }}</p>
                         </div>
                     @endforeach
