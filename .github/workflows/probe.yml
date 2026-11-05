@@ -1,13 +1,32 @@
 # Diagnostic: runs the page-builder self-test ON the hosting server and prints the result.
+# "export-page" downloads the PUBLISHED version of one page (as an artifact) to reproduce problems.
 name: Server self-test
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "selftest or export-page"
+        default: selftest
+      slug:
+        description: "page slug (for export-page)"
+        default: ""
 jobs:
   selftest:
     runs-on: ubuntu-latest
     steps:
-      - name: Run self-test on the live server
+      - name: Run on the live server
         env:
           SITE_URL: ${{ secrets.SITE_URL }}
           DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+          ACTION: ${{ inputs.action }}
+          SLUG: ${{ inputs.slug }}
         run: |
-          curl -sS -X POST "${SITE_URL%/}/_deploy" -H "X-Deploy-Token: $DEPLOY_TOKEN" -H "Accept: application/json" -d "action=selftest" | python3 -m json.tool
+          curl -sS -X POST "${SITE_URL%/}/_deploy" -H "X-Deploy-Token: $DEPLOY_TOKEN" -H "Accept: application/json" \
+            --data-urlencode "action=$ACTION" --data-urlencode "slug=$SLUG" -o result.json
+          if [ "$ACTION" = "export-page" ]; then python3 -c "import json;d=json.load(open('result.json'));print(d.get('slug'), len(json.dumps(d)), 'bytes')"; else python3 -m json.tool result.json; fi
+      - uses: actions/upload-artifact@v4
+        if: ${{ inputs.action == 'export-page' }}
+        with:
+          name: page-export
+          path: result.json
+          retention-days: 1

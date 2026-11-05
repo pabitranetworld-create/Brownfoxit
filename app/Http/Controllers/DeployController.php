@@ -26,6 +26,13 @@ class DeployController extends Controller
         @set_time_limit(300);
         $output = [];
 
+        if ($request->input('action') === 'export-page') {
+            // Only the PUBLISHED version (already public on the site) of one page.
+            $page = \App\Models\Page::where('slug', (string) $request->input('slug'))->where('status', 'published')->firstOrFail();
+
+            return response()->json(['slug' => $page->slug, 'title' => $page->title, 'template' => $page->template, 'show_page_header' => $page->show_page_header, 'custom_head' => $page->custom_head, 'custom_css' => $page->custom_css, 'custom_js' => $page->custom_js, 'layout' => $page->layout]);
+        }
+
         if ($request->input('action') === 'selftest') {
             return response()->json($this->selfTest());
         }
