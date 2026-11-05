@@ -65,4 +65,7 @@ grep -qF '"ok":true' <<< "$OUT" || { echo "::error::deploy hook failed"; exit 1;
 echo "== 7. site still works with cached config/routes/views"
 [ "$(curl -sS -o /dev/null -w '%{http_code}' "$BASE/")" = "200" ] || { echo "::error::home broken after optimize"; exit 1; }
 
+echo "== 8. admin panel"
+php tests/admin-e2e.php "$BASE" admin@example.com 'Secret@12345'
+
 echo "ALL CHECKS PASSED"

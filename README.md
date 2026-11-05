@@ -64,7 +64,16 @@ Install শেষ হলে `storage/installed.json` ফাইল তৈরি �
 
 ---
 
-## ৩. নিজের কম্পিউটারে চালানো (ঐচ্ছিক)
+## ৩. Admin panel
+
+**ঠিকানা:** `https://আপনার-ডোমেইন/admin`। Installer-এ যে ইমেইল আর পাসওয়ার্ড দিয়েছিলেন, সেটা দিয়ে লগইন করবেন।
+
+- **Home Page:** Hero, About, Counter, Steps, Footer, মেনু সহ প্রতিটা অংশের লেখা আর ছবি বদলানো যায়।
+- **কন্টেন্ট:** Services, Projects, Testimonials, Client লোগো আর Blog যোগ করা, এডিট আর মুছে ফেলা যায়।
+- **প্রোফাইল:** নাম, ইমেইল আর পাসওয়ার্ড বদলানো যায়।
+- আপলোড করা ছবি থাকে `public/uploads/`-এ, আর Auto-deploy কখনো এগুলো মোছে না।
+
+## ৪. নিজের কম্পিউটারে চালানো (ঐচ্ছিক)
 
 **যা লাগবে:** PHP 8.2+, Composer আর MySQL। **Laragon** (Windows) বা **XAMPP** ইনস্টল করলে সব একসাথে পেয়ে যাবেন।
 
@@ -78,7 +87,7 @@ Terminal দিয়ে সেটআপ করতে চাইলে `.env.exam
 
 ---
 
-## ৪. দরকারি কমান্ড
+## ৫. দরকারি কমান্ড
 
 | কমান্ড | কাজ |
 |---|---|
@@ -88,7 +97,7 @@ Terminal দিয়ে সেটআপ করতে চাইলে `.env.exam
 
 ---
 
-## ৫. কোন জিনিস কোথায়
+## ৬. কোন জিনিস কোথায়
 
 | কী | কোথায় |
 |---|---|
@@ -97,6 +106,7 @@ Terminal দিয়ে সেটআপ করতে চাইলে `.env.exam
 | ফন্ট, আইকন, স্লাইডার (সব লোকাল) | `public/vendor/` |
 | ছবি | `public/uploads/` |
 | Installer | `installer/installer.php` |
+| Admin panel | `app/Admin/Schema.php` (সব ফর্মের তালিকা), `app/Http/Controllers/Admin/`, `resources/views/admin/`, `public/assets/admin/` |
 | Auto-deploy | `.github/workflows/deploy.yml`, `app/Http/Controllers/DeployController.php` |
 | Install zip বানানো | `.github/workflows/release.yml` |
 | ডাটাবেস টেবিল / শুরুর কন্টেন্ট | `database/migrations/`, `database/seeders/` |

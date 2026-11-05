@@ -21,6 +21,17 @@ Read this before adding a new page or feature, so everything stays consistent.
 - Workflow for changes: commit to `main` = deploy. Every schema change must be a new migration
   (never edit an old one that has already run on the server).
 
+## Admin panel (/admin)
+- Everything is driven by `app/Admin/Schema.php`: `sections()` = home-page blocks in `settings`,
+  `resources()` = content tables. Add a field/section/table there and the forms, validation and saving follow.
+- `App\Admin\FormData` validates and normalises posted forms (`data[...]` values + `data_files[...]` uploads).
+  Field types: text, textarea, html, url, email, number, icon, checkbox, datetime, select, image, images,
+  repeater (nested allowed), model_select.
+- Uploads go to `public/uploads/YYYY/MM/` via `App\Support\ImageUploader` (no SVG, max 5 MB).
+- Login: `/admin/login` (5 tries/minute), middleware alias `admin` (`EnsureAdmin`, role = admin).
+- `tests/admin-e2e.php` acts like a browser: re-submits every form unchanged and fails if any stored
+  value changes. Run in CI after the installer test.
+
 ## Content model
 | Kind of content | Where it lives | Read it with |
 |---|---|---|
@@ -54,7 +65,7 @@ Keys in `settings`: `site`, `menu`, `hero`, `about`, `service_cards`, `marketpla
 ## Roadmap (to be built step by step)
 - [x] Home page (design + database-driven content)
 - [x] Web installer + GitHub auto-deploy
-- [ ] Admin panel: login, dashboard, CRUD for every table + settings editor + image upload
+- [x] Admin panel: login, dashboard, CRUD for every table + settings editor + image upload
 - [ ] About, Services (+ detail), Portfolio (+ detail), Blog (list, category, post), Contact (form → DB + email)
 - [ ] Shop: products, cart, checkout, orders, customer account (WooCommerce replacement)
 - [ ] SEO: sitemap.xml, meta per page, 301 redirects from old WordPress URLs
