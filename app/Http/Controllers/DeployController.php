@@ -101,6 +101,35 @@ class DeployController extends Controller
             auth()->logout();
         }
 
+        // Structure of the real pages (no content, only sizes/flags) to find display problems.
+        $report['pages'] = rescue(fn () => \App\Models\Page::where('is_template', false)->orderBy('id')->get()->map(function ($p) {
+            $info = function ($layout) {
+                $types = []; $html = [];
+                $walk = function ($node) use (&$walk, &$types, &$html) {
+                    if (! is_array($node)) { return; }
+                    if (isset($node['type']) && is_string($node['type'])) {
+                        $types[] = $node['type'];
+                        if ($node['type'] === 'html') {
+                            $c = (string) ($node['data']['code'] ?? '');
+                            $html[] = ['code' => strlen($c), 'css' => strlen((string) ($node['data']['css'] ?? '')), 'js' => strlen((string) ($node['data']['js'] ?? '')), 'wrap' => $node['data']['wrap'] ?? null, 'full_doc' => (bool) preg_match('/<html|<body|<!doctype/i', $c), 'anim' => $node['settings']['anim'] ?? null];
+                        }
+                    }
+                    foreach ($node as $v) { $walk($v); }
+                };
+                $walk($layout ?? []);
+
+                return ['sections' => count($layout['sections'] ?? []), 'types' => array_count_values($types), 'html' => $html];
+            };
+            $rendered = rescue(function () use ($p) {
+                $out = view('pages.show', ['page' => $p, 'layout' => $p->layout, 'preview' => false, 'editor' => false])->render();
+                preg_match('#<main[^>]*>(.*)</main>#s', $out, $m);
+
+                return ['bytes' => strlen($out), 'main_text_chars' => strlen(trim(preg_replace('/\s+/', ' ', strip_tags(preg_replace('#<(script|style)\b.*?</\1>#is', '', $m[1] ?? ''))))), 'body_class' => preg_match('#<body[^>]*class="([^"]*)"#', $out, $b) ? $b[1] : null];
+            }, fn ($e) => ['error' => \Illuminate\Support\Str::limit($e->getMessage(), 300)], false);
+
+            return ['id' => $p->id, 'slug' => $p->slug, 'status' => $p->status, 'template' => $p->template, 'unpublished_changes' => $p->hasUnpublishedChanges(), 'custom' => ['head' => strlen((string) $p->custom_head), 'css' => strlen((string) $p->custom_css), 'js' => strlen((string) $p->custom_js)], 'published' => $info($p->layout), 'draft' => $info($p->draft_layout), 'render' => $rendered];
+        })->all(), fn ($e) => 'error: '.$e->getMessage(), false);
+
         // Last errors from the log (first line of each, shortened).
         $log = storage_path('logs/laravel.log');
         $report['recent_errors'] = is_file($log)
