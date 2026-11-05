@@ -26,6 +26,10 @@ class DeployController extends Controller
         @set_time_limit(300);
         $output = [];
 
+        if ($request->input('action') === 'selftest') {
+            return response()->json($this->selfTest());
+        }
+
         try {
             foreach ([
                 ['migrate', ['--force' => true]],
@@ -44,5 +48,67 @@ class DeployController extends Controller
         Log::info('Deploy hook finished', ['commit' => $request->input('commit')]);
 
         return response()->json(['ok' => true, 'output' => $output]);
+    }
+
+    /**
+     * Runs the page-builder save/publish code on THIS server (with a throw-away page)
+     * and reports environment details and recent errors, so problems that only
+     * happen on the hosting can be diagnosed from GitHub Actions.
+     */
+    protected function selfTest(): array
+    {
+        $report = [
+            'php' => PHP_VERSION,
+            'db' => rescue(fn () => \Illuminate\Support\Facades\DB::select('select version() as v')[0]->v, 'n/a', false),
+            'env' => app()->environment(),
+            'config_cached' => app()->configurationIsCached(),
+            'routes_cached' => app()->routesAreCached(),
+            'limits' => ['post_max_size' => ini_get('post_max_size'), 'upload_max_filesize' => ini_get('upload_max_filesize'), 'memory_limit' => ini_get('memory_limit'), 'max_input_vars' => ini_get('max_input_vars')],
+            'session' => config('session.driver'),
+            'steps' => [],
+        ];
+
+        $page = null;
+        try {
+            $admin = \App\Models\User::where('role', 'admin')->first();
+            auth()->login($admin);
+            $page = \App\Models\Page::create(['title' => 'Selftest', 'slug' => 'selftest-'.\Illuminate\Support\Str::lower(\Illuminate\Support\Str::random(6)), 'status' => 'draft', 'layout' => ['version' => 1, 'sections' => []]]);
+            $report['steps'][] = 'page created #'.$page->id;
+
+            $layout = ['version' => 1, 'sections' => [['id' => 'sectest1', 'settings' => [], 'columns' => [['id' => 'coltest1', 'settings' => ['w' => 100], 'widgets' => [
+                ['id' => 'wtest0001', 'type' => 'heading', 'data' => ['text' => 'Selftest'], 'settings' => []],
+                ['id' => 'wtest0002', 'type' => 'html', 'data' => ['code' => '<div>html</div><script>console.log(1)</script>'], 'settings' => []],
+            ]]]]]];
+            $ctl = app(\App\Http\Controllers\Admin\PageController::class);
+            foreach (['save', 'publish'] as $action) {
+                $req = \Illuminate\Http\Request::create('/admin/pages/'.$page->id.'/'.$action, 'POST', [
+                    'layout' => json_encode($layout),
+                    'page' => ['title' => 'Selftest', 'slug' => $page->slug, 'show_page_header' => '1', 'noindex' => '0'],
+                ]);
+                $req->setUserResolver(fn () => $admin);
+                app()->instance('request', $req);
+                $res = $ctl->{$action}($req, $page->fresh(), app(\App\PageBuilder\LayoutValidator::class));
+                $report['steps'][] = $action.': HTTP '.$res->getStatusCode().' '.\Illuminate\Support\Str::limit($res->getContent(), 200);
+            }
+            $view = rescue(fn () => strlen(view('pages.show', ['page' => $page->fresh(), 'layout' => $page->fresh()->layout, 'preview' => false, 'editor' => false])->render()).' bytes', fn ($e) => 'render error: '.$e->getMessage(), false);
+            $report['steps'][] = 'render public page: '.$view;
+            $report['ok'] = true;
+        } catch (Throwable $e) {
+            $report['ok'] = false;
+            $report['error'] = get_class($e).': '.$e->getMessage().' @ '.str_replace(base_path(), '', $e->getFile()).':'.$e->getLine();
+        } finally {
+            $page?->delete();
+            auth()->logout();
+        }
+
+        // Last errors from the log (first line of each, shortened).
+        $log = storage_path('logs/laravel.log');
+        $report['recent_errors'] = is_file($log)
+            ? collect(preg_split('/\R/', (string) @file_get_contents($log, false, null, max(0, filesize($log) - 300000)) ?: ''))
+                ->filter(fn ($l) => preg_match('/^\[\d{4}-\d\d-\d\d [\d:]+\] \w+\.(ERROR|CRITICAL|ALERT|EMERGENCY)/', $l))
+                ->map(fn ($l) => \Illuminate\Support\Str::limit($l, 400))->take(-12)->values()->all()
+            : ['(no log file)'];
+
+        return $report;
     }
 }

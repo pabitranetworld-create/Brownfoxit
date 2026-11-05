@@ -1,29 +1,13 @@
-# Temporary diagnostic: checks whether the hosting firewall blocks requests that contain HTML.
-name: Probe hosting firewall
+# Diagnostic: runs the page-builder self-test ON the hosting server and prints the result.
+name: Server self-test
 on: workflow_dispatch
 jobs:
-  probe:
+  selftest:
     runs-on: ubuntu-latest
     steps:
-      - name: Send test requests
+      - name: Run self-test on the live server
         env:
           SITE_URL: ${{ secrets.SITE_URL }}
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
         run: |
-          U="${SITE_URL%/}"
-          probe() { # name, body
-            code=$(curl -s -o /tmp/out -w '%{http_code}' -X POST "$U/_deploy" -H 'X-Deploy-Token: probe' --data-urlencode "layout=$2")
-            server=$(curl -s -o /dev/null -D - -X POST "$U/_deploy" -H 'X-Deploy-Token: probe' --data-urlencode "layout=$2" | grep -i '^server:' | tr -d '\r')
-            echo "$1 => HTTP $code | $server | $(head -c 160 /tmp/out | tr '\n' ' ')"
-          }
-          probe "plain text      " 'hello world'
-          probe "json            " '{"version":1,"sections":[]}'
-          probe "paragraph html  " '{"content":"<p>Write <strong>something</strong></p>"}'
-          probe "link html       " '{"content":"<a href=\"https://example.com\">x</a>"}'
-          probe "iframe          " '{"code":"<iframe src=\"https://www.google.com/maps/embed\"></iframe>"}'
-          probe "script tag      " '{"code":"<script>console.log(1)</script>"}'
-          probe "style tag       " '{"code":"<style>.a{color:red}</style>"}'
-          probe "onclick attr    " '{"code":"<div onclick=\"x()\">a</div>"}'
-          probe "base64 of script" "$(printf '<script>console.log(1)</script>' | base64 -w0)"
-          echo "--- GET home"; curl -s -o /dev/null -w 'HTTP %{http_code}\n' "$U/"
-          echo "--- GET admin login"; curl -s -o /dev/null -w 'HTTP %{http_code}\n' "$U/admin/login"
-          echo "--- builder assets"; for f in assets/admin/builder.js assets/admin/preview-bridge.js assets/js/motion.js assets/css/pages.css; do curl -s -o /dev/null -w "$f %{http_code} %{size_download}\n" "$U/$f"; done
+          curl -sS -X POST "${SITE_URL%/}/_deploy" -H "X-Deploy-Token: $DEPLOY_TOKEN" -H "Accept: application/json" -d "action=selftest" | python3 -m json.tool
