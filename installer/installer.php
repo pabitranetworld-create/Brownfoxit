@@ -143,7 +143,7 @@ function bfi_requirements(): array
     }
 
     $checks[] = ['label' => 'vendor ফোল্ডার (Laravel লাইব্রেরি)', 'ok' => is_file(BFI_ROOT.'/vendor/autoload.php'),
-        'help' => 'GitHub Releases থেকে "brownfoxit-install.zip" নামান (এতে vendor থাকে), অথবা cPanel Terminal-এ "composer install --no-dev" চালান।'];
+        'help' => 'এটা কোনো একক ফাইল নয়, Laravel-এর লাইব্রেরির পুরো "vendor" ফোল্ডার। সম্ভবত vendor ছাড়া zip আপলোড হয়েছে। GitHub repo → Releases → "Latest install zip" থেকে brownfoxit-install.zip নামিয়ে এই ফোল্ডারেই আবার extract করুন (overwrite)। তারপর "আবার পরীক্ষা" চাপুন।'];
 
     $envWritable = is_file(BFI_ROOT.'/.env') ? is_writable(BFI_ROOT.'/.env') : is_writable(BFI_ROOT);
     $checks[] = ['label' => '.env ফাইল লেখার অনুমতি', 'ok' => $envWritable, 'help' => 'প্রজেক্টের মূল ফোল্ডারের permission 755 করুন।'];

@@ -10,7 +10,7 @@ brownfoxit.com-এর নতুন ওয়েবসাইট, **Laravel 12 (PH
 ## ১. cPanel-এ নতুন করে Install (প্রথমবার)
 
 ### ধাপ ক: Install zip নামান
-GitHub repo → **Actions** → **Build install zip** → **Run workflow** চাপুন। কাজ শেষ হলে (২-৩ মিনিট) ওই run খুলে নিচের **Artifacts** থেকে `brownfoxit-install` নামান। এটার ভেতরে `brownfoxit-install.zip` আছে, যেটায় Laravel-এর সব লাইব্রেরি (`vendor`) দেওয়া থাকে।
+GitHub repo-র ডান পাশে **Releases → "Latest install zip"** থেকে `brownfoxit-install.zip` নামান (প্রতিটা push-এর পর এটা নিজে থেকেই নতুন হয়)। সরাসরি লিংক: `https://github.com/pabitranetworld-create/Brownfoxit/releases/latest/download/brownfoxit-install.zip`। এই zip-এর ভেতরে Laravel-এর সব লাইব্রেরি (`vendor` ফোল্ডার) থাকে।
 
 > Repo-তে `v1.0.0`-এর মতো একটা tag push করলে zip-টা **Releases** পেজেও চলে আসে।
 
