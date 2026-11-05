@@ -62,6 +62,12 @@ OUT=$(curl -sS -X POST "$BASE/_deploy" -H "X-Deploy-Token: $TOKEN" -H 'Accept: a
 echo "$OUT" | head -c 600; echo
 grep -qF '"ok":true' <<< "$OUT" || { echo "::error::deploy hook failed"; exit 1; }
 
+BADV=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/_deploy-vendor.php" -H "X-Deploy-Token: wrong")
+[ "$BADV" = "404" ] || { echo "::error::vendor hook accepted a wrong token ($BADV)"; exit 1; }
+OUTV=$(curl -sS -X POST "$BASE/_deploy-vendor.php" -H "X-Deploy-Token: $TOKEN")
+echo "$OUTV"
+grep -qF '"ok":true' <<< "$OUTV" || { echo "::error::vendor hook failed"; exit 1; }
+
 echo "== 7. site still works with cached config/routes/views"
 [ "$(curl -sS -o /dev/null -w '%{http_code}' "$BASE/")" = "200" ] || { echo "::error::home broken after optimize"; exit 1; }
 

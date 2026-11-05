@@ -19,3 +19,8 @@ yarn-error.log
 /storage/installed.json
 /public/uploads/*
 !/public/uploads/.gitkeep
+/.deploy
+/vendor_new
+/vendor_old
+/vendor_tmp
+/storage/vendor.hash

@@ -3,8 +3,11 @@
 #
 #   0. runs the full test (test.yml) – nothing is deployed if it fails
 #   1. installs the PHP libraries (vendor/) on GitHub's server
-#   2. uploads only the changed files to the hosting over FTP
-#   3. calls https://your-site/_deploy so the site runs new database
+#   2. packs vendor/ into ONE file (.deploy/vendor.zip) – 7,000 small files
+#      over FTP would take an hour; the server unpacks it only when it changed
+#   3. uploads only the changed files to the hosting over FTP
+#   4. calls /_deploy-vendor.php (swap vendor/ if needed), then
+#      https://your-site/_deploy so the site runs new database
 #      migrations and refreshes its caches
 #
 # One-time setup: GitHub repo → Settings → Secrets and variables → Actions
@@ -37,7 +40,7 @@ jobs:
   deploy:
     needs: test
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
 
     steps:
       - name: Check that deploy secrets are set
@@ -83,6 +86,16 @@ jobs:
         if: steps.secrets.outputs.ready == 'true'
         run: find app bootstrap config database routes installer public -name "*.php" -print0 | xargs -0 -n1 php -l > /dev/null
 
+      - name: Pack vendor into one file
+        if: steps.secrets.outputs.ready == 'true'
+        run: |
+          mkdir -p .deploy
+          HASH=$(find vendor -type f -print0 | sort -z | xargs -0 sha1sum | sha1sum | cut -c1-40)
+          echo "$HASH" > .deploy/vendor.hash
+          zip -qr -X .deploy/vendor.zip vendor
+          ls -lh .deploy/
+          echo "vendor fingerprint: $HASH"
+
       - name: Upload changed files (FTP)
         if: steps.secrets.outputs.ready == 'true'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -100,6 +113,7 @@ jobs:
             **/.git*/**
             .github/**
             **/node_modules/**
+            vendor/**
             .env
             .env.backup
             .env.production
@@ -119,6 +133,11 @@ jobs:
             echo "::warning::SITE_URL or DEPLOY_TOKEN not set, skipped the deploy hook (run migrations manually)."
             exit 0
           fi
+          echo "== vendor"
+          curl --fail-with-body -sS -X POST "${SITE_URL%/}/_deploy-vendor.php" \
+            -H "X-Deploy-Token: $DEPLOY_TOKEN"
+          echo
+          echo "== migrations + caches"
           curl --fail-with-body -sS -X POST "${SITE_URL%/}/_deploy" \
             -H "X-Deploy-Token: $DEPLOY_TOKEN" \
             -H "Accept: application/json" \
