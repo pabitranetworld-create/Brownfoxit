@@ -129,7 +129,7 @@ class LayoutValidator
             case 'richtext':
                 return HtmlSanitizer::clean(Str::limit((string) (is_scalar($v) ? $v : ''), 60000, ''));
             case 'code':
-                return Str::limit((string) (is_scalar($v) ? $v : ''), 20000, '');
+                return Str::limit((string) (is_scalar($v) ? $v : ''), 1000000, '');
             case 'number':
                 if (! is_numeric($v)) {
                     return $default;

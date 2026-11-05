@@ -150,19 +150,19 @@
       var p = (vh * 0.9 - r.top) / (vh * 0.5);
       el.style.setProperty("--fill", Math.max(0, Math.min(1, p)) * 100 + "%");
     });
-    header.classList.toggle("sticky", y > 300);
-    backTop.classList.toggle("show", y > 400);
+    if (header) header.classList.toggle("sticky", y > 300);
+    if (backTop) backTop.classList.toggle("show", y > 400);
     var max = document.documentElement.scrollHeight - vh;
-    prog.style.strokeDashoffset = 125.6 - (125.6 * y) / (max || 1);
+    if (prog) prog.style.strokeDashoffset = 125.6 - (125.6 * y) / (max || 1);
   }
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
-  backTop.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
+  if (backTop) backTop.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
 
   /* ---------- 6. Mobile menu ---------- */
   var toggle = document.getElementById("menuToggle"), nav = document.getElementById("mainNav");
-  toggle.addEventListener("click", function () { toggle.classList.toggle("open"); nav.classList.toggle("open"); });
-  nav.querySelectorAll("a").forEach(function (a) {
+  if (toggle && nav) toggle.addEventListener("click", function () { toggle.classList.toggle("open"); nav.classList.toggle("open"); });
+  if (nav) nav.querySelectorAll("a").forEach(function (a) {
     a.addEventListener("click", function (ev) {
       var li = a.parentElement;
       if (li.classList.contains("has-sub") && window.innerWidth < 992) { ev.preventDefault(); li.classList.toggle("open"); return; }
@@ -175,13 +175,16 @@
   document.querySelectorAll("[data-video]").forEach(function (b) {
     b.addEventListener("click", function (ev) {
       ev.preventDefault();
+      if (!modal) return;
       frame.innerHTML = '<iframe src="https://www.youtube.com/embed/' + b.dataset.video + '?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
       modal.classList.add("open");
     });
   });
-  function closeVideo() { modal.classList.remove("open"); frame.innerHTML = ""; }
-  document.getElementById("videoClose").addEventListener("click", closeVideo);
-  modal.addEventListener("click", function (e) { if (e.target === modal) closeVideo(); });
+  function closeVideo() { if (!modal) return; modal.classList.remove("open"); frame.innerHTML = ""; }
+  if (modal) {
+    document.getElementById("videoClose").addEventListener("click", closeVideo);
+    modal.addEventListener("click", function (e) { if (e.target === modal) closeVideo(); });
+  }
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeVideo(); });
 
 })();

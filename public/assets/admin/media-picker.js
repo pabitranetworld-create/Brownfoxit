@@ -7,6 +7,7 @@
   function el(html) { var d = document.createElement("div"); d.innerHTML = html.trim(); return d.firstChild; }
 
   function request(method, url, body) {
+    if (body instanceof FormData && !body.has("_token")) body.append("_token", cfg.csrf);
     return fetch(url, {
       method: method, body: body, credentials: "same-origin",
       headers: { "X-CSRF-TOKEN": cfg.csrf, "Accept": "application/json", "X-Requested-With": "XMLHttpRequest" }

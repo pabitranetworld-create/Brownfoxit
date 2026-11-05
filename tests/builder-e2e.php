@@ -193,6 +193,52 @@ ok(get('/'.$slug.'-copy')['code'] === 404, 'duplicate stays draft');
 $r = submit("/admin/pages/{$id}/unpublish", [['_token', $csrf]]);
 ok($r['code'] === 302 && get('/'.$slug)['code'] === 404, 'unpublish hides the page');
 
+echo "== CMS: page layouts (Default / Full Width / Canvas) + Custom HTML\n";
+// save works even when a proxy strips the X-CSRF-TOKEN header (token sent in the body)
+function json_post_body_token(string $url, array $fields, string $csrf): array
+{
+    $fields['_token'] = $csrf;
+    $q = http_build_query($fields);
+    $r = http('POST', $url, $q, ['Content-Type: application/x-www-form-urlencoded', 'Accept: application/json']);
+    $r['json'] = json_decode($r['body'], true);
+
+    return $r;
+}
+$f = form(get('/admin/pages')['body'], '/admin/pages');
+set($f['fields'], 'title', 'E2E Canvas HTML');
+set($f['fields'], 'slug', $slug.'-canvas');
+set($f['fields'], 'template_id', 'html');
+$r = submit($f['action'], $f['fields']);
+ok($r['code'] === 302 && preg_match('#/admin/pages/(\d+)/builder#', (string) $r['location'], $hm) === 1, 'custom HTML page created');
+$hid = (int) ($hm[1] ?? 0);
+$hb = get("/admin/pages/{$hid}/builder")['body'];
+ok(str_contains($hb, '"template":"canvas"') && str_contains($hb, 'templates:'), 'custom HTML page starts as Canvas');
+$htmlLayout = ['version' => 1, 'sections' => [[
+    'id' => 'canvassec', 'settings' => ['width' => 'bleed', 'pt' => 0, 'pb' => 0, 'gap' => 'none', 'height' => 'screen', 'content_pos' => 'center'],
+    'columns' => [['id' => 'canvascol', 'settings' => ['w' => 100], 'widgets' => [
+        widget('html', ['code' => '<section id="e2e-own"><h1>Own landing E2E</h1><p id="e2e-js">x</p></section>', 'css' => '#e2e-own{background:#123456}', 'js' => 'document.getElementById("e2e-js").textContent="ok";', 'wrap' => 'none']),
+    ]]],
+]]];
+$canvasPage = ['title' => 'E2E Canvas HTML', 'slug' => $slug.'-canvas', 'template' => 'canvas', 'custom_css' => 'body.e2e-x{color:red}', 'custom_js' => 'window.__e2eCustom=1;', 'custom_head' => '<meta name="e2e-head" content="1">', 'show_page_header' => false];
+$r = json_post_body_token("/admin/pages/{$hid}/save", ['layout' => json_encode($htmlLayout), 'page' => $canvasPage], $csrf);
+ok(($r['json']['ok'] ?? false) === true, 'save works with the CSRF token only in the body');
+$r = json_post_body_token("/admin/pages/{$hid}/publish", ['page' => $canvasPage], $csrf);
+ok(($r['json']['ok'] ?? false) && ($r['json']['status'] ?? '') === 'published', 'publish works with the CSRF token only in the body');
+$ch = get('/'.$slug.'-canvas')['body'];
+foreach (['Own landing E2E', '#e2e-own{background:#123456}', 'textContent="ok"', 'body.e2e-x{color:red}', 'window.__e2eCustom=1;', 'name="e2e-head"', 'tpl-canvas', 'w-bleed', 'h-screen'] as $needle) {
+    ok(str_contains($ch, $needle), 'canvas renders: '.$needle);
+}
+ok(! str_contains($ch, 'site-header') && ! str_contains($ch, 'site-footer'), 'canvas has no theme header/footer');
+$canvasPage['template'] = 'full_width';
+$r = json_post_body_token("/admin/pages/{$hid}/publish", ['layout' => json_encode($htmlLayout), 'page' => $canvasPage], $csrf);
+$fw = get('/'.$slug.'-canvas')['body'];
+ok(str_contains($fw, 'tpl-full_width') && str_contains($fw, 'site-header') && ! str_contains($fw, 'class="pb-page-header'), 'full width keeps header/footer, no title banner');
+$canvasPage['template'] = 'evil';
+$r = json_post_body_token("/admin/pages/{$hid}/save", ['layout' => json_encode($htmlLayout), 'page' => $canvasPage], $csrf);
+ok($r['code'] === 422, 'unknown page layout refused');
+$r = json_post_body_token('/admin/client-log', ['message' => 'E2E client log', 'context' => 'test'], $csrf);
+ok($r['code'] === 200 || $r['code'] === 204, 'builder client-log endpoint accepts reports');
+
 echo "== Media library\n";
 $png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==');
 $r = submit('/admin/media', [['_token', $csrf]], ['files[]' => ['Team Photo.png', $png, 'image/png']]);

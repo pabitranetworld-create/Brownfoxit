@@ -7,6 +7,8 @@
     if ($s['fx'] !== 'none') { $classes[] = 'has-fx'; }
     if ($s['divider_top']) { $classes[] = 'has-wave'; }
     if ($s['fx'] === 'particles') { $classes[] = 'has-particles'; }
+    if ($s['height'] !== 'auto') { $classes[] = 'h-'.$s['height']; $classes[] = 'pos-'.$s['content_pos']; }
+    if ($s['height'] === 'custom') { $style[] = '--mh:'.(int) $s['min_height'].'px'; }
 @endphp
 <section{!! \App\PageBuilder\Attr::element(array_merge($s, ['anim' => 'none', 'parallax' => 'none', 'anim_stagger' => 0]), 'pb-section', $editor ? $section['id'] : null, $classes, $style) !!} @if ($s['fx'] === 'particles') data-number="4" data-size="4" data-random="true" data-colors='["#FF6A59","#B3DB61","#0081FF","#FF5337"]' @endif>
     @if ($s['divider_top'])

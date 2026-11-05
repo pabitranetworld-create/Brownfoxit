@@ -60,7 +60,8 @@
             <div class="adm-field">
                 <label>শুরু করুন</label>
                 <select name="template_id">
-                    <option value="">খালি পেজ</option>
+                    <option value="">খালি পেজ (Builder দিয়ে সাজাবেন)</option>
+                    <option value="html">Custom HTML পেজ (Canvas — নিজের HTML/CSS/JS দিয়ে পুরো পেজ)</option>
                     @foreach ($templates as $t)<option value="{{ $t->id }}">Template: {{ $t->title }}</option>@endforeach
                 </select>
             </div>

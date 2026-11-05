@@ -11,11 +11,19 @@ class Page extends Model
     public const STATUS_DRAFT = 'draft';
     public const STATUS_PUBLISHED = 'published';
 
+    /** Page layouts, same idea as Elementor's Default / Full Width / Canvas. */
+    public const TEMPLATES = [
+        'default' => 'Default — Header, Footer ও টাইটেল ব্যানার',
+        'full_width' => 'Full Width — Header ও Footer, টাইটেল ব্যানার নেই',
+        'canvas' => 'Canvas — শুধু আপনার কন্টেন্ট (Header/Footer নেই)',
+    ];
+
     /** Slugs that cannot be used because a real route lives there. */
     public const RESERVED = ['admin', 'up', '_deploy', 'install', 'vendor', 'assets', 'uploads', 'storage', 'login', 'logout', 'register', 'shop', 'cart', 'checkout', 'account', 'blog', 'portfolio', 'services', 'search', 'sitemap.xml', 'robots.txt'];
 
     protected $fillable = [
-        'title', 'slug', 'status', 'is_template', 'layout', 'draft_layout',
+        'title', 'slug', 'status', 'is_template', 'template', 'layout', 'draft_layout',
+        'custom_head', 'custom_css', 'custom_js',
         'seo_title', 'seo_description', 'og_image', 'noindex',
         'show_page_header', 'header_subtitle', 'published_at', 'updated_by',
     ];

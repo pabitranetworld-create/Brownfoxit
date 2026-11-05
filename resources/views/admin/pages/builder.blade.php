@@ -74,11 +74,13 @@ window.BFI_BUILDER = {
         publish: @json(route('admin.pages.publish', $page)),
         preview: @json(route('admin.pages.preview', $page)),
         revisions: @json(route('admin.pages.revisions', $page)),
+        clientLog: @json(route('admin.client-log')),
         restore: @json(url('admin/pages/'.$page->id.'/revisions')),
         site: @json(url('/')),
         media: @json(url('/')),
     },
-    csrf: @json(csrf_token())
+    csrf: @json(csrf_token()),
+    templates: @json($templates)
 };
 </script>
 <script src="{{ asset('assets/admin/media-picker.js') }}?v={{ filemtime(public_path('assets/admin/media-picker.js')) }}"></script>

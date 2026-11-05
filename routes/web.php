@@ -45,6 +45,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Pages + page builder
         Route::get('pages', [Admin\PageController::class, 'index'])->name('pages.index');
         Route::post('pages', [Admin\PageController::class, 'store'])->name('pages.store');
+        Route::post('client-log', [Admin\PageController::class, 'clientLog'])->name('client-log');
         Route::prefix('pages/{page}')->name('pages.')->controller(Admin\PageController::class)->group(function () {
             Route::get('builder', 'builder')->name('builder');
             Route::post('save', 'save')->name('save');

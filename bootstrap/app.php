@@ -12,7 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         // The deploy hook is called by GitHub Actions, not by a browser form.
-        $middleware->validateCsrfTokens(except: ['_deploy']);
+        $middleware->validateCsrfTokens(except: ['_deploy', 'admin/client-log']);
 
         $middleware->alias(['admin' => \App\Http\Middleware\EnsureAdmin::class]);
         $middleware->redirectGuestsTo(fn () => route('admin.login'));

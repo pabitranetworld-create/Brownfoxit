@@ -27,8 +27,18 @@
     var t = $("#bToast"); t.textContent = msg; t.className = "bld-toast show" + (bad ? " bad" : "");
     clearTimeout(toast.t); toast.t = setTimeout(function () { t.className = "bld-toast"; }, 3200);
   }
+  function report(what, status, detail) {
+    try {
+      var fd = new FormData();
+      fd.append("what", what); fd.append("status", status || 0); fd.append("url", location.href); fd.append("detail", String(detail || "").slice(0, 1500));
+      fetch(B.urls.clientLog, { method: "POST", body: fd, credentials: "same-origin", headers: { "Accept": "application/json" } });
+    } catch (e) {}
+  }
+  window.addEventListener("error", function (e) { report("js error", 0, (e.message || "") + " @ " + (e.filename || "") + ":" + (e.lineno || "")); });
+
   function api(url, data) {
     var fd = new FormData();
+    fd.append("_token", B.csrf);
     Object.keys(data || {}).forEach(function (k) {
       if (k === "page") Object.keys(data.page).forEach(function (pk) { var v = data.page[pk]; fd.append("page[" + pk + "]", typeof v === "boolean" ? (v ? "1" : "0") : (v == null ? "" : v)); });
       else fd.append(k, data[k]);
@@ -36,8 +46,13 @@
     return fetch(url, { method: "POST", body: fd, credentials: "same-origin", headers: { "X-CSRF-TOKEN": B.csrf, "Accept": "application/json", "X-Requested-With": "XMLHttpRequest" } })
       .then(function (r) {
         return r.text().then(function (t) {
-          var j; try { j = JSON.parse(t); } catch (e) { throw new Error(r.status === 419 ? "সেশন শেষ হয়ে গেছে, পেজ রিফ্রেশ করে আবার লগইন করুন।" : "সার্ভার Error (" + r.status + ")"); }
-          if (!r.ok || j.ok === false) throw new Error(j.message || "Error " + r.status);
+          var j; try { j = JSON.parse(t); } catch (e) {
+            report("bad response", r.status, t.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").slice(0, 600));
+            throw new Error(r.status === 419 ? "সেশন শেষ হয়ে গেছে (419)। পেজ রিফ্রেশ করুন — আপনার কাজ এই ব্রাউজারে ব্যাকআপ রাখা আছে।"
+              : r.status === 401 || r.status === 302 ? "লগইন শেষ হয়ে গেছে। নতুন ট্যাবে আবার লগইন করে Save চাপুন।"
+              : "সার্ভার Error (HTTP " + r.status + "): " + t.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 120));
+          }
+          if (!r.ok || j.ok === false) { if (r.status >= 500) report("server error", r.status, t); throw new Error(j.message || "Error " + r.status); }
           return j;
         });
       });
@@ -133,10 +148,10 @@
     var seq = ++previewSeq;
     $("#bLoading").classList.add("on");
     var fd = new FormData();
-    fd.append("layout", JSON.stringify(state.layout)); fd.append("editor", "1");
-    ["title", "show_page_header", "header_subtitle"].forEach(function (k) { var v = state.page[k]; fd.append("page[" + k + "]", typeof v === "boolean" ? (v ? "1" : "0") : (v || "")); });
+    fd.append("_token", B.csrf); fd.append("layout", JSON.stringify(state.layout)); fd.append("editor", "1");
+    ["title", "show_page_header", "header_subtitle", "template", "custom_head", "custom_css", "custom_js"].forEach(function (k) { var v = state.page[k]; fd.append("page[" + k + "]", typeof v === "boolean" ? (v ? "1" : "0") : (v || "")); });
     fetch(B.urls.preview, { method: "POST", body: fd, credentials: "same-origin", headers: { "X-CSRF-TOKEN": B.csrf } })
-      .then(function (r) { return r.text(); })
+      .then(function (r) { if (!r.ok) report("preview failed", r.status, ""); return r.text(); })
       .then(function (html) {
         if (seq !== previewSeq) return;
         var y = scrollY;
@@ -154,10 +169,51 @@
     try { frame.contentWindow.postMessage({ type: "bfi-highlight", id: f ? state.sel : null, label: label(f), scroll: scroll }, "*"); } catch (e) {}
   }
   window.addEventListener("message", function (e) {
-    if (!e.data) return;
-    if (e.data.type === "bfi-select") select(e.data.id, false);
-    if (e.data.type === "bfi-scroll") scrollY = e.data.y;
+    var m = e.data;
+    if (!m || e.source !== frame.contentWindow) return;
+    if (m.type === "bfi-scroll") scrollY = m.y;
+    if (m.type === "bfi-select") { select(m.id, false); if (m.add) { state.tab = "add"; renderPanel(); } }
+    if (m.type === "bfi-action") previewAction(m);
+    if (m.type === "bfi-drop") previewDrop(m);
   });
+  function findColumn(id) { var f = find(id); return f && f.kind === "column" ? f.node : null; }
+  function previewAction(m) {
+    if (m.action === "add-section-end") { state.sel = null; state.tab = "add"; renderPanel(); toast("নিচের \"নতুন Section\" থেকে একটা লেআউট বেছে নিন, অথবা Widget চাপুন"); return; }
+    var f = find(m.id); if (!f) return;
+    if (m.action === "edit") return select(m.id, false);
+    if (m.action === "dup" || m.action === "del") return action(m.id, m.action);
+    if (m.action === "add-above" && f.kind === "section") {
+      var sec = newSection([100]); state.layout.sections.splice(f.index, 0, sec);
+      changed({ instant: true }); state.sel = sec.columns[0].id; state.tab = "add"; renderPanel();
+    }
+  }
+  function previewDrop(m) {
+    if (m.kind === "newsection") {
+      var widths = (m.widths || "100").split(",").map(Number);
+      var sec = newSection(widths); state.layout.sections.splice(m.sectionIndex, 0, sec);
+      changed({ instant: true }); select(sec.columns[0].id, false); state.tab = "add"; renderPanel(); return;
+    }
+    if (m.kind === "movesection") {
+      var f = find(m.id); if (!f || f.kind !== "section") return;
+      var to = m.sectionIndex; if (f.index < to) to--;
+      state.layout.sections.splice(f.index, 1); state.layout.sections.splice(to, 0, f.node);
+      changed({ instant: true }); return;
+    }
+    var col = m.col ? findColumn(m.col) : null;
+    if (!col) { // dropped between sections: make a new one-column section there
+      var ns = newSection([100]); state.layout.sections.splice(m.sectionIndex == null ? state.layout.sections.length : m.sectionIndex, 0, ns);
+      col = ns.columns[0]; m.index = 0;
+    }
+    if (m.kind === "new") { if (defs.widgets[m.widget]) addWidget(m.widget, col, m.index); return; }
+    if (m.kind === "move") {
+      var mv = find(m.id); if (!mv || mv.kind !== "widget") return;
+      var nested = false; eachColumn(function (c, s, row) { if (c === col && row) nested = true; });
+      if (mv.node.type === "row" && (nested || (mv.node.columns || []).indexOf(col) > -1)) return toast("এখানে Nested কলাম রাখা যায় না", true);
+      var idx = m.index; if (mv.list === col.widgets && mv.index < idx) idx--;
+      mv.list.splice(mv.index, 1); col.widgets.splice(idx, 0, mv.node);
+      state.sel = mv.node.id; changed({ instant: true });
+    }
+  }
 
   /* ---------------- selection + panel ---------------- */
   function select(id, scroll) {
@@ -177,12 +233,47 @@
     else if (state.tab === "edit") { var f = state.sel && find(state.sel); if (f) panel.appendChild(editPanel(f)); else { state.tab = "tree"; renderPanel(); } }
   }
 
+  /* ---- drag from the panel into the preview (pointer events, like Elementor) ---- */
+  var dragJustEnded = false;
+  function pointerDrag(el, kind, data, label) {
+    el.addEventListener("pointerdown", function (e) {
+      if (e.button !== 0) return;
+      var sx = e.clientX, sy = e.clientY, ghost = null, active = false, overFrame = false;
+      function bridge() { try { return frame.contentWindow.__bfiDrag; } catch (x) { return null; } }
+      function move(ev) {
+        if (!active && Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) < 6) return;
+        if (!active) {
+          active = true;
+          ghost = h('<div class="bld-ghost">' + label + "</div>"); document.body.appendChild(ghost);
+          document.body.classList.add("bld-dragging");
+          try { el.setPointerCapture(ev.pointerId); } catch (x) {}
+        }
+        ghost.style.transform = "translate(" + (ev.clientX + 12) + "px," + (ev.clientY + 12) + "px)";
+        var r = frame.getBoundingClientRect(), api = bridge();
+        overFrame = ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom;
+        if (!api) return;
+        if (overFrame) { var fx = (ev.clientX - r.left), fy = (ev.clientY - r.top); api.scroll(fy); api.over(kind, fx, fy); ghost.classList.add("ok"); }
+        else { api.leave(); ghost.classList.remove("ok"); }
+      }
+      function up() {
+        document.removeEventListener("pointermove", move); document.removeEventListener("pointerup", up); document.removeEventListener("pointercancel", up);
+        if (!active) return;
+        ghost.remove(); document.body.classList.remove("bld-dragging");
+        dragJustEnded = true; setTimeout(function () { dragJustEnded = false; }, 50);
+        var api = bridge();
+        if (api && overFrame) { var msg = api.drop(kind, data); if (msg) previewDrop(msg); }
+        else if (api) api.leave();
+      }
+      document.addEventListener("pointermove", move); document.addEventListener("pointerup", up); document.addEventListener("pointercancel", up);
+    });
+  }
+
   /* ---- widget palette ---- */
   var PRESETS = [[100], [50, 50], [33.33, 33.33, 33.34], [25, 25, 25, 25], [60, 40], [40, 60], [66.67, 33.33], [33.33, 66.67]];
   function addPanel() {
     var box = h('<div class="bld-add"></div>');
     var tgt = targetColumn();
-    box.appendChild(h('<p class="bld-hint">' + (tgt ? 'Widget যোগ হবে: <b>' + esc(tgt.where) + '</b>' : "প্রথমে নিচ থেকে একটা Section লেআউট বেছে নিন, অথবা Widget চাপুন (নতুন Section তৈরি হবে)।") + "</p>"));
+    box.appendChild(h('<p class="bld-hint"><i class="fa-solid fa-hand-pointer"></i> Widget <b>প্রিভিউতে টেনে এনে</b> যেখানে চান সেখানে ছাড়ুন, অথবা চাপুন' + (tgt ? ' (যোগ হবে: <b>' + esc(tgt.where) + '</b>)' : " (নতুন Section তৈরি হবে)") + "।</p>"));
     var cats = {};
     Object.keys(defs.widgets).forEach(function (k) { var w = defs.widgets[k]; (cats[w.category] = cats[w.category] || []).push(w); });
     Object.keys(defs.categories).forEach(function (c) {
@@ -190,9 +281,9 @@
       box.appendChild(h('<h4 class="bld-cat">' + esc(defs.categories[c]) + "</h4>"));
       var grid = h('<div class="bld-palette"></div>');
       cats[c].forEach(function (w) {
-        var b = h('<button type="button" class="bld-wbtn" draggable="true"><i class="' + esc(w.icon) + '"></i><span>' + esc(w.label) + "</span></button>");
-        b.addEventListener("click", function () { addWidget(w.type); });
-        b.addEventListener("dragstart", function (e) { e.dataTransfer.setData("text/bfi-new", w.type); });
+        var b = h('<button type="button" class="bld-wbtn"><i class="' + esc(w.icon) + '"></i><span>' + esc(w.label) + "</span></button>");
+        b.addEventListener("click", function () { if (!dragJustEnded) addWidget(w.type); });
+        pointerDrag(b, "new", w.type, '<i class="' + esc(w.icon) + '"></i> ' + esc(w.label));
         grid.appendChild(b);
       });
       box.appendChild(grid);
@@ -200,9 +291,10 @@
     box.appendChild(h('<h4 class="bld-cat">নতুন Section (কলাম লেআউট)</h4>'));
     var pre = h('<div class="bld-presets"></div>');
     PRESETS.forEach(function (p) {
-      var b = h('<button type="button" class="bld-preset" title="' + p.map(Math.round).join(" / ") + '"></button>');
+      var b = h('<button type="button" class="bld-preset" title="' + p.map(Math.round).join(" / ") + ' — চাপুন অথবা প্রিভিউতে টেনে আনুন"></button>');
       p.forEach(function (w) { b.appendChild(h('<span style="flex:' + w + '"></span>')); });
-      b.addEventListener("click", function () { addSection(p); });
+      b.addEventListener("click", function () { if (!dragJustEnded) addSection(p); });
+      pointerDrag(b, "newsection", p.join(","), '<i class="fa-solid fa-table-columns"></i> Section ' + p.map(Math.round).join("/"));
       pre.appendChild(b);
     });
     box.appendChild(pre);
@@ -351,18 +443,22 @@
     var fields = [
       { key: "title", label: "পেজের নাম", type: "text" },
       { key: "slug", label: "URL (" + B.urls.site.replace(/^https?:\/\//, "") + "/…)", type: "text" },
-      { key: "show_page_header", label: "ওপরে টাইটেল ব্যানার (Breadcrumb সহ)", type: "checkbox" },
+      { key: "template", label: "Page Layout", type: "select", options: B.templates, help: "Canvas = শুধু আপনার কন্টেন্ট (Landing page / পুরো Custom HTML পেজের জন্য)। Full Width = Header-Footer থাকে, টাইটেল ব্যানার থাকে না।" },
+      { key: "show_page_header", label: "ওপরে টাইটেল ব্যানার (Breadcrumb সহ) — শুধু Default লেআউটে", type: "checkbox" },
       { key: "header_subtitle", label: "ব্যানারের নিচের লেখা", type: "text" },
       { key: "seo_title", label: "SEO Title (খালি = পেজের নাম)", type: "text" },
       { key: "seo_description", label: "SEO Description", type: "textarea" },
       { key: "og_image", label: "Social share ছবি (Facebook/LinkedIn)", type: "image" },
-      { key: "noindex", label: "Google-এ দেখাবে না (noindex)", type: "checkbox" }
+      { key: "noindex", label: "Google-এ দেখাবে না (noindex)", type: "checkbox" },
+      { key: "custom_css", label: "এই পেজের Custom CSS", type: "code", lang: "css" },
+      { key: "custom_js", label: "এই পেজের Custom JavaScript (পেজের শেষে চলে)", type: "code", lang: "js" },
+      { key: "custom_head", label: "<head>-এ বাড়তি কোড (Font, Meta, Tracking)", type: "code", lang: "html" }
     ];
     if (p.is_template) fields = fields.filter(function (f) { return ["title"].indexOf(f.key) > -1; });
     fields.forEach(function (f) {
       box.appendChild(field(f, p[f.key], function (v) {
         p[f.key] = v; state.dirty = true; updateButtons();
-        if (["title", "show_page_header", "header_subtitle"].indexOf(f.key) > -1) schedulePreview();
+        if (["title", "show_page_header", "header_subtitle", "template", "custom_head", "custom_css", "custom_js"].indexOf(f.key) > -1) schedulePreview(f.type === "code" ? 900 : 300);
       }));
     });
     if (p.seo_description !== undefined) {
@@ -452,9 +548,12 @@
     if (f.type !== "checkbox" && f.type !== "note" && f.label) wrap.appendChild(h('<label for="' + id + '">' + esc(f.label) + "</label>"));
     var ctl;
     switch (f.type) {
-      case "textarea": case "code":
-        ctl = h('<textarea id="' + id + '" rows="' + (f.type === "code" ? 8 : 4) + '"' + (f.type === "code" ? ' class="mono" spellcheck="false"' : "") + "></textarea>");
+      case "textarea":
+        ctl = h('<textarea id="' + id + '" rows="4"></textarea>');
         ctl.value = value || ""; ctl.addEventListener("input", function () { set(ctl.value); });
+        break;
+      case "code":
+        ctl = codeField(id, f, value, set);
         break;
       case "number":
         ctl = h('<input id="' + id + '" type="number"' + (f.min != null ? ' min="' + f.min + '"' : "") + (f.max != null ? ' max="' + f.max + '"' : "") + ' step="' + (f.step || 1) + '">');
@@ -500,6 +599,33 @@
     wrap.appendChild(ctl);
     if (f.help) wrap.appendChild(h('<small class="bld-help">' + esc(f.help) + "</small>"));
     return wrap;
+  }
+
+  function tabKeys(ta) {
+    ta.addEventListener("keydown", function (e) {
+      if (e.key !== "Tab") return;
+      e.preventDefault();
+      var s0 = ta.selectionStart, s1 = ta.selectionEnd;
+      ta.value = ta.value.slice(0, s0) + "  " + ta.value.slice(s1);
+      ta.selectionStart = ta.selectionEnd = s0 + 2;
+      ta.dispatchEvent(new Event("input"));
+    });
+  }
+  function codeField(id, f, value, set) {
+    var box = h('<div class="bld-code"><textarea id="' + id + '" rows="9" class="mono" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off"></textarea>' +
+      '<button type="button" class="adm-btn ghost sm"><i class="fa-solid fa-up-right-and-down-left-from-center"></i> বড় করে এডিট করুন</button></div>');
+    var ta = box.querySelector("textarea");
+    ta.value = value || ""; ta.placeholder = { html: "<div>…</div>", css: ".class { color: #fff; }", js: "document.querySelector(…)" }[f.lang] || "";
+    tabKeys(ta);
+    ta.addEventListener("input", function () { set(ta.value); });
+    box.querySelector("button").addEventListener("click", function () {
+      var m = h('<div class="bld-codemodal"><div class="bld-codemodal-h"><strong>' + esc(f.label) + '</strong><span class="bld-hint">Tab = ২ স্পেস · লেখার সাথে সাথে প্রিভিউ আপডেট হয়</span><button type="button" class="adm-btn sm"><i class="fa-solid fa-check"></i> শেষ</button></div><textarea class="mono" spellcheck="false" wrap="off"></textarea></div>');
+      var big = m.querySelector("textarea"); big.value = ta.value; tabKeys(big);
+      big.addEventListener("input", function () { ta.value = big.value; set(big.value); });
+      m.querySelector("button").addEventListener("click", function () { m.remove(); });
+      document.body.appendChild(m); big.focus();
+    });
+    return box;
   }
 
   function imageField(value, set) {
@@ -582,12 +708,17 @@
   }
 
   /* ---------------- save / publish / revisions ---------------- */
-  function payload() { return { layout: JSON.stringify(state.layout), page: { title: state.page.title, slug: state.page.slug, seo_title: state.page.seo_title, seo_description: state.page.seo_description, og_image: state.page.og_image, noindex: state.page.noindex, show_page_header: state.page.show_page_header, header_subtitle: state.page.header_subtitle } }; }
+  function payload() {
+    var p = {};
+    ["title", "slug", "seo_title", "seo_description", "og_image", "noindex", "show_page_header", "header_subtitle", "template", "custom_head", "custom_css", "custom_js"].forEach(function (k) { p[k] = state.page[k]; });
+    return { layout: JSON.stringify(state.layout), page: p };
+  }
   function busy(btn, on) { btn.disabled = on; btn.classList.toggle("busy", on); }
   function afterSave(res, published) {
     state.layout = res.layout; lastSnap = JSON.stringify(state.layout);
     state.page.status = res.status; state.page.slug = res.slug; state.page.unpublished = !published && res.status === "published";
     state.dirty = false; updateButtons(); toast(res.message);
+    try { localStorage.removeItem(backupKey); } catch (e) {}
     $("#bLive").href = res.url;
     if (state.sel && !find(state.sel)) state.sel = null;
     renderPanel();
@@ -643,6 +774,28 @@
   window.addEventListener("beforeunload", function (e) { if (state.dirty) { e.preventDefault(); e.returnValue = ""; } });
   document.querySelector(".bld-more > button").addEventListener("click", function (e) { e.stopPropagation(); this.parentNode.classList.toggle("open"); });
   document.addEventListener("click", function () { var m = document.querySelector(".bld-more.open"); if (m) m.classList.remove("open"); });
+
+  /* ---------------- safety: local backup + autosave ---------------- */
+  var backupKey = "bfi-page-backup:" + B.urls.save;
+  function backup() { try { localStorage.setItem(backupKey, JSON.stringify({ t: Date.now(), layout: state.layout, page: state.page })); } catch (e) {} }
+  setInterval(function () { if (state.dirty) backup(); }, 5000);
+  try {
+    var bk = JSON.parse(localStorage.getItem(backupKey) || "null");
+    if (bk && JSON.stringify(bk.layout) !== JSON.stringify(state.layout) && confirm("এই পেজের সেভ না হওয়া কিছু কাজ এই ব্রাউজারে পাওয়া গেছে (" + new Date(bk.t).toLocaleString() + ")। সেটা ফিরিয়ে আনবেন?")) {
+      state.layout = bk.layout; Object.keys(bk.page || {}).forEach(function (k) { if (k !== "status" && k !== "unpublished") state.page[k] = bk.page[k]; }); state.dirty = true;
+    } else if (bk) { localStorage.removeItem(backupKey); }
+  } catch (e) {}
+  var saving = false;
+  setInterval(function () {
+    if (!state.dirty || saving || document.hidden) return;
+    saving = true;
+    api(B.urls.save, payload()).then(function (r) {
+      if (JSON.stringify(state.layout) === JSON.stringify(r.layout)) { state.dirty = false; }
+      state.page.status = r.status; state.page.unpublished = r.status === "published";
+      updateButtons(); toast("স্বয়ংক্রিয়ভাবে Draft সেভ হয়েছে");
+      try { localStorage.removeItem(backupKey); } catch (e) {}
+    }).catch(function (e) { toast("স্বয়ংক্রিয় সেভ হয়নি: " + e.message, true); }).then(function () { saving = false; });
+  }, 60000);
 
   renderPanel(); updateButtons(); refreshPreview();
   if (!state.layout.sections.length) toast("বাঁ পাশ থেকে Widget বা Section লেআউট বেছে নিয়ে শুরু করুন");

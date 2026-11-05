@@ -70,7 +70,10 @@ function form(string $html, string $actionContains): array
     $dom->loadHTML('<?xml encoding="utf-8"?>'.$html);
     $xp = new DOMXPath($dom);
 
-    foreach ($dom->getElementsByTagName('form') as $form) {
+    // prefer a form whose action ENDS with the given path (e.g. the "new page" form, not a row's /duplicate form)
+    $forms = iterator_to_array($dom->getElementsByTagName('form'));
+    usort($forms, fn ($a, $b) => (int) str_ends_with($b->getAttribute('action'), $actionContains) <=> (int) str_ends_with($a->getAttribute('action'), $actionContains));
+    foreach ($forms as $form) {
         $action = $form->getAttribute('action');
         if (! str_contains($action, $actionContains)) {
             continue;

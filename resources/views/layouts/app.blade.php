@@ -31,14 +31,19 @@
 </head>
 <body class="@yield('body_class')">
 
-    @include('partials.header')
+    @php($canvas = isset($page) && $page instanceof \App\Models\Page && $page->template === 'canvas')
+    @unless ($canvas)
+        @include('partials.header')
+    @endunless
 
     <main>
         @yield('content')
     </main>
 
-    @include('partials.footer')
-    @include('partials.floating')
+    @unless ($canvas)
+        @include('partials.footer')
+        @include('partials.floating')
+    @endunless
 
     <script src="{{ asset('vendor/swiper/swiper-bundle.min.js') }}"></script>
     <script src="{{ asset('assets/js/main.js') }}?v={{ filemtime(public_path('assets/js/main.js')) }}"></script>

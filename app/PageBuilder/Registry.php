@@ -279,9 +279,12 @@ class Registry
             ],
 
             'html' => [
-                'label' => 'Custom HTML', 'icon' => 'fa-solid fa-code', 'category' => 'advanced',
+                'label' => 'HTML / CSS / JS', 'icon' => 'fa-solid fa-code', 'category' => 'advanced',
                 'fields' => [
-                    ['key' => 'code', 'label' => 'HTML কোড', 'type' => 'code', 'default' => '', 'help' => 'Embed কোড (Google Map, ফর্ম ইত্যাদি)। শুধু বিশ্বস্ত কোড দিন।'],
+                    ['key' => 'code', 'label' => 'HTML', 'type' => 'code', 'lang' => 'html', 'default' => '', 'help' => 'যেকোনো HTML: নিজের ডিজাইন, Embed কোড (Google Map, ফর্ম, ভিডিও)। শুধু বিশ্বস্ত কোড দিন।'],
+                    ['key' => 'css', 'label' => 'CSS (শুধু এই পেজে)', 'type' => 'code', 'lang' => 'css', 'default' => ''],
+                    ['key' => 'js', 'label' => 'JavaScript (HTML লোড হওয়ার পরে চলে)', 'type' => 'code', 'lang' => 'js', 'default' => ''],
+                    ['key' => 'wrap', 'label' => 'চারপাশের ফাঁক', 'type' => 'select', 'options' => ['none' => 'নেই (কোড যেমন, তেমন)', 'normal' => 'সাধারণ'], 'default' => 'none', 'group' => 'style'],
                 ],
             ],
 
@@ -289,7 +292,7 @@ class Registry
                 'label' => 'ভেতরের কলাম (Nested)', 'icon' => 'fa-solid fa-table-columns', 'category' => 'layout',
                 'container' => true,
                 'fields' => [
-                    ['key' => 'gap', 'label' => 'কলামের ফাঁক', 'type' => 'select', 'options' => ['s' => 'কম', 'm' => 'মাঝারি', 'l' => 'বেশি'], 'default' => 'm', 'group' => 'style'],
+                    ['key' => 'gap', 'label' => 'কলামের ফাঁক', 'type' => 'select', 'options' => ['none' => 'কোনো ফাঁক নেই', 's' => 'কম', 'm' => 'মাঝারি', 'l' => 'বেশি'], 'default' => 'm', 'group' => 'style'],
                     ['key' => 'valign', 'label' => 'উল্লম্ব সারিবদ্ধতা', 'type' => 'select', 'options' => ['start' => 'ওপরে', 'center' => 'মাঝে', 'end' => 'নিচে'], 'default' => 'start', 'group' => 'style'],
                 ],
             ],
@@ -338,7 +341,10 @@ class Registry
     public static function sectionFields(): array
     {
         return array_merge([
-            ['key' => 'width', 'label' => 'প্রস্থ', 'type' => 'select', 'options' => ['boxed' => 'সাধারণ (১২০০px)', 'narrow' => 'সরু (৮৪০px)', 'wide' => 'চওড়া (১৪৪০px)', 'full' => 'পুরো স্ক্রিন'], 'default' => 'boxed', 'group' => 'style'],
+            ['key' => 'width', 'label' => 'কন্টেন্টের প্রস্থ', 'type' => 'select', 'options' => ['boxed' => 'Boxed (১২০০px)', 'narrow' => 'সরু (৮৪০px)', 'wide' => 'চওড়া (১৪৪০px)', 'full' => 'Full width (দুই পাশে অল্প ফাঁকা)', 'bleed' => 'Full width — একদম কিনারা পর্যন্ত (ফাঁকা নেই)'], 'default' => 'boxed', 'group' => 'style', 'help' => 'Section-এর ব্যাকগ্রাউন্ড সবসময় পুরো স্ক্রিন জুড়ে থাকে। এখানে ভেতরের কন্টেন্ট কতটা চওড়া হবে সেটা ঠিক হয়।'],
+            ['key' => 'height', 'label' => 'উচ্চতা', 'type' => 'select', 'options' => ['auto' => 'কন্টেন্ট অনুযায়ী', 'screen' => 'পুরো স্ক্রিন (100vh)', 'custom' => 'নির্দিষ্ট সর্বনিম্ন উচ্চতা'], 'default' => 'auto', 'group' => 'style'],
+            ['key' => 'min_height', 'label' => 'সর্বনিম্ন উচ্চতা (px)', 'type' => 'number', 'min' => 0, 'max' => 2000, 'default' => 500, 'group' => 'style'],
+            ['key' => 'content_pos', 'label' => 'উচ্চতার মধ্যে কন্টেন্টের অবস্থান', 'type' => 'select', 'options' => ['start' => 'ওপরে', 'center' => 'মাঝে', 'end' => 'নিচে'], 'default' => 'center', 'group' => 'style'],
             ['key' => 'pt', 'label' => 'ভেতরে ওপরের ফাঁক (px)', 'type' => 'number', 'min' => 0, 'max' => 400, 'default' => 90, 'group' => 'style'],
             ['key' => 'pb', 'label' => 'ভেতরে নিচের ফাঁক (px)', 'type' => 'number', 'min' => 0, 'max' => 400, 'default' => 90, 'group' => 'style'],
             ['key' => 'bg', 'label' => 'ব্যাকগ্রাউন্ড', 'type' => 'select', 'options' => ['none' => 'নেই (পেজের রং)', 'dark' => 'গাঢ়', 'card' => 'হালকা বেগুনি', 'gradient' => 'Gradient', 'image' => 'ছবি', 'color' => 'নিজের রং'], 'default' => 'none', 'group' => 'style'],
@@ -346,7 +352,7 @@ class Registry
             ['key' => 'bg_image', 'label' => 'ব্যাকগ্রাউন্ড ছবি', 'type' => 'image', 'default' => '', 'group' => 'style'],
             ['key' => 'overlay', 'label' => 'ছবির ওপর অন্ধকার (%)', 'type' => 'number', 'min' => 0, 'max' => 95, 'default' => 60, 'group' => 'style'],
             ['key' => 'fx', 'label' => 'চলমান ব্যাকগ্রাউন্ড', 'type' => 'select', 'options' => ['none' => 'নেই', 'gradient' => 'চলমান Gradient', 'orbs' => 'আলোর গোলক', 'lines' => 'চলমান রেখা', 'grid' => 'আলোকিত গ্রিড', 'particles' => 'ভাসমান বিন্দু'], 'default' => 'none', 'group' => 'style'],
-            ['key' => 'gap', 'label' => 'কলামের ফাঁক', 'type' => 'select', 'options' => ['s' => 'কম', 'm' => 'মাঝারি', 'l' => 'বেশি'], 'default' => 'l', 'group' => 'style'],
+            ['key' => 'gap', 'label' => 'কলামের ফাঁক', 'type' => 'select', 'options' => ['none' => 'কোনো ফাঁক নেই', 's' => 'কম', 'm' => 'মাঝারি', 'l' => 'বেশি'], 'default' => 'l', 'group' => 'style'],
             ['key' => 'valign', 'label' => 'কলামের উল্লম্ব সারিবদ্ধতা', 'type' => 'select', 'options' => ['start' => 'ওপরে', 'center' => 'মাঝে', 'end' => 'নিচে'], 'default' => 'center', 'group' => 'style'],
             ['key' => 'reverse_mobile', 'label' => 'মোবাইলে কলামের ক্রম উল্টো', 'type' => 'checkbox', 'default' => false, 'group' => 'style'],
             ['key' => 'divider_top', 'label' => 'ওপরে ঢেউ আকৃতি', 'type' => 'checkbox', 'default' => false, 'group' => 'style'],

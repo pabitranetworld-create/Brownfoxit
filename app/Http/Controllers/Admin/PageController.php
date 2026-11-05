@@ -37,7 +37,7 @@ class PageController extends Controller
         $data = $request->validate([
             'title' => ['required', 'string', 'max:190'],
             'slug' => ['nullable', 'string', 'max:190'],
-            'template_id' => ['nullable', 'integer', 'exists:pages,id'],
+            'template_id' => ['nullable', 'string', 'max:20'],
         ], ['title.required' => 'পেজের নাম দিন।']);
 
         if (filled($data['slug']) && ($error = $this->slugProblem($this->slug($data['slug'])))) {
@@ -46,16 +46,31 @@ class PageController extends Controller
         $slug = $this->uniqueSlug($data['slug'] ?: $data['title']);
 
         $layout = LayoutValidator::empty();
-        if (! empty($data['template_id'])) {
-            $layout = $validator->clean(Page::find($data['template_id'])->workingLayout());
+        $template = 'default';
+        $start = (string) ($data['template_id'] ?? '');
+        if ($start === 'html') {
+            // Blank canvas with one edge-to-edge HTML block: build any custom page with code.
+            $template = 'canvas';
+            $layout = $validator->clean(['version' => 1, 'sections' => [[
+                'id' => 'htmlsection', 'settings' => ['width' => 'bleed', 'pt' => 0, 'pb' => 0, 'gap' => 'none', 'anim' => 'none'],
+                'columns' => [['id' => 'htmlcolumn', 'settings' => ['w' => 100, 'anim' => 'none'], 'widgets' => [[
+                    'id' => 'htmlwidget1', 'type' => 'html',
+                    'data' => ['code' => "<div class=\"my-page\">\n  <h1>My custom page</h1>\n  <p>Write any HTML here. CSS and JavaScript go in the next boxes.</p>\n</div>", 'css' => ".my-page { min-height: 100vh; display: grid; place-content: center; text-align: center; padding: 40px; }\n.my-page h1 { font-size: 56px; color: #fff; }", 'js' => '', 'wrap' => 'none'],
+                    'settings' => ['anim' => 'none'],
+                ]]]],
+            ]]]);
+        } elseif (ctype_digit($start) && ($tpl = Page::find((int) $start))) {
+            $layout = $validator->clean($tpl->workingLayout());
+            $template = $tpl->template ?: 'default';
         }
 
         $page = Page::create([
             'title' => $data['title'],
             'slug' => $slug,
             'status' => Page::STATUS_DRAFT,
+            'template' => $template,
             'layout' => $layout,
-            'show_page_header' => true,
+            'show_page_header' => $template === 'default',
             'updated_by' => $request->user()->id,
         ]);
 
@@ -72,8 +87,10 @@ class PageController extends Controller
                 'title' => $page->title, 'slug' => $page->slug, 'status' => $page->status, 'is_template' => $page->is_template,
                 'seo_title' => $page->seo_title, 'seo_description' => $page->seo_description, 'og_image' => $page->og_image,
                 'noindex' => $page->noindex, 'show_page_header' => $page->show_page_header, 'header_subtitle' => $page->header_subtitle,
+                'template' => $page->template ?: 'default', 'custom_head' => $page->custom_head, 'custom_css' => $page->custom_css, 'custom_js' => $page->custom_js,
                 'unpublished' => $page->hasUnpublishedChanges(),
             ],
+            'templates' => Page::TEMPLATES,
         ]);
     }
 
@@ -165,6 +182,11 @@ class PageController extends Controller
             $page->title = (string) ($p['title'] ?? $page->title);
             $page->show_page_header = filter_var($p['show_page_header'] ?? $page->show_page_header, FILTER_VALIDATE_BOOLEAN);
             $page->header_subtitle = $p['header_subtitle'] ?? $page->header_subtitle;
+            foreach (['template', 'custom_head', 'custom_css', 'custom_js'] as $k) {
+                if (array_key_exists($k, $p)) {
+                    $page->{$k} = $k === 'template' && ! isset(Page::TEMPLATES[$p[$k]]) ? 'default' : $p[$k];
+                }
+            }
         }
 
         return view('pages.show', [
@@ -191,6 +213,21 @@ class PageController extends Controller
         return response()->json(['ok' => true, 'message' => 'পুরোনো ভার্সন ফিরিয়ে আনা হয়েছে (Draft হিসেবে)। প্রকাশ করতে Publish চাপুন।', 'layout' => $layout]);
     }
 
+    /** The builder reports failed requests / JS errors here so they show up in the server log. */
+    public function clientLog(Request $request): JsonResponse
+    {
+        \Illuminate\Support\Facades\Log::warning('Builder client problem', [
+            'user' => $request->user()?->id,
+            'what' => Str::limit((string) $request->input('what'), 200),
+            'status' => (int) $request->input('status'),
+            'url' => Str::limit((string) $request->input('url'), 300),
+            'detail' => Str::limit((string) $request->input('detail'), 1500),
+            'agent' => Str::limit((string) $request->userAgent(), 200),
+        ]);
+
+        return response()->json(['ok' => true]);
+    }
+
     /* ------------------------------------------------------------- */
 
     protected function validateSettings(Request $request, Page $page): array|JsonResponse
@@ -208,6 +245,10 @@ class PageController extends Controller
             'seo_description' => ['nullable', 'string', 'max:500'],
             'og_image' => ['nullable', 'string', 'max:255', 'regex:#^(uploads/[A-Za-z0-9_\-./]+|https://\S+)$#'],
             'header_subtitle' => ['nullable', 'string', 'max:300'],
+            'template' => ['nullable', Rule::in(array_keys(Page::TEMPLATES))],
+            'custom_head' => ['nullable', 'string', 'max:200000'],
+            'custom_css' => ['nullable', 'string', 'max:1000000'],
+            'custom_js' => ['nullable', 'string', 'max:1000000'],
         ], [
             'title.required' => 'পেজের নাম দিন।',
             'slug.unique' => 'এই URL অন্য একটা পেজে ব্যবহার হচ্ছে।',
@@ -229,6 +270,10 @@ class PageController extends Controller
             'noindex' => filter_var($p['noindex'] ?? false, FILTER_VALIDATE_BOOLEAN),
             'show_page_header' => filter_var($p['show_page_header'] ?? true, FILTER_VALIDATE_BOOLEAN),
             'header_subtitle' => $p['header_subtitle'] ?? null,
+            'template' => $p['template'] ?? $page->template ?? 'default',
+            'custom_head' => array_key_exists('custom_head', $p) ? $p['custom_head'] : $page->custom_head,
+            'custom_css' => array_key_exists('custom_css', $p) ? $p['custom_css'] : $page->custom_css,
+            'custom_js' => array_key_exists('custom_js', $p) ? $p['custom_js'] : $page->custom_js,
         ];
     }
 

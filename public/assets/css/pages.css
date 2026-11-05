@@ -447,3 +447,17 @@ html.reduced [data-anim-reduced="fade"].in { opacity: 1; transition: opacity .6s
 /* Inner pages: the home page's blog overlaps the footer wave; here it doesn't, so use less top space. */
 .page-inner .site-footer { padding-top: 230px; }
 @media (max-width: 767px) { .page-inner .site-footer { padding-top: 150px; } }
+
+/* ---------- page layouts & section sizing ---------- */
+.w-bleed .pb-container { max-width: none; padding: 0; }
+.pb-row.gap-none { --g: 0px; }
+.pb-section.h-screen, .pb-section.h-custom { display: flex; flex-direction: column; justify-content: center; }
+.pb-section.h-screen { min-height: 100vh; min-height: 100svh; }
+.pb-section.h-custom { min-height: var(--mh, 500px); }
+.pb-section.pos-start { justify-content: flex-start; } .pb-section.pos-end { justify-content: flex-end; }
+.pb-section.h-screen > .pb-container, .pb-section.h-custom > .pb-container { width: 100%; }
+/* Full Width: no title banner, so the first section must clear the transparent header */
+.tpl-full_width main > .pb-section:first-child:not(.h-screen) { padding-top: calc(var(--pt, 90px) + 110px); }
+.tpl-full_width main > .pb-section.h-screen:first-child > .pb-container { padding-top: 100px; }
+.tpl-canvas main { min-height: 100vh; }
+.pb-html.wrap-normal { padding: 10px 0; }
