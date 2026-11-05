@@ -1,10 +1,15 @@
 @extends('layouts.app')
 
-@php($tpl = $page->template ?: 'default')
+@php
+    $tpl = $page->template ?: 'default';
+    $pbTpl = $tpl;
+    $pbScheme = $page->color_scheme ?: 'light';
+    $topDark = \App\PageBuilder\Theme::topIsDark($page, $layout);
+@endphp
 
 @section('title', $page->seo_title ?: $page->title.' · '.setting('site.name'))
 @section('meta_description', $page->seo_description ?: setting('site.meta_description'))
-@section('body_class', 'page-inner tpl-'.$tpl)
+@section('body_class', 'page-inner tpl-'.$tpl.' theme-'.$pbScheme.' '.($topDark ? 'top-dark' : 'top-light'))
 
 @push('head')
     @if ($page->noindex || $preview)<meta name="robots" content="noindex, nofollow">@endif

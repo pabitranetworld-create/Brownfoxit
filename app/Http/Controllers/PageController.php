@@ -13,9 +13,11 @@ class PageController extends Controller
     {
         $page = Page::published()->where('slug', $slug)->firstOrFail();
 
-        return view('pages.show', [
+        $layout = $validator->clean($page->layout); // re-validated so old layouts get new defaults
+
+        return view(\App\PageBuilder\Theme::view($page, $layout), [
             'page' => $page,
-            'layout' => $validator->clean($page->layout), // re-validated so old layouts get new defaults
+            'layout' => $layout,
             'preview' => false,
             'editor' => false,
         ]);

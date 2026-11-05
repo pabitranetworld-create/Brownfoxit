@@ -85,7 +85,7 @@
       entries.forEach(function (e) {
         if (e.isIntersecting) { reveal(e.target); io.unobserve(e.target); }
       });
-    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.12 });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0 }); // threshold 0: very tall blocks (custom HTML) must still appear
     watched.forEach(function (el) { io.observe(el); });
   } else {
     // No observer (or inside the admin preview): show everything right away.

@@ -3,7 +3,7 @@
     $style = ['--pt:'.(int) $s['pt'].'px', '--pb:'.(int) $s['pb'].'px'];
     if ($s['bg'] === 'color') { $style[] = '--sbg:'.$s['bg_color']; }
     if ($s['bg'] === 'image' && $s['bg_image']) { $style[] = '--sbg-img:url(\''.e(media($s['bg_image'])).'\')'; $style[] = '--ov:'.((int) $s['overlay'] / 100); }
-    $classes = ['bg-'.$s['bg'], 'w-'.$s['width']];
+    $classes = ['bg-'.$s['bg'], 'w-'.\App\PageBuilder\Theme::sectionWidth($section, $pbTpl ?? 'default'), \App\PageBuilder\Theme::sectionIsDark($s, $pbScheme ?? 'dark') ? 'sc-dark' : 'sc-light'];
     if ($s['fx'] !== 'none') { $classes[] = 'has-fx'; }
     if ($s['divider_top']) { $classes[] = 'has-wave'; }
     if ($s['fx'] === 'particles') { $classes[] = 'has-particles'; }

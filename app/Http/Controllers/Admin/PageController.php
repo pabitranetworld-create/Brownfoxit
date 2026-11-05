@@ -87,10 +87,11 @@ class PageController extends Controller
                 'title' => $page->title, 'slug' => $page->slug, 'status' => $page->status, 'is_template' => $page->is_template,
                 'seo_title' => $page->seo_title, 'seo_description' => $page->seo_description, 'og_image' => $page->og_image,
                 'noindex' => $page->noindex, 'show_page_header' => $page->show_page_header, 'header_subtitle' => $page->header_subtitle,
-                'template' => $page->template ?: 'default', 'custom_head' => $page->custom_head, 'custom_css' => $page->custom_css, 'custom_js' => $page->custom_js,
+                'template' => $page->template ?: 'default', 'color_scheme' => $page->color_scheme ?: 'light', 'custom_head' => $page->custom_head, 'custom_css' => $page->custom_css, 'custom_js' => $page->custom_js,
                 'unpublished' => $page->hasUnpublishedChanges(),
             ],
             'templates' => Page::TEMPLATES,
+            'schemes' => Page::SCHEMES,
         ]);
     }
 
@@ -182,14 +183,16 @@ class PageController extends Controller
             $page->title = (string) ($p['title'] ?? $page->title);
             $page->show_page_header = filter_var($p['show_page_header'] ?? $page->show_page_header, FILTER_VALIDATE_BOOLEAN);
             $page->header_subtitle = $p['header_subtitle'] ?? $page->header_subtitle;
-            foreach (['template', 'custom_head', 'custom_css', 'custom_js'] as $k) {
+            foreach (['template', 'color_scheme', 'custom_head', 'custom_css', 'custom_js'] as $k) {
                 if (array_key_exists($k, $p)) {
-                    $page->{$k} = $k === 'template' && ! isset(Page::TEMPLATES[$p[$k]]) ? 'default' : $p[$k];
+                    $page->{$k} = $p[$k];
                 }
             }
+            if (! isset(Page::TEMPLATES[$page->template])) { $page->template = 'default'; }
+            if (! isset(Page::SCHEMES[$page->color_scheme])) { $page->color_scheme = 'light'; }
         }
 
-        return view('pages.show', [
+        return view(\App\PageBuilder\Theme::view($page, $layout), [
             'page' => $page,
             'layout' => $layout,
             'preview' => true,
@@ -246,6 +249,7 @@ class PageController extends Controller
             'og_image' => ['nullable', 'string', 'max:255', 'regex:#^(uploads/[A-Za-z0-9_\-./]+|https://\S+)$#'],
             'header_subtitle' => ['nullable', 'string', 'max:300'],
             'template' => ['nullable', Rule::in(array_keys(Page::TEMPLATES))],
+            'color_scheme' => ['nullable', Rule::in(array_keys(Page::SCHEMES))],
             'custom_head' => ['nullable', 'string', 'max:200000'],
             'custom_css' => ['nullable', 'string', 'max:1000000'],
             'custom_js' => ['nullable', 'string', 'max:1000000'],
@@ -271,6 +275,7 @@ class PageController extends Controller
             'show_page_header' => filter_var($p['show_page_header'] ?? true, FILTER_VALIDATE_BOOLEAN),
             'header_subtitle' => $p['header_subtitle'] ?? null,
             'template' => $p['template'] ?? $page->template ?? 'default',
+            'color_scheme' => $p['color_scheme'] ?? $page->color_scheme ?? 'light',
             'custom_head' => array_key_exists('custom_head', $p) ? $p['custom_head'] : $page->custom_head,
             'custom_css' => array_key_exists('custom_css', $p) ? $p['custom_css'] : $page->custom_css,
             'custom_js' => array_key_exists('custom_js', $p) ? $p['custom_js'] : $page->custom_js,

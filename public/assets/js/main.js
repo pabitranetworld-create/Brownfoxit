@@ -135,7 +135,7 @@
       }
       io.unobserve(el);
     });
-  }, { threshold: 0.15 });
+  }, { rootMargin: "0px 0px -10% 0px", threshold: 0 });
   document.querySelectorAll(".reveal, .count, .progress-item").forEach(function (el) { io.observe(el); });
 
   /* ---------- 5. Text fill headings + header + back to top ---------- */

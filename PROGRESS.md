@@ -31,42 +31,8 @@ Every push runs `tests/e2e-install.sh` on a fresh server with MySQL 8. It covers
 | Page layouts (like Elementor) | ✅ | Per page: **Default** (theme header/footer + title banner), **Full Width** (header/footer, no banner, sections can go edge to edge), **Canvas** (no theme header/footer: a blank page). Sections also have width `bleed` (full screen, no padding), height auto/full screen/custom, and content position. |
 | Custom HTML pages | ✅ | "Custom HTML page" when creating a page: a Canvas page with one full-bleed HTML widget. HTML widget has separate HTML / CSS / JS fields (fullscreen code editor, Tab key). Page-level custom CSS, JS and `<head>` code. Only admins can write HTML/JS. |
 | Save / publish robustness | ✅ | CSRF token sent in the body as well as the header (some hosts strip headers → 419); clear Bengali error messages per HTTP status; local backup in the browser + restore prompt; autosave every 60 s; browser errors reported to the server log (`admin/client-log`), visible in the "Server self-test" GitHub workflow. |
-| Header / footer navigation management | ✅ | Admin → Home Page → Menu / Footer (built in an earlier phase) |
-| Assign content to Pabitra.net / Brown Fox IT / both | ⛔ | The owner chose **two separate installs**, so each site has its own database and content can't be shared between them. A page export/import tool (copy a page from one site to the other) is planned. |
-| Widgets (22): hero, heading, text, image, buttons, icon cards, list, video, gallery + lightbox, FAQ accordion (+ FAQ schema), tabs, CTA, counters, process steps, workflow diagram, comparison table, testimonials, services grid, portfolio grid + animated filter, blog posts, divider, custom HTML, nested columns | ✅ | Every widget is rendered and checked by the CI test. |
-| Contact / quote form widget | ⬜ | Phase 2 (it needs storage and email) |
-
-## Frontend motion (inner pages)
-
-| Requirement | Status | Notes |
-|---|---|---|
-| Scroll reveal, staggered cards, word-by-word headings, scroll-filled headings | ✅ | `public/assets/js/motion.js` |
-| Parallax, hover effects (lift / grow / glow / 3D tilt / shine) | ✅ | |
-| Animated backgrounds (gradient flow, light orbs, moving lines, glowing grid, particles), glow borders | ✅ | |
-| Image zoom / clip reveal / circular mask / float | ✅ | |
-| Animated workflow diagram (moving data dots, node pulses) | ✅ | |
-| FAQ accordion, tabs with moving indicator, lightbox gallery, video popup | ✅ | Checked in a browser |
-| Animated portfolio filtering | ✅ | |
-| Scroll progress bar, back-to-top, sticky header | ✅ | |
-| Page transitions | 🟡 | Uses the browser's native cross-page View Transitions (Chrome / Edge). Other browsers load pages normally. |
-| Reduced-motion support | ✅ | Checked in a browser with "reduce motion" on: nothing hidden, continuous effects stopped |
-| Content stays visible if JavaScript fails | ✅ | Elements are hidden only while JS runs, with a 2.5-second failsafe. Checked with JavaScript disabled. |
-| Desktop / tablet / mobile checked | ✅ | 1366 px, 834 px and 390 px in Chromium, with no horizontal overflow. Real-device testing by the owner is still recommended. |
-| Lightweight 3D / WebGL | ⬜ | Not added. Nothing so far needs it. |
-| Cart / checkout / form-feedback animations | ⬜ | Built together with those features in phases 2 and 4 |
-| Admin stays calm and fast | ✅ | The builder has no decorative animation. |
-
-## Not started yet
-
-| Phase | Items |
-|---|---|
-| 2 – Content pages | 22 service pages with full copy, About (company), Process, FAQ, Contact + Request a Quote forms (stored + emailed), legal page drafts (marked for owner/legal review), 404, search |
-| 3 – Portfolio & blog | Migration from brownfoxit.com / pabitra.net with a source → target inventory, case-study pages, blog list / article pages |
-| 4 – E-commerce | Products (drafts until the owner gives real data), cart, checkout, orders, customer accounts, protected downloads, coupons, reports; PayStation / aamarPay / EPS gateways after their API documents and merchant credentials are confirmed, with a manual-payment fallback until then |
-| 5 – Final QA | Full checklist of the specification, SEO (sitemap, redirects from old WordPress URLs), security review, documentation |
-
-## Waiting for the owner
-
-- Product list and real product details (phase 4)
-- Merchant credentials and API documents for PayStation, aamarPay and EPS (phase 4)
-- Permission to read pabitra.net for the second site's content (phase 3)
+| White inner pages | ✅ | Every page except Home is white by default (page setting "পেজের রং": White/Dark). Header text turns dark on white pages, stays white over a dark first section, and the sticky header is white. Sections with dark / gradient / image backgrounds stay dark. Title banner and footer join adapted. |
+| Full Width = really full width | ✅ | On Full Width and Canvas pages, "Boxed" sections fill the screen (a little side space; sections holding only custom HTML go edge to edge). |
+| Pure custom HTML (Canvas) | ✅ | A Canvas page that only holds HTML widgets is sent without any theme CSS/JS, so the code looks exactly as written. A whole HTML document (`<!DOCTYPE html>…`) is output as it is. |
+| Broken / cut-off HTML can't break a page | ✅ | Unclosed `<style>`, `<script>`, comments and `<div>`s in an HTML widget are closed automatically; the builder warns when pasted code looks incomplete. (Old 20,000-character limit removed.) |
+| Very tall blocks always appear | ✅ | Entrance animations start as soon as any part is on screen (before, blocks taller than ~8 screens never appeared). New HTML widgets have no entrance animation. |

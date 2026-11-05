@@ -18,11 +18,16 @@ class Page extends Model
         'canvas' => 'Canvas — শুধু আপনার কন্টেন্ট (Header/Footer নেই)',
     ];
 
+    public const SCHEMES = [
+        'light' => 'সাদা (White) — হালকা পেজ, গাঢ় লেখা',
+        'dark' => 'গাঢ় (Dark) — Home page-এর মতো',
+    ];
+
     /** Slugs that cannot be used because a real route lives there. */
     public const RESERVED = ['admin', 'up', '_deploy', 'install', 'vendor', 'assets', 'uploads', 'storage', 'login', 'logout', 'register', 'shop', 'cart', 'checkout', 'account', 'blog', 'portfolio', 'services', 'search', 'sitemap.xml', 'robots.txt'];
 
     protected $fillable = [
-        'title', 'slug', 'status', 'is_template', 'template', 'layout', 'draft_layout',
+        'title', 'slug', 'status', 'is_template', 'template', 'color_scheme', 'layout', 'draft_layout',
         'custom_head', 'custom_css', 'custom_js',
         'seo_title', 'seo_description', 'og_image', 'noindex',
         'show_page_header', 'header_subtitle', 'published_at', 'updated_by',

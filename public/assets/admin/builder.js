@@ -107,6 +107,7 @@
   function newWidget(type) {
     var w = { id: uid(), type: type, data: defaults(defs.widgets[type].fields), settings: defaults(defs.common) };
     if (type === "row") w.columns = [newColumn(50), newColumn(50)];
+    if (type === "html") w.settings.anim = "none"; // custom code shows as written, no entrance animation
     return w;
   }
 
@@ -149,7 +150,7 @@
     $("#bLoading").classList.add("on");
     var fd = new FormData();
     fd.append("_token", B.csrf); fd.append("layout", JSON.stringify(state.layout)); fd.append("editor", "1");
-    ["title", "show_page_header", "header_subtitle", "template", "custom_head", "custom_css", "custom_js"].forEach(function (k) { var v = state.page[k]; fd.append("page[" + k + "]", typeof v === "boolean" ? (v ? "1" : "0") : (v || "")); });
+    ["title", "show_page_header", "header_subtitle", "template", "color_scheme", "custom_head", "custom_css", "custom_js"].forEach(function (k) { var v = state.page[k]; fd.append("page[" + k + "]", typeof v === "boolean" ? (v ? "1" : "0") : (v || "")); });
     fetch(B.urls.preview, { method: "POST", body: fd, credentials: "same-origin", headers: { "X-CSRF-TOKEN": B.csrf } })
       .then(function (r) { if (!r.ok) report("preview failed", r.status, ""); return r.text(); })
       .then(function (html) {
@@ -443,7 +444,8 @@
     var fields = [
       { key: "title", label: "পেজের নাম", type: "text" },
       { key: "slug", label: "URL (" + B.urls.site.replace(/^https?:\/\//, "") + "/…)", type: "text" },
-      { key: "template", label: "Page Layout", type: "select", options: B.templates, help: "Canvas = শুধু আপনার কন্টেন্ট (Landing page / পুরো Custom HTML পেজের জন্য)। Full Width = Header-Footer থাকে, টাইটেল ব্যানার থাকে না।" },
+      { key: "template", label: "Page Layout", type: "select", options: B.templates, help: "Full Width = Header-Footer থাকে, টাইটেল ব্যানার থাকে না, Section-গুলো পুরো স্ক্রিন চওড়া। Canvas = Header/Footer ছাড়া শুধু আপনার কন্টেন্ট; পেজে শুধু HTML widget থাকলে থিমের কোনো CSS/JS লোড হয় না — আপনার কোড হুবহু দেখায়।" },
+      { key: "color_scheme", label: "পেজের রং", type: "select", options: B.schemes || { light: "সাদা", dark: "গাঢ়" }, help: "সাদা পেজে Header-এর লেখা গাঢ় হয়। কোনো Section-এ গাঢ়/Gradient/ছবি ব্যাকগ্রাউন্ড দিলে সেই Section গাঢ়ই থাকে।" },
       { key: "show_page_header", label: "ওপরে টাইটেল ব্যানার (Breadcrumb সহ) — শুধু Default লেআউটে", type: "checkbox" },
       { key: "header_subtitle", label: "ব্যানারের নিচের লেখা", type: "text" },
       { key: "seo_title", label: "SEO Title (খালি = পেজের নাম)", type: "text" },
@@ -458,7 +460,7 @@
     fields.forEach(function (f) {
       box.appendChild(field(f, p[f.key], function (v) {
         p[f.key] = v; state.dirty = true; updateButtons();
-        if (["title", "show_page_header", "header_subtitle", "template", "custom_head", "custom_css", "custom_js"].indexOf(f.key) > -1) schedulePreview(f.type === "code" ? 900 : 300);
+        if (["title", "show_page_header", "header_subtitle", "template", "color_scheme", "custom_head", "custom_css", "custom_js"].indexOf(f.key) > -1) schedulePreview(f.type === "code" ? 900 : 300);
       }));
     });
     if (p.seo_description !== undefined) {
@@ -617,11 +619,25 @@
     var ta = box.querySelector("textarea");
     ta.value = value || ""; ta.placeholder = { html: "<div>…</div>", css: ".class { color: #fff; }", js: "document.querySelector(…)" }[f.lang] || "";
     tabKeys(ta);
-    ta.addEventListener("input", function () { set(ta.value); });
+    var warn = h('<div class="bld-codewarn" hidden></div>'); box.appendChild(warn);
+    function check(v) {
+      if (f.lang !== "html") return;
+      var probs = [];
+      ["style", "script", "textarea"].forEach(function (t) {
+        var o = (v.match(new RegExp("<" + t + "\\b", "gi")) || []).length, c = (v.match(new RegExp("</" + t + "\\s*>", "gi")) || []).length;
+        if (o > c) probs.push("<" + t + "> খোলা হয়েছে কিন্তু বন্ধ হয়নি");
+      });
+      var d1 = (v.match(/<div\b/gi) || []).length, d2 = (v.match(/<\/div\s*>/gi) || []).length;
+      if (d1 !== d2) probs.push("<div> " + d1 + "টা খোলা, " + d2 + "টা বন্ধ");
+      warn.hidden = !probs.length;
+      warn.innerHTML = probs.length ? '<i class="fa-solid fa-triangle-exclamation"></i> কোড সম্ভবত পুরোটা পেস্ট হয়নি: ' + esc(probs.join(" · ")) + ". পুরো কোড আবার কপি করে বসান (সাইট এটা সামলে নেবে, তবে ডিজাইন ঠিক নাও দেখাতে পারে)।" : "";
+    }
+    check(ta.value);
+    ta.addEventListener("input", function () { set(ta.value); check(ta.value); });
     box.querySelector("button").addEventListener("click", function () {
       var m = h('<div class="bld-codemodal"><div class="bld-codemodal-h"><strong>' + esc(f.label) + '</strong><span class="bld-hint">Tab = ২ স্পেস · লেখার সাথে সাথে প্রিভিউ আপডেট হয়</span><button type="button" class="adm-btn sm"><i class="fa-solid fa-check"></i> শেষ</button></div><textarea class="mono" spellcheck="false" wrap="off"></textarea></div>');
       var big = m.querySelector("textarea"); big.value = ta.value; tabKeys(big);
-      big.addEventListener("input", function () { ta.value = big.value; set(big.value); });
+      big.addEventListener("input", function () { ta.value = big.value; set(big.value); check(big.value); });
       m.querySelector("button").addEventListener("click", function () { m.remove(); });
       document.body.appendChild(m); big.focus();
     });
@@ -710,7 +726,7 @@
   /* ---------------- save / publish / revisions ---------------- */
   function payload() {
     var p = {};
-    ["title", "slug", "seo_title", "seo_description", "og_image", "noindex", "show_page_header", "header_subtitle", "template", "custom_head", "custom_css", "custom_js"].forEach(function (k) { p[k] = state.page[k]; });
+    ["title", "slug", "seo_title", "seo_description", "og_image", "noindex", "show_page_header", "header_subtitle", "template", "color_scheme", "custom_head", "custom_css", "custom_js"].forEach(function (k) { p[k] = state.page[k]; });
     return { layout: JSON.stringify(state.layout), page: p };
   }
   function busy(btn, on) { btn.disabled = on; btn.classList.toggle("busy", on); }

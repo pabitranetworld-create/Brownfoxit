@@ -10,6 +10,8 @@
 (function () {
   "use strict";
   var doc = document;
+  // a Canvas page whose HTML widget is a whole document: every click edits that widget
+  var docId = document.documentElement.getAttribute("data-bfi-doc");
   var send = function (msg) { parent.postMessage(msg, "*"); };
 
   /* ---------- styles ---------- */
@@ -112,6 +114,7 @@
     if (zone) { send({ type: "bfi-action", action: "add-section-end" }); return; }
     var empty = e.target.closest(".pb-empty-col");
     var t = e.target.closest("[data-bfi-id]");
+    if (!t && docId) { send({ type: "bfi-select", id: docId, add: false }); return; }
     if (!t) return;
     // clicks on a section's own padding/background select the section, not a column
     if (t.classList.contains("pb-col") && !e.target.closest(".pb-w") && !empty) {
@@ -253,7 +256,7 @@
   addEventListener("scroll", function () { send({ type: "bfi-scroll", y: scrollY }); }, { passive: true });
 
   // "add section" zone at the end of the page
-  var main = doc.querySelector("main");
+  var main = docId ? null : doc.querySelector("main");
   if (main) {
     var z = doc.createElement("div");
     z.className = "pb-add-zone";

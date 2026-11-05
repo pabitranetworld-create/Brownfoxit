@@ -128,7 +128,7 @@ class DeployController extends Controller
                 return ['sections' => count($layout['sections'] ?? []), 'types' => array_count_values($types), 'html' => $html];
             };
             $rendered = rescue(function () use ($p) {
-                $out = view('pages.show', ['page' => $p, 'layout' => $p->layout, 'preview' => false, 'editor' => false])->render();
+                $out = view(\App\PageBuilder\Theme::view($p, $p->layout ?? []), ['page' => $p, 'layout' => $p->layout, 'preview' => false, 'editor' => false])->render();
                 preg_match('#<main[^>]*>(.*)</main>#s', $out, $m);
 
                 return ['bytes' => strlen($out), 'main_text_chars' => strlen(trim(preg_replace('/\s+/', ' ', strip_tags(preg_replace('#<(script|style)\b.*?</\1>#is', '', $m[1] ?? ''))))), 'body_class' => preg_match('#<body[^>]*class="([^"]*)"#', $out, $b) ? $b[1] : null];

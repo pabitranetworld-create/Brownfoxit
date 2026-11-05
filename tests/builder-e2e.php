@@ -225,14 +225,42 @@ ok(($r['json']['ok'] ?? false) === true, 'save works with the CSRF token only in
 $r = json_post_body_token("/admin/pages/{$hid}/publish", ['page' => $canvasPage], $csrf);
 ok(($r['json']['ok'] ?? false) && ($r['json']['status'] ?? '') === 'published', 'publish works with the CSRF token only in the body');
 $ch = get('/'.$slug.'-canvas')['body'];
-foreach (['Own landing E2E', '#e2e-own{background:#123456}', 'textContent="ok"', 'body.e2e-x{color:red}', 'window.__e2eCustom=1;', 'name="e2e-head"', 'tpl-canvas', 'w-bleed', 'h-screen'] as $needle) {
-    ok(str_contains($ch, $needle), 'canvas renders: '.$needle);
+foreach (['Own landing E2E', '#e2e-own{background:#123456}', 'textContent="ok"', 'body.e2e-x{color:red}', 'window.__e2eCustom=1;', 'name="e2e-head"', 'class="pb-pure"'] as $needle) {
+    ok(str_contains($ch, $needle), 'pure canvas renders: '.$needle);
 }
-ok(! str_contains($ch, 'site-header') && ! str_contains($ch, 'site-footer'), 'canvas has no theme header/footer');
+ok(! str_contains($ch, 'site-header') && ! str_contains($ch, 'site-footer') && ! str_contains($ch, 'assets/css/style.css') && ! str_contains($ch, 'main.js'), 'pure canvas: no theme header/footer/CSS/JS');
+// a whole HTML document is sent as it is (plus the page's custom code)
+$docLayout = $htmlLayout;
+$docLayout['sections'][0]['columns'][0]['widgets'][0]['data']['code'] = "<!DOCTYPE html>\n<html><head><title>My own doc E2E</title></head><body><h1>Doc body E2E</h1></body></html>";
+$r = json_post_body_token("/admin/pages/{$hid}/publish", ['layout' => json_encode($docLayout), 'page' => $canvasPage], $csrf);
+$dh = get('/'.$slug.'-canvas')['body'];
+ok(str_starts_with(ltrim($dh), '<!DOCTYPE html>') && substr_count(strtolower($dh), '<html') === 1 && str_contains($dh, '<title>My own doc E2E</title>') && preg_match('#<meta name="e2e-head" content="1">.*</head>#s', $dh) === 1 && str_contains($dh, 'window.__e2eCustom=1;</script></body>'), 'full HTML document output as-is with custom head/JS');
+// a canvas page that also has a normal widget uses the theme
+$mixed = $htmlLayout;
+$mixed['sections'][0]['columns'][0]['widgets'][] = widget('heading', ['text' => 'Mixed heading E2E']);
+$r = json_post_body_token("/admin/pages/{$hid}/publish", ['layout' => json_encode($mixed), 'page' => $canvasPage], $csrf);
+$mh = get('/'.$slug.'-canvas')['body'];
+ok(str_contains($mh, 'tpl-canvas') && str_contains($mh, 'Mixed heading E2E') && str_contains($mh, 'assets/css/pages.css') && ! str_contains($mh, 'site-header'), 'canvas with builder widgets: theme CSS, still no header/footer');
+// an HTML widget whose code was cut off can't swallow the rest of the page
+$broken = $htmlLayout;
+$broken['sections'][0]['columns'][0]['widgets'] = [widget('html', ['code' => '<div class="cut"><style>.cut{color:red']), widget('heading', ['text' => 'After broken E2E'])];
+$canvasPage['template'] = 'default';
+$r = json_post_body_token("/admin/pages/{$hid}/publish", ['layout' => json_encode($broken), 'page' => $canvasPage], $csrf);
+$bh = get('/'.$slug.'-canvas')['body'];
+ok(str_contains($bh, '.cut{color:red</style></div>') && preg_match('#</style></div>\s*</div>.*After broken E2E#s', $bh) === 1, 'unclosed <style>/<div> in an HTML widget are closed');
+ok(str_contains($bh, 'theme-light') && str_contains($bh, 'sc-light') && str_contains($bh, 'top-light'), 'inner pages are white by default');
+$canvasPage['color_scheme'] = 'dark';
+$r = json_post_body_token("/admin/pages/{$hid}/publish", ['layout' => json_encode($broken), 'page' => $canvasPage], $csrf);
+$bh = get('/'.$slug.'-canvas')['body'];
+ok(str_contains($bh, 'theme-dark') && str_contains($bh, 'sc-dark') && ! str_contains($bh, 'sc-light'), 'page colour scheme can be dark');
+$canvasPage['color_scheme'] = 'light';
 $canvasPage['template'] = 'full_width';
 $r = json_post_body_token("/admin/pages/{$hid}/publish", ['layout' => json_encode($htmlLayout), 'page' => $canvasPage], $csrf);
 $fw = get('/'.$slug.'-canvas')['body'];
 ok(str_contains($fw, 'tpl-full_width') && str_contains($fw, 'site-header') && ! str_contains($fw, 'class="pb-page-header'), 'full width keeps header/footer, no title banner');
+$fwBoxed = $htmlLayout; $fwBoxed['sections'][0]['settings']['width'] = 'boxed'; $fwBoxed['sections'][0]['columns'][0]['widgets'][] = widget('heading', ['text' => 'FW heading E2E']);
+$r = json_post_body_token("/admin/pages/{$hid}/publish", ['layout' => json_encode($fwBoxed), 'page' => $canvasPage], $csrf);
+ok(str_contains(get('/'.$slug.'-canvas')['body'], 'w-full'), 'full width page: "boxed" sections become full width');
 $canvasPage['template'] = 'evil';
 $r = json_post_body_token("/admin/pages/{$hid}/save", ['layout' => json_encode($htmlLayout), 'page' => $canvasPage], $csrf);
 ok($r['code'] === 422, 'unknown page layout refused');

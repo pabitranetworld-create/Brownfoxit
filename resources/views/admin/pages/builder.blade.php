@@ -80,7 +80,8 @@ window.BFI_BUILDER = {
         media: @json(url('/')),
     },
     csrf: @json(csrf_token()),
-    templates: @json($templates)
+    templates: @json($templates),
+    schemes: @json($schemes)
 };
 </script>
 <script src="{{ asset('assets/admin/media-picker.js') }}?v={{ filemtime(public_path('assets/admin/media-picker.js')) }}"></script>
