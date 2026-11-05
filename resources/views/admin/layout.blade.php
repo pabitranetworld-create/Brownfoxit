@@ -21,6 +21,9 @@
         <nav class="adm-nav">
             <a href="{{ route('admin.dashboard') }}" @class(['on' => request()->routeIs('admin.dashboard')])><i class="fa-solid fa-gauge"></i> Dashboard</a>
 
+            <a href="{{ route('admin.pages.index') }}" @class(['on' => request()->routeIs('admin.pages.*')])><i class="fa-solid fa-file-lines"></i> Pages (Page Builder)</a>
+            <a href="{{ route('admin.media.index') }}" @class(['on' => request()->routeIs('admin.media.*')])><i class="fa-solid fa-photo-film"></i> Media library</a>
+
             <p class="adm-nav-h">Home Page</p>
             @foreach (\App\Admin\Schema::sections() as $sKey => $s)
                 <a href="{{ route('admin.settings.edit', $sKey) }}" @class(['on' => request()->route('section') === $sKey])><i class="{{ $s['icon'] }}"></i> {{ $s['title'] }}</a>
@@ -67,6 +70,9 @@
     </div>
 </div>
 <div class="adm-overlay" id="overlay"></div>
+<script>window.BFI_MEDIA = { list: @json(route('admin.media.list')), upload: @json(route('admin.media.store')), base: @json(url('/')), csrf: @json(csrf_token()) };</script>
+<script src="{{ asset('assets/admin/media-picker.js') }}?v={{ filemtime(public_path('assets/admin/media-picker.js')) }}"></script>
 <script src="{{ asset('assets/admin/admin.js') }}?v={{ filemtime(public_path('assets/admin/admin.js')) }}"></script>
+@stack('scripts')
 </body>
 </html>

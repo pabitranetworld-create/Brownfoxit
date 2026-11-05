@@ -17,6 +17,31 @@
     b.innerHTML = input.type === "password" ? '<i class="fa-regular fa-eye"></i>' : '<i class="fa-regular fa-eye-slash"></i>';
   });
 
+  /* ---------- simple modals: data-open="#id", data-close ---------- */
+  document.addEventListener("click", function (e) {
+    var o = e.target.closest("[data-open]");
+    if (o) { var m = document.querySelector(o.getAttribute("data-open")); if (m) { m.hidden = false; var f = m.querySelector("input:not([type=hidden]),select"); if (f) f.focus(); } return; }
+    var c = e.target.closest("[data-close]");
+    if (c) { c.closest(".adm-modal").hidden = true; return; }
+    if (e.target.classList && e.target.classList.contains("adm-modal") && e.target.id) e.target.hidden = true;
+  });
+
+  /* ---------- pick an image from the media library (admin forms) ---------- */
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-image-library]");
+    if (!b || !window.BFIMedia) return;
+    var box = b.closest("[data-image]");
+    window.BFIMedia.pick(function (it) {
+      box.querySelector("[data-image-path]").value = it.path;
+      box.querySelector("[data-image-file]").value = "";
+      var img = box.querySelector("[data-image-img]"); img.src = it.url; img.hidden = false;
+      box.querySelector("[data-image-empty]").hidden = true;
+      box.querySelector("[data-image-clear]").hidden = false;
+      box.querySelector("[data-image-name]").textContent = it.path.split("/").pop();
+      box.closest("form").dispatchEvent(new Event("change"));
+    });
+  });
+
   /* ---------- confirm before delete ---------- */
   document.addEventListener("submit", function (e) {
     var msg = e.target.getAttribute("data-confirm");

@@ -202,3 +202,36 @@ h1, h2, h3 { font-family: var(--head); color: var(--white); line-height: 1.25; }
   .adm-table td.r { grid-column: 1 / -1; }
   .adm-image { flex-direction: column; align-items: flex-start; }
 }
+
+/* segmented control, modal, media library */
+.adm-seg { display: inline-flex; padding: 4px; border-radius: 40px; background: #120a33; border: 1px solid var(--line); }
+.adm-seg a { padding: 7px 18px; border-radius: 40px; font-weight: 700; font-size: 13px; color: var(--muted); }
+.adm-seg a.on { background: var(--grad); color: #fff; }
+.adm-badge.warn { background: rgba(255,180,0,.15); color: #ffcf66; }
+.adm-modal { position: fixed; inset: 0; z-index: 900; background: rgba(6,2,20,.7); backdrop-filter: blur(4px); display: grid; place-items: center; padding: 20px; }
+.adm-modal[hidden] { display: none !important; }
+.adm-modal-box { width: 100%; max-width: 520px; max-height: 92vh; overflow: auto; background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 26px; box-shadow: 0 40px 80px rgba(0,0,0,.5); }
+.adm-modal-box.wide { max-width: 900px; } .adm-modal-box.xwide { max-width: 1100px; }
+.adm-modal-box h3 { font-size: 19px; margin-bottom: 16px; }
+.adm-modal-box .adm-field + .adm-field { margin-top: 14px; }
+.ml-drop { border: 2px dashed rgba(255,255,255,.15); border-radius: 14px; padding: 18px; text-align: center; color: var(--muted); margin-bottom: 18px; transition: .2s; }
+.ml-drop.on { border-color: #ff7a59; background: rgba(255,122,89,.06); color: #fff; }
+.ml-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 12px; }
+.ml-item { position: relative; border: 2px solid transparent; border-radius: 12px; overflow: hidden; background: repeating-conic-gradient(#2a1d5e 0% 25%, #221650 0% 50%) 50% / 16px 16px; cursor: pointer; padding: 0; aspect-ratio: 1; display: flex; flex-direction: column; }
+.ml-item img { flex: 1; width: 100%; min-height: 0; object-fit: contain; }
+.ml-item span { display: block; font-size: 11px; color: #ddd; background: rgba(0,0,0,.55); padding: 4px 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+.ml-item em { position: absolute; top: 6px; right: 6px; font-style: normal; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 6px; background: #ffb400; color: #1a1033; }
+.ml-item:hover { border-color: rgba(255,122,89,.6); }
+.ml-item.sel { border-color: #ff5266; box-shadow: 0 0 0 3px rgba(255,82,102,.3); }
+.ml-edit { display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; }
+.ml-edit-img { border-radius: 14px; background: repeating-conic-gradient(#2a1d5e 0% 25%, #221650 0% 50%) 50% / 16px 16px; display: grid; place-items: center; min-height: 260px; }
+.ml-edit-img img { max-height: 60vh; object-fit: contain; }
+.adm-pages .info { color: var(--muted); }
+.mp-head { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+.mp-head h3 { margin: 0 auto 0 0; }
+.mp-grid { max-height: 58vh; overflow: auto; padding: 2px; }
+.mp-foot { display: flex; gap: 10px; align-items: center; margin-top: 16px; }
+.mp-foot .spacer { flex: 1; }
+.mp-msg { font-size: 13px; margin-bottom: 8px; color: var(--muted); }
+.mp-msg.ok { color: #8de191; } .mp-msg.err { color: #ffb3bc; }
+@media (max-width: 680px) { .ml-edit { grid-template-columns: 1fr; } }

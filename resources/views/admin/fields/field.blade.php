@@ -86,6 +86,7 @@
                     <label class="adm-btn ghost sm"><i class="fa-solid fa-upload"></i> ছবি বেছে নিন
                         <input type="file" name="{{ $file }}" accept="image/*" hidden data-image-file>
                     </label>
+                    <button type="button" class="adm-btn ghost sm" data-image-library><i class="fa-solid fa-photo-film"></i> লাইব্রেরি</button>
                     <button type="button" class="adm-btn ghost sm danger" data-image-clear @if (! $value) hidden @endif><i class="fa-solid fa-xmark"></i> সরান</button>
                     <small class="adm-path" data-image-name>{{ $value ? basename($value) : 'কোনো ছবি নেই' }}</small>
                 </div>

@@ -71,7 +71,10 @@ grep -qF '"ok":true' <<< "$OUTV" || { echo "::error::vendor hook failed"; exit 1
 echo "== 7. site still works with cached config/routes/views"
 [ "$(curl -sS -o /dev/null -w '%{http_code}' "$BASE/")" = "200" ] || { echo "::error::home broken after optimize"; exit 1; }
 
-echo "== 8. admin panel"
+echo "== 8. page builder + media library"
+php tests/builder-e2e.php "$BASE" admin@example.com 'Secret@12345'
+
+echo "== 9. admin panel"
 php tests/admin-e2e.php "$BASE" admin@example.com 'Secret@12345'
 
 echo "ALL CHECKS PASSED"

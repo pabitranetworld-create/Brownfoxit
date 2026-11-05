@@ -32,6 +32,21 @@ Read this before adding a new page or feature, so everything stays consistent.
 - `tests/admin-e2e.php` acts like a browser: re-submits every form unchanged and fails if any stored
   value changes. Run in CI after the installer test.
 
+## CMS / page builder
+- Tables: `pages` (layout = live JSON, draft_layout = unpublished JSON), `page_revisions` (last 30), `media`.
+- `App\PageBuilder\Registry` defines every widget + its fields (also sent to the builder JS),
+  section/column/common motion fields. `LayoutValidator` cleans everything before saving AND before rendering.
+  `HtmlSanitizer` for rich text. `Attr` turns settings into classes / data attributes.
+- Rendering: `resources/views/pages/{show,builder/*,widgets/*}.blade.php`; one view per widget type.
+- Builder UI: `resources/views/admin/pages/builder.blade.php` + `public/assets/admin/builder.{js,css}`;
+  preview = POST to `admin/pages/{id}/preview?editor=1` shown in an iframe; `preview-bridge.js` handles click-to-select.
+- Frontend motion for all non-home pages: `public/assets/css/pages.css` + `public/assets/js/motion.js`.
+  Attributes: data-anim / data-anim-dur / -delay / -int / -mobile / -reduced, data-stagger (children .pb-item),
+  data-parallax, data-words, data-inview, data-reveal, hv-* classes.
+- To add a widget: add it to Registry::widgets(), create `pages/widgets/<type>.blade.php`, add CSS, and extend
+  `tests/builder-e2e.php` so CI proves it renders.
+- Public route `/{slug}` is the LAST route; reserved slugs are in `Page::RESERVED`.
+
 ## Content model
 | Kind of content | Where it lives | Read it with |
 |---|---|---|
@@ -66,6 +81,7 @@ Keys in `settings`: `site`, `menu`, `hero`, `about`, `service_cards`, `marketpla
 - [x] Home page (design + database-driven content)
 - [x] Web installer + GitHub auto-deploy
 - [x] Admin panel: login, dashboard, CRUD for every table + settings editor + image upload
+- [x] CMS: page builder, media library, drafts/preview/publish, revisions, templates (see PROGRESS.md)
 - [ ] About, Services (+ detail), Portfolio (+ detail), Blog (list, category, post), Contact (form → DB + email)
 - [ ] Shop: products, cart, checkout, orders, customer account (WooCommerce replacement)
 - [ ] SEO: sitemap.xml, meta per page, 301 redirects from old WordPress URLs

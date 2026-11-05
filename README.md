@@ -71,6 +71,8 @@ Install শেষ হলে `storage/installed.json` ফাইল তৈরি �
 - **Home Page:** Hero, About, Counter, Steps, Footer, মেনু সহ প্রতিটা অংশের লেখা আর ছবি বদলানো যায়।
 - **কন্টেন্ট:** Services, Projects, Testimonials, Client লোগো আর Blog যোগ করা, এডিট আর মুছে ফেলা যায়।
 - **প্রোফাইল:** নাম, ইমেইল আর পাসওয়ার্ড বদলানো যায়।
+- **Pages (Page Builder):** নতুন পেজ বানানো, Section/Column/Widget টেনে সাজানো, Animation সেটিং, Draft → Preview → Publish, আগের ভার্সন ফেরানো, Template।
+- **Media library:** সব ছবি এক জায়গায়, Alt লেখা আর ক্যাপশনসহ।
 - আপলোড করা ছবি থাকে `public/uploads/`-এ, আর Auto-deploy কখনো এগুলো মোছে না।
 
 ## ৪. নিজের কম্পিউটারে চালানো (ঐচ্ছিক)

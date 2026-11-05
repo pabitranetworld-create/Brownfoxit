@@ -47,8 +47,20 @@ class ImageUploader
         $name = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) ?: 'image';
         $name = Str::limit($name, 60, '').'-'.Str::lower(Str::random(6)).'.'.$ext;
 
+        $original = $file->getClientOriginalName();
+        $mime = (string) $file->getMimeType();
+        $size = (int) $file->getSize();
         $file->move(public_path($dir), $name);
+        $path = $dir.'/'.$name;
 
-        return $dir.'/'.$name;
+        // Every upload also appears in the Media library.
+        [$w, $h] = @getimagesize(public_path($path)) ?: [null, null];
+        \App\Models\Media::create([
+            'path' => $path, 'original_name' => $original, 'mime' => $mime, 'size' => $size,
+            'width' => $w, 'height' => $h, 'user_id' => auth()->id(),
+            'alt' => Str::of(pathinfo($original, PATHINFO_FILENAME))->replace(['-', '_'], ' ')->squish()->title()->limit(120, '')->toString(),
+        ]);
+
+        return $path;
     }
 }
