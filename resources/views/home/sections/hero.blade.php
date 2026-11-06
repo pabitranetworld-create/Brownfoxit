@@ -1,6 +1,7 @@
 @php($hero = setting('hero', []))
 <section class="hero has-particles" data-number="5" data-size="4" data-random="false" data-colors='["#FF6A59","#B3DB61","#0081FF","#FF5337"]'>
     <canvas class="particles"></canvas>
+    @include('pages.builder.fx-tech', ['fx' => 'circuit'])
     <div class="bubbles" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
 
     <div class="container hero-grid">
@@ -19,6 +20,11 @@
             @if (! empty($hero['badge_image']))
                 <img class="hero-badge float-y" src="{{ media($hero['badge_image']) }}" alt="">
             @endif
+ <div class="hh-ring" aria-hidden="true"><i></i><i></i><i></i></div>
+            <span class="hh-chip c1" aria-hidden="true"><i class="fa-solid fa-code"></i></span>
+            <span class="hh-chip c2" aria-hidden="true"><i class="fa-solid fa-robot"></i></span>
+            <span class="hh-chip c3" aria-hidden="true"><i class="fa-solid fa-pen-nib"></i></span>
+            <span class="hh-chip c4" aria-hidden="true"><i class="fa-solid fa-clapperboard"></i></span>
             <img class="hero-person" src="{{ media($hero['person_image'] ?? '') }}" alt="{{ $hero['title'] ?? '' }}">
 
             <div class="rating-pill">
@@ -37,8 +43,15 @@
 
         <div class="hero-content">
             <p class="sub-title reveal" data-delay="100">{{ $hero['powered_by'] ?? '' }}</p>
-            <h1 class="hero-title reveal" data-delay="200">{{ $hero['title'] ?? setting('site.name') }}</h1>
-            <p class="hero-desc reveal" data-delay="300">{{ $hero['subtitle'] ?? '' }}</p>
+            <h1 class="hero-title hh-shine reveal" data-delay="200">{{ $hero['title'] ?? setting('site.name') }}</h1>
+            @php($skills = array_values(array_filter(array_map('trim', explode('|', (string) ($hero['subtitle'] ?? ''))))))
+            @if (count($skills) > 1)
+                {{-- the services type themselves one after another; the full list stays readable below as tags --}}
+                <p class="hero-desc hh-typed reveal" data-delay="300"><span class="hh-prompt" aria-hidden="true">&gt;_</span> <span class="tx-rotate" data-rotate="{{ json_encode($skills, JSON_UNESCAPED_UNICODE) }}" aria-hidden="true">{{ $skills[0] }}</span><span class="sr-only">{{ $hero['subtitle'] }}</span></p>
+                <ul class="hh-tags reveal" data-delay="350" aria-hidden="true">@foreach ($skills as $sk)<li style="--i: {{ $loop->index }}">{{ $sk }}</li>@endforeach</ul>
+            @else
+                <p class="hero-desc reveal" data-delay="300">{{ $hero['subtitle'] ?? '' }}</p>
+            @endif
             <div class="hero-actions reveal" data-delay="400">
                 @if (setting('site.youtube_video_id'))
                     <a class="play-btn" href="https://www.youtube.com/watch?v={{ setting('site.youtube_video_id') }}" data-video="{{ setting('site.youtube_video_id') }}" aria-label="Play video"><i class="fa-solid fa-play"></i></a>

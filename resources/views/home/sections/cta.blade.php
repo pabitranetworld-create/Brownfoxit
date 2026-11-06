@@ -1,7 +1,8 @@
 @php($cta = setting('cta', []))
 <section class="cta" id="contact">
     <div class="container">
-        <div class="cta-box reveal">
+        <div class="cta-box hh-cta reveal">
+            <div class="hh-cta-fx" aria-hidden="true">@include('pages.builder.fx-tech', ['fx' => 'scan'])</div>
             @if (! empty($cta['image']))
                 <img class="cta-person" src="{{ media($cta['image']) }}" alt="">
             @endif

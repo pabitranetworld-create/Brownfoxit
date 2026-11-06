@@ -108,3 +108,11 @@ Tests: `tests/store-e2e.php` (added to `tests/e2e-install.sh`).
   film, design, globe, chip, chart, shield, rocket, chat. Hero widget option "visual" (auto = chosen from the title,
   `App\PageBuilder\Visuals::guess`); title banners pick a scene from the page title automatically.
 - `public/assets/css/tech-store.css` is GENERATED from the white store styles: `python3 scripts/dark-store-css.py`.
+
+## Home page tech animations
+- `public/assets/css/home-tech.css` + `public/assets/js/home-tech.js` (home only, together with tech.css/tech.js).
+- Hero: circuit background, neon rings and floating tech icons around the photo, light sweep over the title,
+  services typed one after another (full list kept as tags and for screen readers).
+- New running neon band of services (`home/sections/tech-band.blade.php`), neon borders on service boxes and
+  counters, moving stripes on skill bars, orbit around the about photo, binary stream behind counters,
+  travelling light between steps, scanning floor + neon edge in the contact box.

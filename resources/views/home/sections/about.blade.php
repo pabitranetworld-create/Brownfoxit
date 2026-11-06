@@ -5,6 +5,7 @@
         <div class="about-media reveal" data-anim="fade-right">
             <img class="shape-spin about-shape3" src="{{ asset('uploads/2023/11/h10-shape3.png') }}" alt="">
             <img class="shape-slide about-shape4" src="{{ asset('uploads/2023/11/h10-shape4.png') }}" alt="">
+            <div class="hh-orbit" aria-hidden="true"><i></i><i></i></div>
             <div class="about-photo">
                 <img src="{{ media($about['image'] ?? '') }}" alt="{{ $about['subtitle'] ?? '' }}">
                 @if (setting('site.youtube_video_id'))
