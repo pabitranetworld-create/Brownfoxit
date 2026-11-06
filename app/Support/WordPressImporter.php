@@ -147,7 +147,7 @@ class WordPressImporter
 
     protected function exists(string $kind, array $item): ?ImportLog
     {
-        return ImportLog::where('source', $this->base)->where('kind', $kind)->where('source_id', (string) $item['id'])->whereIn('status', ['imported', 'missing_images', 'exists'])->first();
+        return ImportLog::where('source', $this->base)->where('kind', $kind)->where('source_id', (string) $item['id'])->whereIn('status', ['imported', 'missing_images', 'exists', 'removed'])->first();
     }
 
     protected function log(string $kind, array $item, string $status, ?string $type, ?int $id, ?string $notes = null): string

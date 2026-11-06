@@ -94,6 +94,18 @@ class ContentSeeder extends Seeder
             }
         }
 
+        // The pabitra.net shop only had its theme's demo products (Hair Gel, Smart Watch …). They were
+        // imported as drafts once; remove them again while still untouched (no fake products in the shop).
+        $this->once('remove-pabitra-demo-products', function () {
+            $demo = \App\Models\Product::where('status', 'draft')->where('source_url', 'like', 'https://pabitra.net/%')->whereColumn('updated_at', 'created_at')->get();
+            foreach ($demo as $p) {
+                \App\Models\ImportLog::where('target_type', \App\Models\Product::class)->where('target_id', $p->id)->update(['status' => 'removed', 'notes' => 'Theme demo product — removed automatically.', 'target_id' => null]);
+                $p->delete();
+            }
+
+            return true;
+        });
+
         // 5. Menus — only while they are still the untouched originals
         $this->menus();
 

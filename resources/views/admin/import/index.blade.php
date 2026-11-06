@@ -29,7 +29,7 @@
             <h2 class="adm-h" style="margin:0">ইনভেন্টরি / রিপোর্ট</h2>
             <form method="GET" class="imp-filter">
                 <select name="kind" onchange="this.form.submit()"><option value="">সব ধরন</option>@foreach (['posts' => 'ব্লগ', 'portfolio' => 'পোর্টফোলিও', 'products' => 'প্রোডাক্ট'] as $k => $l)<option value="{{ $k }}" @selected(request('kind') === $k)>{{ $l }}</option>@endforeach</select>
-                <select name="status" onchange="this.form.submit()"><option value="">সব অবস্থা</option>@foreach (['imported', 'missing_images', 'exists', 'failed'] as $s)<option @selected(request('status') === $s)>{{ $s }}</option>@endforeach</select>
+                <select name="status" onchange="this.form.submit()"><option value="">সব অবস্থা</option>@foreach (['imported', 'missing_images', 'exists', 'removed', 'failed'] as $s)<option @selected(request('status') === $s)>{{ $s }}</option>@endforeach</select>
             </form>
         </div>
         @if ($stats->isNotEmpty())
