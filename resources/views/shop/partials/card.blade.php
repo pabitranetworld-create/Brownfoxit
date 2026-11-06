@@ -1,14 +1,14 @@
 @php([$regular, $sale] = $product->prices())
-<article class="st-card pb-item">
-    <a href="{{ $product->link() }}" class="st-card-img pb-img fx-zoom">
+<article class="sp-card pb-item">
+    <a href="{{ $product->link() }}" class="sp-card-img pb-img fx-zoom">
         @if ($product->image)<img src="{{ media($product->image) }}" alt="{{ $product->name }}" loading="lazy">@else<span class="st-noimg"><i class="fa-solid fa-box-open"></i></span>@endif
         @if ($sale !== null && ! $product->hasVariants())<span class="st-badge">Sale</span>@elseif ($product->is_featured)<span class="st-badge alt">Featured</span>@endif
     </a>
-    <div class="st-card-body">
-        @if ($product->category)<a class="st-card-cat" href="{{ $product->category->link() }}">{{ $product->category->name }}</a>@endif
+    <div class="sp-card-body">
+        @if ($product->category)<a class="sp-card-cat" href="{{ $product->category->link() }}">{{ $product->category->name }}</a>@endif
         <h3><a href="{{ $product->link() }}">{{ $product->name }}</a></h3>
         @if ($product->short_description)<p>{{ \Illuminate\Support\Str::limit(strip_tags($product->short_description), 90) }}</p>@endif
-        <div class="st-card-foot">
+        <div class="sp-card-foot">
             @include('shop.partials.price', ['product' => $product])
             @if ($product->hasVariants())
                 <a class="st-btn sm" href="{{ $product->link() }}">Choose</a>

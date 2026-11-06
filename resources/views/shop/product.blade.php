@@ -43,7 +43,7 @@
         </div>
 
         <div class="st-summary" data-anim="fade-left">
-            @if ($product->category)<a class="st-card-cat" href="{{ $product->category->link() }}">{{ $product->category->name }}</a>@endif
+            @if ($product->category)<a class="sp-card-cat" href="{{ $product->category->link() }}">{{ $product->category->name }}</a>@endif
             <h1 class="st-title">{{ $product->name }}</h1>
             <div class="st-price-big" data-price>@include('shop.partials.price', ['product' => $product, 'variant' => $first])</div>
             @if ($product->short_description)<div class="pb-text st-short">{!! \App\PageBuilder\HtmlSanitizer::clean($product->short_description) !!}</div>@endif

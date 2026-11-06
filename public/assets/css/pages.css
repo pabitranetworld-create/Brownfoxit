@@ -693,18 +693,18 @@ body.theme-light { --body-bg: #ffffff; background: #fff; color: #4b4763; }
 
 /* product grid + cards */
 .st-grid { display: grid; gap: 26px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
-.st-card { display: flex; flex-direction: column; border-radius: 22px; overflow: hidden; background: #fff; border: 1px solid rgba(23,17,46,.08); box-shadow: 0 12px 34px rgba(23,17,46,.06); transition: transform .45s var(--ease), box-shadow .45s; }
-.st-card:hover { transform: translateY(-6px); box-shadow: 0 24px 50px rgba(23,17,46,.11); }
-.st-card-img { position: relative; display: block; aspect-ratio: 4 / 3; background: #f6f4fc; }
-.st-card-img img { width: 100%; height: 100%; object-fit: cover; }
+.sp-card { display: flex; flex-direction: column; border-radius: 22px; overflow: hidden; background: #fff; border: 1px solid rgba(23,17,46,.08); box-shadow: 0 12px 34px rgba(23,17,46,.06); transition: transform .45s var(--ease), box-shadow .45s; }
+.sp-card:hover { transform: translateY(-6px); box-shadow: 0 24px 50px rgba(23,17,46,.11); }
+.sp-card-img { position: relative; display: block; aspect-ratio: 4 / 3; background: #f6f4fc; }
+.sp-card-img img { width: 100%; height: 100%; object-fit: cover; }
 .st-badge { position: absolute; top: 14px; left: 14px; padding: 5px 12px; border-radius: 20px; background: var(--grad); color: #fff; font-size: 12px; font-weight: 700; }
 .st-badge.alt { background: #17112e; }
-.st-card-body { display: flex; flex-direction: column; gap: 8px; padding: 18px 20px 20px; flex: 1; }
-.st-card-cat { font-size: 12px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: #e8452f; }
-.st-card h3 { font-size: 18px; line-height: 1.35; color: #17112e; }
-.st-card h3 a:hover { color: #e8452f; }
-.st-card p { font-size: 14px; color: #6b6680; }
-.st-card-foot { margin-top: auto; padding-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.sp-card-body { display: flex; flex-direction: column; gap: 8px; padding: 18px 20px 20px; flex: 1; }
+.sp-card-cat { font-size: 12px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: #e8452f; }
+.sp-card h3 { font-size: 18px; line-height: 1.35; color: #17112e; }
+.sp-card h3 a:hover { color: #e8452f; }
+.sp-card p { font-size: 14px; color: #6b6680; }
+.sp-card-foot { margin-top: auto; padding-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .st-price { font-family: var(--heading-font); font-weight: 800; color: #17112e; font-size: 18px; }
 .st-price del { color: #9a94b8; font-weight: 500; font-size: .8em; margin-right: 4px; }
 .st-price ins { text-decoration: none; color: #e8452f; }
