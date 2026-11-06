@@ -55,7 +55,7 @@ foreach (['privacy-policy', 'terms-and-conditions', 'refund-policy', 'digital-pr
     ok(get('/'.$slug)['code'] === 404, "legal draft /{$slug} is not public yet");
 }
 ok(! str_contains($about, '/privacy-policy"'), 'menus hide links to unpublished pages');
-ok(str_contains($about, 'theme-light'), 'inner pages are white');
+ok(str_contains($about, 'theme-dark') && str_contains($about, 'tv-s-'), 'inner pages are dark with an animated tech scene');
 
 echo "== Search and 404\n";
 $s = get('/search?q=n8n');
