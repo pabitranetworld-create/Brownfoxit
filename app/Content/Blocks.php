@@ -53,9 +53,9 @@ class Blocks
         return ['id' => self::id(), 'type' => $type, 'data' => $data, 'settings' => $settings];
     }
 
-    public static function hero(string $eyebrow, string $title, string $highlight, string $text, array $buttons, string $image = '', string $layout = 'center'): array
+    public static function hero(string $eyebrow, string $title, string $highlight, string $text, array $buttons, string $image = '', string $layout = 'center', string $visual = 'auto', array $rotate = []): array
     {
-        return self::w('hero', compact('eyebrow', 'title', 'highlight', 'text', 'image') + ['buttons' => $buttons, 'layout' => $image ? $layout : 'center', 'title_effect' => 'words', 'image_effect' => 'float'], ['anim' => 'fade-up']);
+        return self::w('hero', compact('eyebrow', 'title', 'highlight', 'text', 'image', 'visual') + ['rotate_words' => implode(', ', $rotate), 'buttons' => $buttons, 'layout' => $image || $visual !== 'none' ? 'split' : 'center', 'title_effect' => 'words', 'image_effect' => 'float'], ['anim' => 'fade-up']);
     }
 
     public static function btn(string $text, string $url, string $style = 'primary', string $icon = 'fa-solid fa-arrow-right'): array
@@ -152,10 +152,10 @@ class Blocks
         return array_merge(['bg' => 'gradient', 'fx' => 'orbs', 'pt' => 170, 'pb' => 110], $extra);
     }
 
-    /** Top of a white page: colourful moving "aurora" with floating shapes (header text stays dark). */
+    /** Top of a page: dark technology background with coloured light and running circuit lines. */
     public static function top(array $extra = []): array
     {
-        return array_merge(['bg' => 'aurora', 'fx' => 'shapes', 'pt' => 190, 'pb' => 120], $extra);
+        return array_merge(['bg' => 'tech', 'fx' => 'circuit', 'pt' => 170, 'pb' => 110], $extra);
     }
 
     /** A colourful, slowly moving gradient band (white text) — used for contrast between white sections. */
@@ -182,6 +182,6 @@ class Blocks
 
     public static function soft(array $extra = []): array
     {
-        return array_merge(['bg' => 'card', 'pt' => 90, 'pb' => 90], $extra);
+        return array_merge(['bg' => 'tech2', 'pt' => 90, 'pb' => 90], $extra);
     }
 }

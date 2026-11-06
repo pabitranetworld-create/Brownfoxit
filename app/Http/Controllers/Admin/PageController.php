@@ -87,7 +87,7 @@ class PageController extends Controller
                 'title' => $page->title, 'slug' => $page->slug, 'status' => $page->status, 'is_template' => $page->is_template,
                 'seo_title' => $page->seo_title, 'seo_description' => $page->seo_description, 'og_image' => $page->og_image,
                 'noindex' => $page->noindex, 'show_page_header' => $page->show_page_header, 'header_subtitle' => $page->header_subtitle,
-                'template' => $page->template ?: 'default', 'color_scheme' => $page->color_scheme ?: 'light', 'custom_head' => $page->custom_head, 'custom_css' => $page->custom_css, 'custom_js' => $page->custom_js,
+                'template' => $page->template ?: 'default', 'color_scheme' => $page->color_scheme ?: 'dark', 'custom_head' => $page->custom_head, 'custom_css' => $page->custom_css, 'custom_js' => $page->custom_js,
                 'unpublished' => $page->hasUnpublishedChanges(),
             ],
             'templates' => Page::TEMPLATES,

@@ -25,7 +25,7 @@
 
 @section('title', ($product->seo_title ?: $product->name).' · '.setting('site.name'))
 @section('meta_description', $product->seo_description ?: \Illuminate\Support\Str::limit(strip_tags((string) ($product->short_description ?: $product->description)), 155))
-@section('body_class', 'page-inner tpl-full_width theme-light top-light vp-page')
+@section('body_class', 'page-inner tpl-full_width theme-dark top-dark vp-page')
 @push('head')
     @if ($product->status !== 'published')<meta name="robots" content="noindex, nofollow">@endif
     <link rel="canonical" href="{{ $product->link() }}">
@@ -40,9 +40,9 @@
 
 @section('content')
     {{-- ============ HERO ============ --}}
-    <section class="pb-section sc-light bg-aurora vp-hero" id="buy">
-        <div class="vb-aurora-bg" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-        @include('pages.builder.fx-shapes')
+    <section class="pb-section sc-dark bg-tech vp-hero" id="buy">
+        <div class="tb-glow" aria-hidden="true"><span></span><span></span><span></span></div>
+        @include('pages.builder.fx-tech', ['fx' => 'circuit'])
         <div class="pb-container">
             @if ($product->status !== 'published')<div class="st-alert warn"><i class="fa-solid fa-eye-slash"></i> Preview — this product is <strong>{{ $product->status }}</strong> and not visible to customers.</div>@endif
             @if (session('status'))<div class="st-alert ok" role="status"><i class="fa-solid fa-circle-check"></i> {{ session('status') }}</div>@endif
@@ -106,14 +106,12 @@
 
                 <div class="vp-visual" data-gallery data-anim="zoom-in" data-anim-delay="150">
                     <div class="vp-ring" aria-hidden="true"></div>
-                    <div class="vp-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
-                    <div class="vp-frame vb-tilt">
-                        @if ($images)
-                            <img src="{{ media($images[0]) }}" alt="{{ $product->name }}" data-main>
-                        @else
-                            <div class="vp-noimg"><i class="fa-solid {{ $digital ? 'fa-cloud-arrow-down' : 'fa-box-open' }}"></i><span></span><span></span><span></span></div>
-                        @endif
-                    </div>
+                    @if ($images)<div class="vp-orbit" aria-hidden="true"><i></i><i></i><i></i></div>@endif
+                    @if ($images)
+                        <div class="vp-frame vb-tilt"><img src="{{ media($images[0]) }}" alt="{{ $product->name }}" data-main></div>
+                    @else
+                        <div class="tv-wrap vp-scene" aria-hidden="true">@include('pages.visuals.scene', ['scene' => $digital ? 'chip' : 'shop'])</div>
+                    @endif
                     <span class="vp-badge b1"><i class="fa-solid {{ $digital ? 'fa-bolt' : 'fa-truck-fast' }}"></i> {{ $digital ? 'Instant access' : 'Fast delivery' }}</span>
                     @if ($save > 0)<span class="vp-badge b2"><i class="fa-solid fa-fire"></i> {{ $save }}% off</span>@else<span class="vp-badge b2"><i class="fa-solid fa-shield-halved"></i> Secure payment</span>@endif
                     @if (count($images) > 1)
@@ -128,7 +126,7 @@
 
     {{-- ============ RUNNING BAND ============ --}}
     @if (count($features) >= 3)
-        <section class="pb-section sc-light vp-band" style="--pt:24px;--pb:40px">
+        <section class="pb-section sc-dark vp-band" style="--pt:24px;--pb:40px">
             <div class="vb-marquee st-band" style="--mq-speed: {{ max(22, count($features) * 5) }}s">
                 <div class="vb-mq-row">
                     @for ($copy = 0; $copy < 2; $copy++)
@@ -141,7 +139,7 @@
 
     {{-- ============ FEATURES ============ --}}
     @if ($features)
-        <section class="pb-section sc-light bg-card vp-section" style="--pt:90px;--pb:90px">
+        <section class="pb-section sc-dark bg-tech2 vp-section" style="--pt:90px;--pb:90px">
             <div class="pb-fx vb-beams" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
             <div class="pb-container">
                 <div class="vp-head ta-center" data-anim="fade-up"><div class="pb-heading"><p class="pb-eyebrow">Features</p><h2 class="pb-h size-xl">What you get</h2></div></div>
@@ -159,7 +157,7 @@
 
     {{-- ============ VIDEO ============ --}}
     @if ($product->video_url)
-        <section class="pb-section sc-light vp-section" style="--pt:90px;--pb:40px">
+        <section class="pb-section sc-dark vp-section" style="--pt:90px;--pb:40px">
             <div class="pb-fx vb-aurora" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
             <div class="pb-container">
                 <div class="vp-head ta-center" data-anim="fade-up"><div class="pb-heading"><p class="pb-eyebrow">See it in action</p><h2 class="pb-h size-xl">Watch the video</h2></div></div>
@@ -170,7 +168,7 @@
 
     {{-- ============ DETAILS + STICKY BUY CARD ============ --}}
     @if ($tabs)
-        <section class="pb-section sc-light vp-section" style="--pt:90px;--pb:90px">
+        <section class="pb-section sc-dark vp-section" style="--pt:90px;--pb:90px">
             <div class="pb-fx vb-aurora" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
             <div class="pb-container vp-details">
                 <div class="pb-tabs" data-tabs data-anim="fade-up">
@@ -207,7 +205,7 @@
     @endif
 
     {{-- ============ HOW IT WORKS ============ --}}
-    <section class="pb-section sc-light bg-card vp-section" style="--pt:90px;--pb:150px">
+    <section class="pb-section sc-dark bg-tech2 vp-section" style="--pt:90px;--pb:150px">
         <div class="pb-fx vb-waves" aria-hidden="true">@for ($i = 1; $i <= 3; $i++)<svg class="w{{ $i }}" viewBox="0 0 2880 120" preserveAspectRatio="none"><path d="M0,60 C240,110 480,10 720,60 C960,110 1200,10 1440,60 C1680,110 1920,10 2160,60 C2400,110 2640,10 2880,60 L2880,120 L0,120 Z"/></svg>@endfor</div>
         <div class="pb-container">
             <div class="vp-head ta-center" data-anim="fade-up"><div class="pb-heading"><p class="pb-eyebrow">How it works</p><h2 class="pb-h size-xl">{{ $digital ? 'From checkout to download' : 'From order to your door' }}</h2></div></div>
@@ -221,7 +219,7 @@
 
     {{-- ============ FAQ ============ --}}
     @if (! empty($product->faqs))
-        <section class="pb-section sc-light vp-section" style="--pt:90px;--pb:90px">
+        <section class="pb-section sc-dark vp-section" style="--pt:90px;--pb:90px">
             <div class="pb-fx vb-stars" aria-hidden="true">@for ($i = 0; $i < 14; $i++)<i style="--x:{{ ($i * 37 + 11) % 100 }}%;--y:{{ ($i * 53 + 7) % 100 }}%;--d:{{ ($i % 6) * .55 }}s;--c:{{ $i % 5 }}"></i>@endfor</div>
             <div class="pb-container vp-faq">
                 <div class="vp-head" data-anim="fade-up"><div class="pb-heading"><p class="pb-eyebrow">FAQ</p><h2 class="pb-h size-xl">Questions before you buy</h2></div><p class="vp-muted">Something else? <a href="/contact">Send us a message</a>.</p></div>
@@ -247,7 +245,7 @@
 
     {{-- ============ RELATED ============ --}}
     @if ($related->isNotEmpty())
-        <section class="pb-section sc-light vp-section" style="--pt:90px;--pb:110px">
+        <section class="pb-section sc-dark vp-section" style="--pt:90px;--pb:110px">
             <div class="pb-container">
                 <div class="vp-head ta-center" data-anim="fade-up"><div class="pb-heading"><p class="pb-eyebrow">More from the shop</p><h2 class="pb-h size-xl">You may also like</h2></div></div>
                 <div class="st-grid" data-anim="fade-up" data-stagger="80">@foreach ($related as $rp)@include('shop.partials.card', ['product' => $rp])@endforeach</div>

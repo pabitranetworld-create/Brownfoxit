@@ -8,7 +8,7 @@
 
   // 1. Cursor spotlight + gentle 3D tilt on cards
   if (finePointer) {
-    var cards = document.querySelectorAll(".sc-light .pb-ibox, .sp-card, .vb-tilt, .pb-project, .vp-feature");
+    var cards = document.querySelectorAll(".pb-section .pb-ibox, .sp-card, .vb-tilt, .pb-project, .vp-feature");
     cards.forEach(function (el) {
       var raf = 0;
       el.addEventListener("pointermove", function (e) {
@@ -36,7 +36,7 @@
     });
 
     // 3. Floating shapes drift away from the mouse a little (depth effect)
-    var layers = document.querySelectorAll(".vb-shapes, .vb-hero-deco");
+    var layers = document.querySelectorAll(".vb-shapes, .tv-wrap .tv");
     if (layers.length) {
       var mx = 0, my = 0, ticking = false;
       window.addEventListener("pointermove", function (e) {

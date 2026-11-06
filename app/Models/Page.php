@@ -20,8 +20,11 @@ class Page extends Model
 
     public const SCHEMES = [
         'light' => 'সাদা (White) — হালকা পেজ, গাঢ় লেখা',
-        'dark' => 'গাঢ় (Dark) — Home page-এর মতো',
+        'dark' => 'গাঢ় Tech (Dark) — রঙিন আলো ও Tech অ্যানিমেশন',
     ];
+
+    /** New pages start dark (the site's Tech look). */
+    protected $attributes = ['color_scheme' => 'dark'];
 
     /** Allowed page URL: up to three "a-b-c" parts separated by "/" (e.g. services/ai-automation). */
     public const SLUG_PATTERN = '[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*){0,2}';

@@ -98,3 +98,13 @@ Tests: `tests/store-e2e.php` (added to `tests/e2e-install.sh`).
 - Product page rebuilt as a sales landing page (hero with buy box, running feature band, feature cards,
   sticky buy card, how-it-works, FAQ, colourful CTA, sticky buy bar). Shop page gets a running band.
 - Fix: shop card class clashed with the builder "card" style (service boxes had collapsed to one column).
+
+## Design update 2 – dark, colourful technology look
+- All inner pages, shop, product, blog, account, search and 404 are dark (`color_scheme` dark is the default for
+  new pages; seeded pages are switched automatically unless edited).
+- `public/assets/css/tech.css` + `public/assets/js/tech.js`: neon colours, glitch/scramble/typing text, running
+  outline words, circuit / code-rain / hex / scan-floor / binary backgrounds, spinning neon card borders.
+- 13 animated hero scenes (`resources/views/pages/visuals/scene.blade.php`): neural, workflow, code, browser, shop,
+  film, design, globe, chip, chart, shield, rocket, chat. Hero widget option "visual" (auto = chosen from the title,
+  `App\PageBuilder\Visuals::guess`); title banners pick a scene from the page title automatically.
+- `public/assets/css/tech-store.css` is GENERATED from the white store styles: `python3 scripts/dark-store-css.py`.

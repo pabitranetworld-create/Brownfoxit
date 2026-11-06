@@ -14,11 +14,16 @@
     @if ($s['divider_top'])
         <svg class="pb-wave top" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true"><path d="M0,40 C240,90 480,0 720,30 C960,60 1200,10 1440,40 L1440,0 L0,0 Z"/></svg>
     @endif
+    @if (in_array($s['bg'], ['tech', 'tech2'], true))
+        <div class="tb-glow" aria-hidden="true"><span></span><span></span><span></span></div>
+    @endif
     @if ($s['bg'] === 'aurora')
         <div class="vb-aurora-bg" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
     @endif
     @if ($s['fx'] === 'orbs')
         <div class="pb-fx pb-fx-orbs" aria-hidden="true"><span></span><span></span><span></span></div>
+    @elseif (in_array($s['fx'], ['circuit', 'matrix', 'hexgrid', 'scan', 'binary'], true))
+        @include('pages.builder.fx-tech', ['fx' => $s['fx']])
     @elseif ($s['fx'] === 'aurora')
         <div class="pb-fx vb-aurora" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
     @elseif ($s['fx'] === 'shapes')

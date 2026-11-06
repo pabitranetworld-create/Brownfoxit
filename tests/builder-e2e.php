@@ -248,7 +248,7 @@ $canvasPage['template'] = 'default';
 $r = json_post_body_token("/admin/pages/{$hid}/publish", ['layout' => json_encode($broken), 'page' => $canvasPage], $csrf);
 $bh = get('/'.$slug.'-canvas')['body'];
 ok(str_contains($bh, '.cut{color:red</style></div>') && preg_match('#</style></div>\s*</div>.*After broken E2E#s', $bh) === 1, 'unclosed <style>/<div> in an HTML widget are closed');
-ok(str_contains($bh, 'theme-light') && str_contains($bh, 'sc-light') && str_contains($bh, 'top-light'), 'inner pages are white by default');
+ok(str_contains($bh, 'theme-dark') && str_contains($bh, 'sc-dark') && str_contains($bh, 'top-dark'), 'inner pages are dark (tech look) by default');
 $canvasPage['color_scheme'] = 'dark';
 $r = json_post_body_token("/admin/pages/{$hid}/publish", ['layout' => json_encode($broken), 'page' => $canvasPage], $csrf);
 $bh = get('/'.$slug.'-canvas')['body'];

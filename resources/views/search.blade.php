@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', ($q !== '' ? 'Search: '.$q : 'Search').' · '.setting('site.name'))
-@section('body_class', 'page-inner tpl-default theme-light top-light')
+@section('body_class', 'page-inner tpl-default theme-dark top-dark')
 
 @push('head')<meta name="robots" content="noindex, follow">@endpush
 
@@ -16,7 +16,7 @@
         <svg class="pb-wave" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true"><path d="M0,40 C240,90 480,0 720,30 C960,60 1200,10 1440,40 L1440,80 L0,80 Z"/></svg>
     </section>
 
-    <section class="pb-section sc-light" style="--pt:20px;--pb:110px">
+    <section class="pb-section sc-dark" style="--pt:20px;--pb:110px">
         <div class="pb-container">
             @if ($q === '')
                 <p class="pb-results-meta">Type at least two letters to search pages and services.</p>

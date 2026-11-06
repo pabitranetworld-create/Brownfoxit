@@ -128,7 +128,7 @@ class ContentSeeder extends Seeder
             Page::create(array_merge($d, [
                 'slug' => $slug,
                 'status' => $status,
-                'color_scheme' => 'light',
+                'color_scheme' => 'dark',
                 'layout' => $layout,
                 'draft_layout' => null,
                 'published_at' => $status === 'published' ? now() : null,
@@ -161,9 +161,14 @@ class ContentSeeder extends Seeder
         $layout = $validator->clean($data()['layout']);
         $new = Fingerprint::of($layout);
         if ($new === $current) {
+            if ($page->color_scheme !== 'dark') {
+                $page->forceFill(['color_scheme' => 'dark'])->save(); // the site's dark technology look
+                $this->log[] = '/'.$slug.' (dark)';
+            }
+
             return;
         }
-        $page->forceFill(['layout' => $layout])->save();
+        $page->forceFill(['layout' => $layout, 'color_scheme' => 'dark'])->save();
         $written[$slug] = $new;
         Setting::put('content_fingerprints', $written);
         $this->log[] = '/'.$slug.' (new design)';

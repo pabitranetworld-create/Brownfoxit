@@ -22,7 +22,7 @@ class ServicePage
         $sections[] = B::section([B::hero($group, $s['hero']['title'], $s['hero']['highlight'] ?? '', $s['hero']['text'], [
             B::btn('Request a quote', $quote),
             B::btn('How it works', '#process', 'ghost', 'fa-solid fa-arrow-down'),
-        ], $s['image'] ?? '', 'split')], B::top(['anchor' => 'top']));
+        ], $s['image'] ?? '', 'split', self::visual($s))], B::top(['anchor' => 'top', 'fx' => self::backdrop($s)]));
 
         // 2. Running band with the tools we use
         $tools = array_map(fn ($t) => trim(preg_split('/\s*[(,]|\s+when\s|\s+such as\s/i', $t)[0]), $s['tools']);
@@ -44,7 +44,7 @@ class ServicePage
         $sections[] = B::section([
             [55, [B::heading('Key benefits', 'Why it pays off'), B::list($s['benefits'])]],
             [45, [B::heading('What you receive', '', 'm', 'h3'), B::list($s['deliverables'], 'arrow')], ['box' => 'glass', 'pad' => 34, 'anim' => 'fade-left']],
-        ], B::light(['valign' => 'start', 'fx' => 'shapes']));
+        ], B::light(['valign' => 'start', 'fx' => 'circuit']));
 
         // 6. Features
         $sections[] = B::section([
@@ -103,7 +103,7 @@ class ServicePage
             $sections[] = B::section([
                 B::heading('Related services', 'Often combined with', 'l', 'h2', ['text_align' => 'center']),
                 B::boxes(array_map(fn ($r) => [$r['icon'], $r['title'], $r['short'], '/services/'.$r['slug'], 'View service'], $related), (string) min(3, count($related)), 'card'),
-            ], B::light(['fx' => 'shapes']));
+            ], B::light(['fx' => 'hexgrid']));
         }
 
         // 15. CTA
@@ -113,5 +113,31 @@ class ServicePage
         ])], B::light(['pt' => 20, 'pb' => 110, 'fx' => 'confetti']));
 
         return B::layout(...$sections);
+    }
+
+    /** The animated hero scene that matches the service. */
+    public static function visual(array $s): string
+    {
+        $map = [
+            'ai-automation' => 'neural', 'ai-agents' => 'chat', 'ai-integration' => 'neural', 'n8n-automation' => 'workflow', 'automation-consulting' => 'workflow',
+            'website-development' => 'browser', 'ecommerce-development' => 'shop', 'wordpress-development' => 'browser', 'landing-pages' => 'rocket', 'website-maintenance' => 'shield',
+            'custom-software-development' => 'code', 'web-application-development' => 'code', 'business-management-software' => 'chart', 'api-integrations' => 'workflow', 'saas-mvp-development' => 'rocket',
+            'motion-graphics' => 'film', 'video-editing' => 'film', 'explainer-videos' => 'film',
+            'graphic-design' => 'design', 'ui-ux-design' => 'design', 'digital-marketing-assets' => 'design', 'data-dashboards' => 'chart',
+        ];
+
+        return $map[$s['slug']] ?? \App\PageBuilder\Visuals::guess($s['title'] ?? '', $s['slug']);
+    }
+
+    /** Section background that suits the service family. */
+    public static function backdrop(array $s): string
+    {
+        return match (self::visual($s)) {
+            'neural', 'chat' => 'matrix',
+            'code', 'chart' => 'binary',
+            'film', 'design' => 'scan',
+            'shield' => 'hexgrid',
+            default => 'circuit',
+        };
     }
 }

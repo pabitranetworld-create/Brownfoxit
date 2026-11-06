@@ -38,7 +38,9 @@ class Registry
                     ['key' => 'highlight', 'label' => 'টাইটেলের যে অংশ রঙিন হবে', 'type' => 'text', 'default' => ''],
                     ['key' => 'text', 'label' => 'বিবরণ', 'type' => 'textarea', 'default' => ''],
                     $btnItems,
+                    ['key' => 'rotate_words', 'label' => 'ঘুরে ঘুরে বদলানো শব্দ (কমা দিয়ে)', 'type' => 'text', 'default' => '', 'help' => 'রঙিন অংশে এই শব্দগুলো একটার পর একটা টাইপ হয়ে বদলাতে থাকবে, যেমন: Websites, Software, Automation'],
                     ['key' => 'image', 'label' => 'ছবি', 'type' => 'image', 'default' => ''],
+                    ['key' => 'visual', 'label' => 'চলমান Tech অ্যানিমেশন (ছবি না থাকলে)', 'type' => 'select', 'options' => self::visuals(), 'default' => 'auto'],
                     ['key' => 'layout', 'label' => 'লেআউট', 'type' => 'select', 'options' => ['split' => 'বাঁয়ে লেখা, ডানে ছবি', 'split-reverse' => 'বাঁয়ে ছবি, ডানে লেখা', 'center' => 'মাঝখানে'], 'default' => 'split', 'group' => 'style'],
                     ['key' => 'title_effect', 'label' => 'টাইটেল ইফেক্ট', 'type' => 'select', 'options' => ['words' => 'শব্দে শব্দে আসা', 'none' => 'নেই'], 'default' => 'words', 'group' => 'motion'],
                     ['key' => 'image_effect', 'label' => 'ছবির ইফেক্ট', 'type' => 'select', 'options' => self::imageEffects(), 'default' => 'float', 'group' => 'motion'],
@@ -344,6 +346,12 @@ class Registry
         ];
     }
 
+    /** Animated technology scenes for the hero (shown instead of an image). */
+    public static function visuals(): array
+    {
+        return ['none' => 'নেই', 'auto' => 'অটো (টাইটেল দেখে বেছে নেবে)', 'neural' => 'AI নিউরাল নেটওয়ার্ক', 'workflow' => 'অটোমেশন ওয়ার্কফ্লো', 'code' => 'কোড এডিটর ও টার্মিনাল', 'browser' => 'ওয়েবসাইট তৈরি', 'shop' => 'ই-কমার্স / দোকান', 'film' => 'ভিডিও ও মোশন টাইমলাইন', 'design' => 'ডিজাইন (পেন টুল ও রং)', 'globe' => 'ঘুরন্ত গ্লোব', 'chip' => 'প্রসেসর চিপ ও সার্কিট', 'chart' => 'ডেটা ও চার্ট', 'shield' => 'নিরাপত্তা / শিল্ড', 'rocket' => 'রকেট লঞ্চ', 'chat' => 'চ্যাটবট / মেসেজ'];
+    }
+
     public static function imageEffects(): array
     {
         return ['none' => 'নেই', 'zoom' => 'হোভারে Zoom', 'reveal' => 'পর্দা সরে প্রকাশ (Clip)', 'mask' => 'বৃত্ত থেকে প্রকাশ (Mask)', 'float' => 'ভাসমান', 'tilt' => '3D Tilt (মাউসে)'];
@@ -392,11 +400,11 @@ class Registry
             ['key' => 'content_pos', 'label' => 'উচ্চতার মধ্যে কন্টেন্টের অবস্থান', 'type' => 'select', 'options' => ['start' => 'ওপরে', 'center' => 'মাঝে', 'end' => 'নিচে'], 'default' => 'center', 'group' => 'style'],
             ['key' => 'pt', 'label' => 'ভেতরে ওপরের ফাঁক (px)', 'type' => 'number', 'min' => 0, 'max' => 400, 'default' => 90, 'group' => 'style'],
             ['key' => 'pb', 'label' => 'ভেতরে নিচের ফাঁক (px)', 'type' => 'number', 'min' => 0, 'max' => 400, 'default' => 90, 'group' => 'style'],
-            ['key' => 'bg', 'label' => 'ব্যাকগ্রাউন্ড', 'type' => 'select', 'options' => ['none' => 'নেই (পেজের রং)', 'dark' => 'গাঢ়', 'card' => 'হালকা বেগুনি', 'gradient' => 'Gradient', 'image' => 'ছবি', 'color' => 'নিজের রং', 'aurora' => 'রঙিন Aurora (সাদা পেজের জন্য)', 'vivid' => 'চলমান রঙিন Gradient'], 'default' => 'none', 'group' => 'style'],
+            ['key' => 'bg', 'label' => 'ব্যাকগ্রাউন্ড', 'type' => 'select', 'options' => ['none' => 'নেই (পেজের রং)', 'dark' => 'গাঢ়', 'card' => 'হালকা বেগুনি', 'gradient' => 'Gradient', 'image' => 'ছবি', 'color' => 'নিজের রং', 'aurora' => 'রঙিন Aurora (সাদা পেজের জন্য)', 'vivid' => 'চলমান রঙিন Gradient', 'tech' => 'গাঢ় Tech (রঙিন আলো)', 'tech2' => 'গাঢ় Tech প্যানেল'], 'default' => 'none', 'group' => 'style'],
             ['key' => 'bg_color', 'label' => 'নিজের রং', 'type' => 'color', 'default' => '#1d1047', 'group' => 'style'],
             ['key' => 'bg_image', 'label' => 'ব্যাকগ্রাউন্ড ছবি', 'type' => 'image', 'default' => '', 'group' => 'style'],
             ['key' => 'overlay', 'label' => 'ছবির ওপর অন্ধকার (%)', 'type' => 'number', 'min' => 0, 'max' => 95, 'default' => 60, 'group' => 'style'],
-            ['key' => 'fx', 'label' => 'চলমান ব্যাকগ্রাউন্ড', 'type' => 'select', 'options' => ['none' => 'নেই', 'gradient' => 'চলমান Gradient', 'orbs' => 'আলোর গোলক', 'lines' => 'চলমান রেখা', 'grid' => 'আলোকিত গ্রিড', 'particles' => 'ভাসমান বিন্দু', 'aurora' => 'রঙিন Aurora (হালকা)', 'shapes' => 'ভাসমান রঙিন আকৃতি', 'waves' => 'চলমান ঢেউ', 'beams' => 'আলোর রশ্মি', 'stars' => 'ঝিকিমিকি তারা', 'confetti' => 'রঙিন কনফেটি'], 'default' => 'none', 'group' => 'style'],
+            ['key' => 'fx', 'label' => 'চলমান ব্যাকগ্রাউন্ড', 'type' => 'select', 'options' => ['none' => 'নেই', 'gradient' => 'চলমান Gradient', 'orbs' => 'আলোর গোলক', 'lines' => 'চলমান রেখা', 'grid' => 'আলোকিত গ্রিড', 'particles' => 'ভাসমান বিন্দু', 'aurora' => 'রঙিন Aurora (হালকা)', 'shapes' => 'ভাসমান রঙিন আকৃতি', 'waves' => 'চলমান ঢেউ', 'beams' => 'আলোর রশ্মি', 'stars' => 'ঝিকিমিকি তারা', 'confetti' => 'রঙিন কনফেটি', 'circuit' => 'চলমান সার্কিট', 'matrix' => 'কোড বৃষ্টি', 'hexgrid' => 'হেক্সাগন গ্রিড', 'scan' => 'স্ক্যানিং ফ্লোর', 'binary' => 'বাইনারি ডেটা স্ট্রিম'], 'default' => 'none', 'group' => 'style'],
             ['key' => 'gap', 'label' => 'কলামের ফাঁক', 'type' => 'select', 'options' => ['none' => 'কোনো ফাঁক নেই', 's' => 'কম', 'm' => 'মাঝারি', 'l' => 'বেশি'], 'default' => 'l', 'group' => 'style'],
             ['key' => 'valign', 'label' => 'কলামের উল্লম্ব সারিবদ্ধতা', 'type' => 'select', 'options' => ['start' => 'ওপরে', 'center' => 'মাঝে', 'end' => 'নিচে'], 'default' => 'center', 'group' => 'style'],
             ['key' => 'reverse_mobile', 'label' => 'মোবাইলে কলামের ক্রম উল্টো', 'type' => 'checkbox', 'default' => false, 'group' => 'style'],

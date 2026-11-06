@@ -28,7 +28,7 @@
     @endif
 
     @if ($tpl === 'default' && $page->show_page_header)
-        @include('pages.builder.page-header', ['title' => $page->title, 'subtitle' => $page->header_subtitle])
+        @include('pages.builder.page-header', ['title' => $page->title, 'subtitle' => $page->header_subtitle, 'scheme' => $pbScheme])
     @endif
 
     @include('pages.builder.layout', ['layout' => $layout, 'editor' => $editor ?? false])
