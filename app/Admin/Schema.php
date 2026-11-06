@@ -3,6 +3,9 @@
 namespace App\Admin;
 
 use App\Models\Client;
+use App\Models\Coupon;
+use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Models\Post;
 use App\Models\PostCategory;
 use App\Models\Project;
@@ -204,6 +207,71 @@ class Schema
                 ],
             ],
 
+            'store' => [
+                'title' => 'দোকানের সেটিংস', 'icon' => 'fa-solid fa-store',
+                'intro' => 'কারেন্সি বদলালে পুরোনো প্রোডাক্টের দাম নিজে থেকে বদলায় না — দাম নতুন কারেন্সিতে আবার দিন। পেমেন্ট গেটওয়ে চালু/বন্ধ করতে বাঁ পাশের "Payment gateways" দেখুন।',
+                'fields' => [
+                    ['key' => 'currency', 'label' => 'কারেন্সি', 'type' => 'select', 'options' => ['BDT' => 'BDT — বাংলাদেশি টাকা', 'USD' => 'USD — US Dollar', 'EUR' => 'EUR — Euro', 'GBP' => 'GBP — Pound', 'INR' => 'INR — Rupee'], 'default' => 'BDT', 'help' => 'PayStation ও EPS শুধু BDT নেয়; aamarPay BDT ও USD নেয়।'],
+                    ['key' => 'currency_symbol', 'label' => 'কারেন্সি চিহ্ন (খালি = স্বয়ংক্রিয়)', 'type' => 'text'],
+                    ['key' => 'symbol_position', 'label' => 'চিহ্ন কোথায়', 'type' => 'select', 'options' => ['left' => 'বাঁয়ে (৳500)', 'right' => 'ডানে (500 ৳)'], 'default' => 'left'],
+                    ['key' => 'decimals', 'label' => 'দশমিকের পরে কয় ঘর', 'type' => 'number', 'min' => 0, 'max' => 2, 'default' => 2],
+                    ['key' => 'shop_title', 'label' => 'Shop পেজের টাইটেল', 'type' => 'text', 'default' => 'Shop'],
+                    ['key' => 'shop_subtitle', 'label' => 'Shop পেজের সাবটাইটেল', 'type' => 'text'],
+                    ['key' => 'shop_meta_description', 'label' => 'Shop পেজের SEO বিবরণ', 'type' => 'textarea'],
+                    ['key' => 'shop_empty_text', 'label' => 'কোনো প্রোডাক্ট না থাকলে লেখা', 'type' => 'text'],
+                    ['key' => 'per_page', 'label' => 'প্রতি পেজে প্রোডাক্ট', 'type' => 'number', 'min' => 4, 'max' => 60, 'default' => 12],
+                    ['key' => 'h_checkout', 'label' => 'চেকআউট', 'type' => 'heading'],
+                    ['key' => 'guest_checkout', 'label' => 'অ্যাকাউন্ট ছাড়া কেনা যাবে (Guest checkout)', 'type' => 'checkbox', 'default' => true],
+                    ['key' => 'registration', 'label' => 'গ্রাহক অ্যাকাউন্ট খুলতে পারবে', 'type' => 'checkbox', 'default' => true],
+                    ['key' => 'require_phone', 'label' => 'ফোন নম্বর বাধ্যতামূলক', 'type' => 'checkbox', 'default' => true],
+                    ['key' => 'coupons_enabled', 'label' => 'কুপন চালু', 'type' => 'checkbox', 'default' => true],
+                    ['key' => 'show_cart_icon', 'label' => 'হেডারে কার্ট আইকন', 'type' => 'checkbox', 'default' => true],
+                    ['key' => 'terms_url', 'label' => 'Terms পেজের লিংক (দিলে চেকআউটে টিক দিতে হবে)', 'type' => 'text', 'help' => 'যেমন /terms-and-conditions — পেজটা Publish করার পরে দিন'],
+                    ['key' => 'order_prefix', 'label' => 'অর্ডার নম্বরের শুরু', 'type' => 'text', 'default' => 'BFI'],
+                    ['key' => 'h_tax', 'label' => 'ট্যাক্স ও শিপিং (শুধু physical প্রোডাক্টে শিপিং লাগে)', 'type' => 'heading'],
+                    ['key' => 'tax_rate', 'label' => 'ট্যাক্স / VAT (%)', 'type' => 'number', 'min' => 0, 'max' => 50, 'default' => 0],
+                    ['key' => 'tax_label', 'label' => 'ট্যাক্সের নাম', 'type' => 'text', 'default' => 'VAT'],
+                    ['key' => 'shipping_flat', 'label' => 'শিপিং চার্জ (প্রতি অর্ডার)', 'type' => 'number', 'min' => 0, 'max' => 1000000, 'default' => 0],
+                    ['key' => 'free_shipping_over', 'label' => 'এর বেশি কিনলে ফ্রি শিপিং (খালি = কখনো না)', 'type' => 'number', 'min' => 0, 'max' => 100000000],
+                    ['key' => 'h_dl', 'label' => 'ডাউনলোড (ডিফল্ট — প্রতিটা প্রোডাক্টে আলাদা দেওয়া যায়)', 'type' => 'heading'],
+                    ['key' => 'download_limit', 'label' => 'কতবার ডাউনলোড (খালি = সীমা নেই)', 'type' => 'number', 'min' => 0, 'max' => 10000, 'default' => 5],
+                    ['key' => 'download_expiry_days', 'label' => 'কত দিন পর লিংক বাতিল (খালি = কখনো না)', 'type' => 'number', 'min' => 0, 'max' => 36500, 'default' => 30],
+                ],
+            ],
+
+            'store_emails' => [
+                'title' => 'অর্ডারের ইমেইল', 'icon' => 'fa-solid fa-envelope-open-text',
+                'intro' => 'খালি রাখলে ডিফল্ট লেখা যাবে। ব্যবহারযোগ্য: {name} {order_number} {order_link} {total} {items} {downloads} {status} {payment_instructions} {site_name}। ইমেইল যেতে Settings → ইমেইল (SMTP) সেট করা থাকতে হবে।',
+                'fields' => [
+                    ['key' => 'received_subject', 'label' => 'অর্ডার পাওয়া গেছে (ম্যানুয়াল পেমেন্ট) — Subject', 'type' => 'text'],
+                    ['key' => 'received_body', 'label' => 'অর্ডার পাওয়া গেছে — লেখা', 'type' => 'textarea'],
+                    ['key' => 'paid_subject', 'label' => 'পেমেন্ট নিশ্চিত + ডাউনলোড — Subject', 'type' => 'text'],
+                    ['key' => 'paid_body', 'label' => 'পেমেন্ট নিশ্চিত — লেখা', 'type' => 'textarea'],
+                    ['key' => 'status_subject', 'label' => 'স্ট্যাটাস বদল (Completed / Cancelled / Refunded) — Subject', 'type' => 'text'],
+                    ['key' => 'status_body', 'label' => 'স্ট্যাটাস বদল — লেখা', 'type' => 'textarea'],
+                ],
+            ],
+
+            'portfolio_page' => [
+                'title' => 'পোর্টফোলিও পেজ', 'icon' => 'fa-solid fa-briefcase',
+                'intro' => '/portfolio পেজের শিরোনাম ও লেখা। প্রজেক্ট যোগ করুন Content → Projects থেকে।',
+                'fields' => [
+                    ['key' => 'title', 'label' => 'শিরোনাম', 'type' => 'text', 'default' => 'Portfolio'],
+                    ['key' => 'subtitle', 'label' => 'ছোট বিবরণ', 'type' => 'textarea'],
+                    ['key' => 'meta_description', 'label' => 'SEO description', 'type' => 'textarea'],
+                ],
+            ],
+
+            'blog_page' => [
+                'title' => 'ব্লগ পেজ', 'icon' => 'fa-solid fa-newspaper',
+                'intro' => '/blog পেজের শিরোনাম ও লেখা।',
+                'fields' => [
+                    ['key' => 'title', 'label' => 'শিরোনাম', 'type' => 'text', 'default' => 'Blog & Insights'],
+                    ['key' => 'subtitle', 'label' => 'ছোট বিবরণ', 'type' => 'textarea'],
+                    ['key' => 'meta_description', 'label' => 'SEO description', 'type' => 'textarea'],
+                ],
+            ],
+
             'mail' => [
                 'title' => 'ইমেইল (SMTP)', 'icon' => 'fa-solid fa-envelope', 'mail_test' => true,
                 'intro' => 'Contact/Quote ফর্মের বার্তা (আর পরে অর্ডারের ইমেইল) পাঠাতে cPanel-এর একটা ইমেইল অ্যাকাউন্ট দিন। cPanel → Email Accounts → Connect Devices-এ Host, Port দেখা যায়। সেট না করলে বার্তা শুধু Admin → Messages-এ জমা হবে।',
@@ -250,15 +318,34 @@ class Schema
             ],
 
             'projects' => [
-                'model' => Project::class, 'title' => 'Projects', 'singular' => 'Project', 'icon' => 'fa-solid fa-briefcase',
-                'slug_from' => 'title', 'sortable' => true,
-                'columns' => [['key' => 'image', 'type' => 'image'], ['key' => 'title', 'label' => 'নাম'], ['key' => 'category', 'label' => 'ক্যাটাগরি'], ['key' => 'is_featured', 'label' => 'Home-এ', 'type' => 'bool'], ['key' => 'is_active', 'label' => 'সক্রিয়', 'type' => 'bool']],
+                'model' => Project::class, 'title' => 'Portfolio', 'singular' => 'Project', 'icon' => 'fa-solid fa-briefcase',
+                'slug_from' => 'title', 'sortable' => true, 'group' => 'content', 'view_url' => '/portfolio/{slug}',
+                'columns' => [['key' => 'image', 'type' => 'image'], ['key' => 'title', 'label' => 'নাম'], ['key' => 'category', 'label' => 'ক্যাটাগরি'], ['key' => 'status', 'label' => 'অবস্থা'], ['key' => 'is_featured', 'label' => 'Home-এ', 'type' => 'bool'], ['key' => 'is_active', 'label' => 'সক্রিয়', 'type' => 'bool']],
                 'fields' => [
                     ['key' => 'title', 'label' => 'নাম', 'type' => 'text', 'required' => true],
-                    ['key' => 'category', 'label' => 'ক্যাটাগরি', 'type' => 'text', 'help' => 'যেমন Web Design'],
-                    ['key' => 'image', 'label' => 'ছবি (৬০০×৫৫৮)', 'type' => 'image'],
-                    ['key' => 'url', 'label' => 'লাইভ / প্রোডাক্ট লিংক', 'type' => 'url'],
-                    ['key' => 'description', 'label' => 'বিবরণ', 'type' => 'html'],
+                    ['key' => 'status', 'label' => 'অবস্থা', 'type' => 'select', 'options' => ['published' => 'Published (প্রকাশিত)', 'draft' => 'Draft (লুকানো — তথ্য যাচাই বাকি)'], 'default' => 'published'],
+                    ['key' => 'category', 'label' => 'ক্যাটাগরি (একাধিক হলে কমা দিয়ে)', 'type' => 'text', 'help' => 'যেমন Web Design, Development'],
+                    ['key' => 'tags', 'label' => 'ট্যাগ (কমা দিয়ে)', 'type' => 'text'],
+                    ['key' => 'summary', 'label' => 'এক লাইনের সারাংশ (টাইটেলের নিচে দেখায়)', 'type' => 'textarea'],
+                    ['key' => 'image', 'label' => 'প্রধান ছবি', 'type' => 'image'],
+                    ['key' => 'gallery', 'label' => 'গ্যালারি', 'type' => 'repeater', 'fields' => [
+                        ['key' => 'image', 'label' => 'ছবি', 'type' => 'image'],
+                        ['key' => 'caption', 'label' => 'ক্যাপশন', 'type' => 'text'],
+                        ['key' => 'alt', 'label' => 'Alt লেখা', 'type' => 'text'],
+                    ]],
+                    ['key' => 'url', 'label' => 'লাইভ / ডেমো লিংক', 'type' => 'url'],
+                    ['key' => 'video_url', 'label' => 'ভিডিও লিংক (YouTube / Vimeo)', 'type' => 'url'],
+                    ['key' => 'h_case', 'label' => 'কেস স্টাডি (যা জানা আছে শুধু সেটুকু লিখুন — খালি ঘর সাইটে দেখাবে না)', 'type' => 'heading'],
+                    ['key' => 'client', 'label' => 'ক্লায়েন্ট', 'type' => 'text'],
+                    ['key' => 'year', 'label' => 'বছর', 'type' => 'text'],
+                    ['key' => 'services', 'label' => 'যে সার্ভিস দেওয়া হয়েছে', 'type' => 'text'],
+                    ['key' => 'description', 'label' => 'Overview', 'type' => 'html'],
+                    ['key' => 'challenge', 'label' => 'The challenge', 'type' => 'html'],
+                    ['key' => 'solution', 'label' => 'What we did', 'type' => 'html'],
+                    ['key' => 'result', 'label' => 'The result', 'type' => 'html'],
+                    ['key' => 'h_seo', 'label' => 'SEO', 'type' => 'heading'],
+                    ['key' => 'seo_title', 'label' => 'SEO Title', 'type' => 'text'],
+                    ['key' => 'seo_description', 'label' => 'SEO Description', 'type' => 'textarea'],
                     ['key' => 'is_featured', 'label' => 'Home page-এ দেখাবে', 'type' => 'checkbox', 'default' => true],
                     $order, $active,
                 ],
@@ -303,6 +390,105 @@ class Schema
                     ['key' => 'body', 'label' => 'পুরো লেখা', 'type' => 'html'],
                     ['key' => 'status', 'label' => 'অবস্থা', 'type' => 'select', 'options' => ['published' => 'Published (প্রকাশিত)', 'draft' => 'Draft (খসড়া)'], 'default' => 'published'],
                     ['key' => 'published_at', 'label' => 'প্রকাশের তারিখ', 'type' => 'datetime'],
+                    ['key' => 'tags', 'label' => 'ট্যাগ (কমা দিয়ে)', 'type' => 'text'],
+                    ['key' => 'seo_title', 'label' => 'SEO Title', 'type' => 'text'],
+                    ['key' => 'seo_description', 'label' => 'SEO Description', 'type' => 'textarea'],
+                ],
+            ],
+
+            'products' => [
+                'model' => Product::class, 'title' => 'Products', 'singular' => 'Product', 'icon' => 'fa-solid fa-box-open',
+                'slug_from' => 'name', 'sortable' => false, 'order_by' => ['id', 'desc'], 'group' => 'store', 'with' => ['category'],
+                'view_url' => '/shop/{slug}', 'duplicate' => true,
+                'columns' => [['key' => 'image', 'type' => 'image'], ['key' => 'name', 'label' => 'নাম'], ['key' => 'category.name', 'label' => 'ক্যাটাগরি'], ['key' => 'price', 'label' => 'দাম'], ['key' => 'status', 'label' => 'অবস্থা'], ['key' => 'type', 'label' => 'ধরন']],
+                'fields' => [
+                    ['key' => 'name', 'label' => 'প্রোডাক্টের নাম', 'type' => 'text', 'required' => true],
+                    ['key' => 'status', 'label' => 'অবস্থা', 'type' => 'select', 'options' => Product::STATUSES, 'default' => 'draft', 'help' => 'যাচাই না করা প্রোডাক্ট Draft রাখুন — দোকানে দেখাবে না।'],
+                    ['key' => 'type', 'label' => 'ধরন', 'type' => 'select', 'options' => Product::TYPES, 'default' => 'digital'],
+                    ['key' => 'product_category_id', 'label' => 'ক্যাটাগরি', 'type' => 'model_select', 'model' => ProductCategory::class, 'display' => 'name', 'allow_new' => true],
+                    ['key' => 'tags', 'label' => 'ট্যাগ (কমা দিয়ে)', 'type' => 'text'],
+                    ['key' => 'short_description', 'label' => 'ছোট বিবরণ (দামের নিচে)', 'type' => 'html'],
+                    ['key' => 'description', 'label' => 'পুরো বিবরণ', 'type' => 'html'],
+                    ['key' => 'image', 'label' => 'প্রধান ছবি', 'type' => 'image'],
+                    ['key' => 'gallery', 'label' => 'আরও ছবি (গ্যালারি)', 'type' => 'images'],
+                    ['key' => 'video_url', 'label' => 'ভিডিও (YouTube / Vimeo / MP4)', 'type' => 'url'],
+
+                    ['key' => 'h_price', 'label' => 'দাম ও স্টক', 'type' => 'heading', 'help' => 'দাম দোকানের কারেন্সিতে (Settings → দোকান)। চেকআউটে সব হিসাব সার্ভারে আবার করা হয়।'],
+                    ['key' => 'price', 'label' => 'নিয়মিত দাম', 'type' => 'number', 'min' => 0, 'max' => 100000000, 'required' => true],
+                    ['key' => 'sale_price', 'label' => 'ছাড়ের দাম (ঐচ্ছিক)', 'type' => 'number', 'min' => 0, 'max' => 100000000],
+                    ['key' => 'sale_starts_at', 'label' => 'ছাড় শুরু', 'type' => 'datetime'],
+                    ['key' => 'sale_ends_at', 'label' => 'ছাড় শেষ', 'type' => 'datetime'],
+                    ['key' => 'sku', 'label' => 'SKU', 'type' => 'text'],
+                    ['key' => 'manage_stock', 'label' => 'স্টক গুনবে', 'type' => 'checkbox', 'default' => false],
+                    ['key' => 'stock', 'label' => 'স্টকে কতগুলো', 'type' => 'number', 'min' => 0, 'max' => 10000000],
+                    ['key' => 'weight', 'label' => 'ওজন (kg, physical)', 'type' => 'number', 'min' => 0, 'max' => 100000],
+                    ['key' => 'variants', 'label' => 'অপশন / ভ্যারিয়েশন (যেমন Regular license / Extended license)', 'type' => 'repeater', 'help' => 'অপশন থাকলে গ্রাহককে একটা বেছে নিতে হবে, আর অপশনের দামই ধরা হবে।', 'fields' => [
+                        ['key' => 'key', 'label' => '', 'type' => 'uid'],
+                        ['key' => 'name', 'label' => 'অপশনের নাম', 'type' => 'text'],
+                        ['key' => 'price', 'label' => 'দাম', 'type' => 'number', 'min' => 0, 'max' => 100000000],
+                        ['key' => 'sale_price', 'label' => 'ছাড়ের দাম', 'type' => 'number', 'min' => 0, 'max' => 100000000],
+                        ['key' => 'sku', 'label' => 'SKU', 'type' => 'text'],
+                        ['key' => 'stock', 'label' => 'স্টক (খালি = গুনবে না)', 'type' => 'number', 'min' => 0, 'max' => 10000000],
+                    ]],
+
+                    ['key' => 'h_files', 'label' => 'ডাউনলোড ফাইল (ডিজিটাল প্রোডাক্ট)', 'type' => 'heading', 'help' => 'পেমেন্ট নিশ্চিত হওয়ার পরেই গ্রাহক ফাইল পায়, নিজস্ব গোপন লিংক দিয়ে। ফাইল সুরক্ষিত ফোল্ডারে থাকে।'],
+                    ['key' => 'files', 'label' => 'ফাইল', 'type' => 'repeater', 'fields' => [
+                        ['key' => 'key', 'label' => '', 'type' => 'uid'],
+                        ['key' => 'name', 'label' => 'ফাইলের নাম (গ্রাহক দেখবে)', 'type' => 'text'],
+                        ['key' => 'path', 'label' => 'ফাইল', 'type' => 'private_file'],
+                        ['key' => 'version', 'label' => 'ভার্সন', 'type' => 'text'],
+                        ['key' => 'variant', 'label' => 'শুধু এই অপশনের জন্য (অপশনের key, খালি = সবার জন্য)', 'type' => 'text'],
+                    ]],
+                    ['key' => 'download_limit', 'label' => 'কতবার ডাউনলোড করা যাবে (খালি = দোকানের ডিফল্ট)', 'type' => 'number', 'min' => 0, 'max' => 10000],
+                    ['key' => 'download_expiry_days', 'label' => 'কত দিন পর লিংক বাতিল (খালি = দোকানের ডিফল্ট)', 'type' => 'number', 'min' => 0, 'max' => 36500],
+                    ['key' => 'version', 'label' => 'বর্তমান ভার্সন', 'type' => 'text'],
+                    ['key' => 'changelog', 'label' => 'Changelog', 'type' => 'textarea'],
+
+                    ['key' => 'h_details', 'label' => 'বিস্তারিত তথ্য', 'type' => 'heading'],
+                    ['key' => 'features', 'label' => 'ফিচার', 'type' => 'repeater', 'fields' => [['key' => 'text', 'label' => 'ফিচার', 'type' => 'text']]],
+                    ['key' => 'specifications', 'label' => 'Specifications', 'type' => 'repeater', 'fields' => [['key' => 'label', 'label' => 'বিষয়', 'type' => 'text'], ['key' => 'value', 'label' => 'মান', 'type' => 'text']]],
+                    ['key' => 'requirements', 'label' => 'Requirements', 'type' => 'textarea'],
+                    ['key' => 'compatibility', 'label' => 'Compatibility', 'type' => 'textarea'],
+                    ['key' => 'faqs', 'label' => 'FAQ', 'type' => 'repeater', 'fields' => [['key' => 'q', 'label' => 'প্রশ্ন', 'type' => 'text'], ['key' => 'a', 'label' => 'উত্তর', 'type' => 'textarea']]],
+                    ['key' => 'demo_url', 'label' => 'ডেমো লিংক', 'type' => 'url'],
+                    ['key' => 'documentation_url', 'label' => 'ডকুমেন্টেশন লিংক', 'type' => 'url'],
+                    ['key' => 'is_featured', 'label' => 'Featured (দোকানের ওপরে দেখাবে)', 'type' => 'checkbox', 'default' => false],
+                    ['key' => 'related_ids', 'label' => 'Related প্রোডাক্টের ID (কমা দিয়ে, খালি = একই ক্যাটাগরি)', 'type' => 'text'],
+                    ['key' => 'sort_order', 'label' => 'ক্রম', 'type' => 'number', 'default' => 0],
+
+                    ['key' => 'h_seo', 'label' => 'SEO', 'type' => 'heading'],
+                    ['key' => 'seo_title', 'label' => 'SEO Title', 'type' => 'text'],
+                    ['key' => 'seo_description', 'label' => 'SEO Description', 'type' => 'textarea'],
+                    ['key' => 'og_image', 'label' => 'Social share ছবি', 'type' => 'image'],
+                ],
+            ],
+
+            'product_categories' => [
+                'model' => ProductCategory::class, 'title' => 'Product categories', 'singular' => 'Category', 'icon' => 'fa-solid fa-tags',
+                'slug_from' => 'name', 'sortable' => true, 'group' => 'store',
+                'columns' => [['key' => 'image', 'type' => 'image'], ['key' => 'name', 'label' => 'নাম'], ['key' => 'slug', 'label' => 'URL']],
+                'fields' => [
+                    ['key' => 'name', 'label' => 'নাম', 'type' => 'text', 'required' => true],
+                    ['key' => 'description', 'label' => 'বিবরণ', 'type' => 'textarea'],
+                    ['key' => 'image', 'label' => 'ছবি', 'type' => 'image'],
+                    ['key' => 'sort_order', 'label' => 'ক্রম', 'type' => 'number', 'default' => 0],
+                ],
+            ],
+
+            'coupons' => [
+                'model' => Coupon::class, 'title' => 'Coupons', 'singular' => 'Coupon', 'icon' => 'fa-solid fa-ticket',
+                'sortable' => false, 'group' => 'store',
+                'columns' => [['key' => 'code', 'label' => 'কোড'], ['key' => 'type', 'label' => 'ধরন'], ['key' => 'value', 'label' => 'মান'], ['key' => 'used_count', 'label' => 'ব্যবহার'], ['key' => 'is_active', 'label' => 'সক্রিয়', 'type' => 'bool']],
+                'fields' => [
+                    ['key' => 'code', 'label' => 'কোড', 'type' => 'text', 'required' => true, 'help' => 'যেমন WELCOME10 (বড়-ছোট হাতের অক্ষর একই ধরা হয়)'],
+                    ['key' => 'type', 'label' => 'ধরন', 'type' => 'select', 'options' => ['percent' => 'শতকরা (%)', 'fixed' => 'নির্দিষ্ট পরিমাণ'], 'default' => 'percent'],
+                    ['key' => 'value', 'label' => 'মান', 'type' => 'number', 'min' => 0, 'max' => 100000000, 'required' => true],
+                    ['key' => 'min_subtotal', 'label' => 'সর্বনিম্ন অর্ডার (ঐচ্ছিক)', 'type' => 'number', 'min' => 0, 'max' => 100000000],
+                    ['key' => 'max_uses', 'label' => 'সর্বোচ্চ কতবার ব্যবহার (ঐচ্ছিক)', 'type' => 'number', 'min' => 1, 'max' => 10000000],
+                    ['key' => 'starts_at', 'label' => 'শুরু', 'type' => 'datetime'],
+                    ['key' => 'ends_at', 'label' => 'শেষ', 'type' => 'datetime'],
+                    ['key' => 'description', 'label' => 'নিজের নোট', 'type' => 'text'],
+                    ['key' => 'is_active', 'label' => 'সক্রিয়', 'type' => 'checkbox', 'default' => true],
                 ],
             ],
         ];

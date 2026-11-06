@@ -28,9 +28,13 @@
             </ul>
         </nav>
 
-        <a href="{{ link_to_url('/#contact') }}" class="btn btn-gradient btn-sm header-btn">
+        <a href="{{ link_to_url(request()->routeIs('home') ? '/#contact' : '/contact') }}" class="btn btn-gradient btn-sm header-btn">
             <i class="fa-regular fa-comments"></i> Contact Us
         </a>
+        @if (store('show_cart_icon', true))
+            @php($cartCount = request()->cookie(\App\Store\CartService::COOKIE) || auth()->check() ? rescue(fn () => app(\App\Store\CartService::class)->count(), 0, false) : 0)
+            <a href="{{ route('cart.show') }}" class="hdr-cart" aria-label="Cart ({{ $cartCount }})"><i class="fa-solid fa-bag-shopping"></i>@if ($cartCount)<b>{{ $cartCount }}</b>@endif</a>
+        @endif
         <button class="menu-toggle" id="menuToggle" aria-label="Open menu"><span></span><span></span><span></span></button>
     </div>
 </header>

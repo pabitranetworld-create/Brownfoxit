@@ -3,7 +3,15 @@
 @section('title', ($item ? $def['singular'].' এডিট' : 'নতুন '.$def['singular']))
 
 @section('content')
-    <a href="{{ route('admin.resource.index', $key) }}" class="adm-backlink"><i class="fa-solid fa-arrow-left"></i> {{ $def['title'] }}-এর তালিকা</a>
+    <div class="adm-formhead">
+        <a href="{{ route('admin.resource.index', $key) }}" class="adm-backlink"><i class="fa-solid fa-arrow-left"></i> {{ $def['title'] }}-এর তালিকা</a>
+        @if ($item && ! empty($def['view_url']) && $item->slug)
+            <a class="adm-btn ghost sm" href="{{ url(str_replace('{slug}', $item->slug, $def['view_url'])) }}" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> সাইটে দেখুন</a>
+        @endif
+        @if ($item && ! empty($def['duplicate']))
+            <form method="POST" action="{{ route('admin.resource.duplicate', [$key, $item->id]) }}">@csrf<button class="adm-btn ghost sm"><i class="fa-regular fa-copy"></i> কপি করুন</button></form>
+        @endif
+    </div>
 
     <form method="POST" enctype="multipart/form-data" class="adm-card" data-unsaved
           action="{{ $item ? route('admin.resource.update', [$key, $item->id]) : route('admin.resource.store', $key) }}">

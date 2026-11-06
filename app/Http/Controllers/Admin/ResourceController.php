@@ -66,6 +66,9 @@ class ResourceController extends Controller
         $values = [];
         foreach ($def['fields'] as $f) {
             $v = $item->{$f['key']};
+            if (is_array($v) && in_array($f['type'], ['text', 'textarea'], true)) {
+                $v = implode(', ', array_map(fn ($x) => is_scalar($x) ? (string) $x : '', $v));
+            }
             $values[$f['key']] = $v instanceof \DateTimeInterface ? $v->format('Y-m-d\TH:i') : $v;
         }
 
@@ -84,6 +87,28 @@ class ResourceController extends Controller
         $def = Schema::resource($resource);
 
         return $this->save($request, $resource, $def, $def['model']::findOrFail($id), $form);
+    }
+
+    /** Copy a record as a new draft (products, projects …). */
+    public function duplicate(string $resource, int $id): RedirectResponse
+    {
+        $def = Schema::resource($resource);
+        $item = $def['model']::findOrFail($id);
+        $copy = $item->replicate();
+        $titleKey = $def['slug_from'] ?? $def['fields'][0]['key'];
+        $copy->{$titleKey} = $item->{$titleKey}.' (copy)';
+        if (isset($def['slug_from'])) {
+            $copy->slug = $this->uniqueSlug($def['model'], (string) $copy->{$titleKey}, null);
+        }
+        if (array_key_exists('status', $copy->getAttributes())) {
+            $copy->status = 'draft';
+        }
+        if (array_key_exists('published_at', $copy->getAttributes())) {
+            $copy->published_at = null;
+        }
+        $copy->save();
+
+        return redirect()->route('admin.resource.edit', [$resource, $copy->id])->with('status', 'কপি তৈরি হয়েছে (Draft)।');
     }
 
     public function destroy(string $resource, int $id): RedirectResponse

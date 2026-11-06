@@ -8,6 +8,11 @@
     $wide = in_array($type, ['repeater', 'images', 'html', 'textarea'], true) || ! empty($field['wide']);
 @endphp
 
+@if ($type === 'uid')
+    <input type="hidden" name="{{ $name }}" value="{{ $value }}">
+@elseif ($type === 'heading')
+    <div class="adm-field full adm-field-heading"><h3>{{ $field['label'] }}</h3>@if (! empty($field['help']))<small class="adm-help">{{ $field['help'] }}</small>@endif</div>
+@else
 <div @class(['adm-field', 'full' => $wide, 'adm-field-'.$type])>
     @if ($type !== 'checkbox')
         <label for="{{ $id }}">{{ $field['label'] }} @if (! empty($field['required']))<b class="req">*</b>@endif</label>
@@ -36,6 +41,15 @@
 
         @case('email')
             <input id="{{ $id }}" type="email" name="{{ $name }}" value="{{ $value }}">
+            @break
+
+        @case('private_file')
+            <div class="adm-pfile">
+                <input type="hidden" name="{{ $name }}" value="{{ $value }}">
+                @if ($value)<span class="adm-badge ok"><i class="fa-solid fa-lock"></i> {{ basename($value) }}</span>@endif
+                <input id="{{ $id }}" type="file" name="{{ $file }}">
+                <small class="adm-help">{{ $value ? 'নতুন ফাইল দিলে আগেরটা বদলে যাবে।' : 'ফাইলটা সুরক্ষিত জায়গায় রাখা হয় — সরাসরি লিংক দিয়ে খোলা যায় না।' }} সর্বোচ্চ {{ ini_get('upload_max_filesize') }}।</small>
+            </div>
             @break
 
         @case('datetime')
@@ -138,3 +152,4 @@
         <small class="adm-help">{{ $field['help'] }}</small>
     @endif
 </div>
+@endif

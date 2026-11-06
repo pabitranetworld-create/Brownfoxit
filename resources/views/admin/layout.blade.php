@@ -27,14 +27,28 @@
             <a href="{{ route('admin.messages.index') }}" @class(['on' => request()->routeIs('admin.messages.*')])><i class="fa-solid fa-inbox"></i> Messages @if ($newMsgs)<span class="adm-count">{{ $newMsgs }}</span>@endif</a>
 
             <p class="adm-nav-h">Home Page ও সেটিংস</p>
-            @foreach (\App\Admin\Schema::sections() as $sKey => $s)
+            @foreach (array_diff_key(\App\Admin\Schema::sections(), ['store' => 1, 'store_emails' => 1]) as $sKey => $s)
                 <a href="{{ route('admin.settings.edit', $sKey) }}" @class(['on' => request()->route('section') === $sKey])><i class="{{ $s['icon'] }}"></i> {{ $s['title'] }}</a>
             @endforeach
 
             <p class="adm-nav-h">কন্টেন্ট</p>
             @foreach (\App\Admin\Schema::resources() as $rKey => $r)
+                @continue(($r['group'] ?? 'content') === 'store')
                 <a href="{{ route('admin.resource.index', $rKey) }}" @class(['on' => request()->route('resource') === $rKey])><i class="{{ $r['icon'] }}"></i> {{ $r['title'] }}</a>
             @endforeach
+            <a href="{{ route('admin.import.index') }}" @class(['on' => request()->routeIs('admin.import.*')])><i class="fa-brands fa-wordpress"></i> WordPress থেকে আনুন</a>
+
+            <p class="adm-nav-h">দোকান</p>
+            @php($pendingOrders = rescue(fn () => \App\Models\Order::whereIn('status', ['on_hold', 'processing'])->count(), 0, false))
+            <a href="{{ route('admin.orders.index') }}" @class(['on' => request()->routeIs('admin.orders.*')])><i class="fa-solid fa-receipt"></i> Orders @if ($pendingOrders)<span class="adm-count">{{ $pendingOrders }}</span>@endif</a>
+            @foreach (\App\Admin\Schema::resources() as $rKey => $r)
+                @continue(($r['group'] ?? 'content') !== 'store')
+                <a href="{{ route('admin.resource.index', $rKey) }}" @class(['on' => request()->route('resource') === $rKey])><i class="{{ $r['icon'] }}"></i> {{ $r['title'] }}</a>
+            @endforeach
+            <a href="{{ route('admin.customers.index') }}" @class(['on' => request()->routeIs('admin.customers.*')])><i class="fa-solid fa-users"></i> Customers</a>
+            <a href="{{ route('admin.payments.index') }}" @class(['on' => request()->routeIs('admin.payments.*')])><i class="fa-solid fa-credit-card"></i> Payment gateways</a>
+            <a href="{{ route('admin.settings.edit', 'store') }}" @class(['on' => request()->route('section') === 'store'])><i class="fa-solid fa-store"></i> দোকানের সেটিংস</a>
+            <a href="{{ route('admin.settings.edit', 'store_emails') }}" @class(['on' => request()->route('section') === 'store_emails'])><i class="fa-solid fa-envelope-open-text"></i> অর্ডারের ইমেইল</a>
 
             <p class="adm-nav-h">অ্যাকাউন্ট</p>
             <a href="{{ route('admin.profile') }}" @class(['on' => request()->routeIs('admin.profile')])><i class="fa-solid fa-user-gear"></i> প্রোফাইল ও পাসওয়ার্ড</a>

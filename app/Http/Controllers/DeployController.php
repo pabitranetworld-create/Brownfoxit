@@ -33,6 +33,16 @@ class DeployController extends Controller
             return response()->json(['slug' => $page->slug, 'title' => $page->title, 'template' => $page->template, 'show_page_header' => $page->show_page_header, 'custom_head' => $page->custom_head, 'custom_css' => $page->custom_css, 'custom_js' => $page->custom_js, 'layout' => $page->layout]);
         }
 
+        if ($request->input('action') === 'import') {
+            // Copy blog / portfolio (published) and products (draft) from an old WordPress site. Re-runnable.
+            $site = (string) $request->input('slug');
+            abort_unless(preg_match('#^https://[a-z0-9.\-]+/?$#i', $site), 422);
+            $result = (new \App\Support\WordPressImporter($site))->all((bool) $request->input('products', true), 230);
+            $result['log'] = \App\Models\ImportLog::where('source', rtrim($site, '/'))->orderBy('kind')->get(['kind', 'status', 'title', 'target_id', 'notes'])->toArray();
+
+            return response()->json($result);
+        }
+
         if ($request->input('action') === 'selftest') {
             return response()->json($this->selfTest());
         }

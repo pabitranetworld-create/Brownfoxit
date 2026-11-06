@@ -39,7 +39,7 @@ Every push runs `tests/e2e-install.sh` on a fresh server with MySQL 8. It covers
 
 ---
 
-## Phase 2 – Content pages, services, forms (this phase)
+## Phase 2 – Content pages, services, forms
 
 | Requirement | Status | Notes |
 |---|---|---|
@@ -56,3 +56,31 @@ Every push runs `tests/e2e-install.sh` on a fresh server with MySQL 8. It covers
 | Content seeding on deploy | ✅ | `ContentSeeder` runs on every deploy but only creates what is missing; never overwrites edits and never re-creates a page you deleted. |
 | Tools lists | 🟡 owner review | Tool lists on service pages are typical choices — please remove any you do not want to offer. |
 | Pabitra.net install (About the Expert etc.) | ⬜ | Will be added when the second install is set up. |
+
+## Phase 3 – Shop, payments, portfolio & blog migration (this phase)
+
+**Shop (WooCommerce-like)** — Admin → দোকান
+- Products: digital / physical / service, regular + sale price (with dates), SKU, stock, gallery, variants
+  (own price, sale price, stock, files), downloadable files (private storage), features, specifications, FAQ,
+  related products, SEO, "Duplicate". Product categories, coupons (percent / fixed, minimum, limit, dates).
+- Public: `/shop`, `/shop/category/{slug}`, `/shop/{slug}`, `/cart`, `/checkout`, `/order/{number}`,
+  `/account` (register, login, password reset, orders, downloads, profile). Guest checkout optional.
+- Totals are always calculated on the server. Orders get a number, timeline and emails (texts editable).
+- Downloads: random 48-character links, limit + expiry (per product or default), revoked on refund/cancel.
+
+**Payments** — Admin → Payment gateways (enable/disable switch, sandbox/live, test button)
+- PayStation, aamarPay, EPS (built from their API docs), Bank transfer + Mobile banking (manual: admin confirms).
+- Custom gateway 1/2: connect any other gateway without code (URLs, fields with placeholders, signatures,
+  response paths for status / amount / transaction id).
+- Every online payment is verified server-to-server before the order is marked paid; amount and duplicate checks.
+- Secrets are stored encrypted. EPS endpoints follow a community package — check with EPS's merchant-portal docs.
+
+**Portfolio & blog** — `/portfolio`, `/portfolio/{slug}` (case study fields, gallery, video), `/blog`,
+`/blog/category/{slug}`, `/blog/{slug}` (reading time, prev/next, related). Page texts: Admin settings.
+
+**WordPress import** — Admin → WordPress থেকে আনুন (or `php artisan content:import-wp https://site`,
+or the "Server self-test" workflow with action `import` and the site URL in `slug`).
+Posts + portfolio are published with their original dates; products always arrive as drafts. Images are
+downloaded; nothing existing is overwritten; every item is listed in the import report.
+
+Tests: `tests/store-e2e.php` (added to `tests/e2e-install.sh`).

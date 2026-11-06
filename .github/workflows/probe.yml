@@ -5,10 +5,10 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: "selftest or export-page"
+        description: "selftest, export-page or import"
         default: selftest
       slug:
-        description: "page slug (for export-page)"
+        description: "page slug (export-page) or site URL (import)"
         default: ""
 jobs:
   selftest:
@@ -21,6 +21,6 @@ jobs:
           ACTION: ${{ inputs.action }}
           SLUG: ${{ inputs.slug }}
         run: |
-          curl -sS -X POST "${SITE_URL%/}/_deploy" -H "X-Deploy-Token: $DEPLOY_TOKEN" -H "Accept: application/json" \
+          curl -sS --max-time 290 -X POST "${SITE_URL%/}/_deploy" -H "X-Deploy-Token: $DEPLOY_TOKEN" -H "Accept: application/json" \
             --data-urlencode "action=$ACTION" --data-urlencode "slug=$SLUG" -o result.json
           if [ "$ACTION" = "export-page" ]; then echo "EXPORT:$(gzip -9c result.json | base64 -w0)"; else python3 -m json.tool result.json; fi

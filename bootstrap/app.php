@@ -12,11 +12,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         // The deploy hook is called by GitHub Actions, not by a browser form.
-        $middleware->validateCsrfTokens(except: ['_deploy', 'admin/client-log']);
+        $middleware->validateCsrfTokens(except: ['_deploy', 'admin/client-log', 'payment/*']); // gateways POST back to /payment/…
 
         $middleware->alias(['admin' => \App\Http\Middleware\EnsureAdmin::class]);
-        $middleware->redirectGuestsTo(fn () => route('admin.login'));
-        $middleware->redirectUsersTo(fn () => route('admin.dashboard'));
+        $middleware->redirectGuestsTo(fn ($request) => $request->is('admin', 'admin/*') ? route('admin.login') : route('account.login'));
+        $middleware->redirectUsersTo(fn ($request) => $request->user()?->isAdmin() && $request->is('admin', 'admin/*') ? route('admin.dashboard') : route('account.dashboard'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Public 404: show the editable "page-not-found" builder page when it exists.

@@ -140,25 +140,58 @@ class ContentSeeder extends Seeder
     {
         $defaults = (new SettingsSeeder)->settings();
 
+        // The menu is replaced only while it is one of the menus this installer wrote itself
+        // (original default, or the Phase 2 version) — a menu you edited is never touched.
         $menu = Setting::get('menu');
-        if ($menu == $defaults['menu']) {
-            $shop = collect($menu)->firstWhere('label', 'Shop');
-            Setting::put('menu', array_values(array_filter([
+        $services = ['label' => 'Services', 'url' => '/services', 'children' => [
+            ['label' => 'AI Automation', 'url' => '/services/ai-automation'],
+            ['label' => 'Website Development', 'url' => '/services/website-development'],
+            ['label' => 'Software Development', 'url' => '/services/custom-software-development'],
+            ['label' => 'Motion Graphics & Video', 'url' => '/services/motion-graphics'],
+            ['label' => 'All Services', 'url' => '/services'],
+        ]];
+        $phase2 = [
+            ['label' => 'Home', 'url' => '/'],
+            ['label' => 'About', 'url' => '/about'],
+            $services,
+            ['label' => 'Portfolio', 'url' => '/#portfolio'],
+            $defaults['menu'][4],
+            ['label' => 'Contact Us', 'url' => '/contact'],
+        ];
+        $norm = fn ($m) => array_map(fn ($i) => array_filter((array) $i, fn ($v) => $v !== [] && $v !== null && $v !== ''), (array) $m);
+        if ($norm($menu) == $norm($defaults['menu']) || $norm($menu) == $norm($phase2)) {
+            Setting::put('menu', [
                 ['label' => 'Home', 'url' => '/'],
                 ['label' => 'About', 'url' => '/about'],
-                ['label' => 'Services', 'url' => '/services', 'children' => [
-                    ['label' => 'AI Automation', 'url' => '/services/ai-automation'],
-                    ['label' => 'Website Development', 'url' => '/services/website-development'],
-                    ['label' => 'Software Development', 'url' => '/services/custom-software-development'],
-                    ['label' => 'Motion Graphics & Video', 'url' => '/services/motion-graphics'],
-                    ['label' => 'All Services', 'url' => '/services'],
+                $services,
+                ['label' => 'Portfolio', 'url' => '/portfolio'],
+                ['label' => 'Shop', 'url' => '/shop', 'children' => [
+                    ['label' => 'All Products', 'url' => '/shop'],
+                    ['label' => 'Cart', 'url' => '/cart'],
+                    ['label' => 'My Account', 'url' => '/account'],
                 ]],
-                ['label' => 'Portfolio', 'url' => '/#portfolio'],
-                $shop,
+                ['label' => 'Blog', 'url' => '/blog'],
                 ['label' => 'Contact Us', 'url' => '/contact'],
-            ])));
+            ]);
             $this->log[] = 'main menu';
         }
+
+        // Home page service cards: link to the portfolio page instead of the #portfolio anchor (only untouched cards).
+        $this->once('portfolio-links', function () {
+            $port = (array) Setting::get('service_cards', []);
+            $changed = false;
+            foreach ((array) ($port['items'] ?? []) as $k => $item) {
+                if (($item['url'] ?? null) === '/#portfolio') {
+                    $port['items'][$k]['url'] = '/portfolio';
+                    $changed = true;
+                }
+            }
+            if ($changed) {
+                Setting::put('service_cards', $port);
+            }
+
+            return true;
+        });
 
         $footer = (array) Setting::get('footer', []);
         $changed = false;
@@ -171,6 +204,15 @@ class ContentSeeder extends Seeder
                 ['label' => 'Testimonials', 'url' => '/#testimonials'],
                 ['label' => 'FAQ', 'url' => '/faq'],
             ];
+            $changed = true;
+        }
+        // Phase 3: add Portfolio and Blog to the Phase 2 footer list (only if still unedited).
+        if (($footer['links'] ?? null) == [
+            ['label' => 'About us', 'url' => '/about'], ['label' => 'Services', 'url' => '/services'],
+            ['label' => 'Our Process', 'url' => '/our-process'], ['label' => 'Tools & Technologies', 'url' => '/tools-and-technologies'],
+            ['label' => 'Testimonials', 'url' => '/#testimonials'], ['label' => 'FAQ', 'url' => '/faq'],
+        ]) {
+            array_splice($footer['links'], 2, 0, [['label' => 'Portfolio', 'url' => '/portfolio'], ['label' => 'Blog', 'url' => '/blog'], ['label' => 'Shop', 'url' => '/shop']]);
             $changed = true;
         }
         if (($footer['support'] ?? null) == $defaults['footer']['support']) {

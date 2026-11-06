@@ -75,3 +75,25 @@ if (! function_exists('link_visible')) {
         return ! isset($hidden[$slug]);
     }
 }
+
+if (! function_exists('money')) {
+    /** Format an amount in the store currency, e.g. "৳1,250.00" or "$49.00". */
+    function money(mixed $amount, ?string $currency = null): string
+    {
+        $s = (array) setting('store', []);
+        $currency = $currency ?: ($s['currency'] ?? 'BDT');
+        $symbol = $currency === ($s['currency'] ?? 'BDT') ? ($s['currency_symbol'] ?? null) : null;
+        $symbol ??= ['BDT' => '৳', 'USD' => '$', 'EUR' => '€', 'GBP' => '£', 'INR' => '₹'][$currency] ?? $currency.' ';
+        $n = number_format((float) $amount, (int) ($s['decimals'] ?? 2));
+
+        return ($s['symbol_position'] ?? 'left') === 'right' ? $n.' '.$symbol : $symbol.$n;
+    }
+}
+
+if (! function_exists('store')) {
+    /** Store setting with a default, e.g. store('currency', 'BDT'). */
+    function store(string $key, mixed $default = null): mixed
+    {
+        return data_get((array) setting('store', []), $key, $default);
+    }
+}

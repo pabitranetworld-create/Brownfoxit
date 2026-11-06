@@ -15,7 +15,7 @@ class User extends Authenticatable
     public const ROLE_CUSTOMER = 'customer';
 
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'avatar',
+        'name', 'email', 'password', 'role', 'avatar', 'phone', 'address',
     ];
 
     protected $hidden = [
@@ -27,12 +27,18 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'address' => 'array',
         ];
     }
 
     public function isAdmin(): bool
     {
         return $this->role === self::ROLE_ADMIN;
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class)->latest('id');
     }
 
     public function posts(): HasMany

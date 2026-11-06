@@ -61,6 +61,19 @@ class FormData
                     break;
 
                 case 'checkbox':
+                case 'heading':
+                case 'uid':
+                    break;
+
+                case 'private_file':
+                    if ($file instanceof UploadedFile) {
+                        $ext = strtolower($file->getClientOriginalExtension());
+                        if (! $file->isValid()) {
+                            $this->errors[] = "{$label}: ফাইল আপলোড হয়নি (সার্ভারের সর্বোচ্চ সাইজ ".ini_get('upload_max_filesize').')।';
+                        } elseif (in_array($ext, ['php', 'phtml', 'phar', 'php3', 'php4', 'php5', 'php7', 'pht', 'cgi', 'pl', 'asp', 'aspx', 'jsp', 'htaccess', 'exe', 'sh'], true)) {
+                            $this->errors[] = "{$label}: .{$ext} ফাইল নিরাপত্তার কারণে নেওয়া হয় না — ZIP করে দিন।";
+                        }
+                    }
                     break;
 
                 default:
@@ -113,7 +126,12 @@ class FormData
             $value = $input[$key] ?? null;
             $file = $files[$key] ?? null;
 
+            if ($field['type'] === 'heading') {
+                continue;
+            }
             $out[$key] = match ($field['type']) {
+                'uid' => filled($value) ? preg_replace('/[^A-Za-z0-9]/', '', (string) $value) : strtolower(\Illuminate\Support\Str::random(10)),
+                'private_file' => $file instanceof UploadedFile ? $this->storePrivate($file) : (blank($value) ? null : trim((string) $value)),
                 'repeater' => $this->repeater($field, (array) $value, (array) $file),
                 'image' => $file instanceof UploadedFile ? $this->uploader->store($file) : (blank($value) ? null : trim((string) $value)),
                 'images' => $this->images((array) $value, (array) $file),
@@ -141,6 +159,17 @@ class FormData
         return $out;
     }
 
+    /** Paid download files live outside public/ (storage/app/private/products/…). */
+    protected function storePrivate(UploadedFile $file): string
+    {
+        $name = preg_replace('/[^A-Za-z0-9._-]+/', '-', pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) ?: 'file';
+        $ext = strtolower($file->getClientOriginalExtension());
+        $dir = 'products/'.date('Y/m').'/'.\Illuminate\Support\Str::random(16);
+        $file->move(storage_path('app/private/'.$dir), $name.($ext ? '.'.$ext : ''));
+
+        return $dir.'/'.$name.($ext ? '.'.$ext : '');
+    }
+
     protected function images(array $paths, array $files): array
     {
         $list = array_values(array_filter(array_map(fn ($p) => is_string($p) ? trim($p) : '', $paths)));
@@ -156,7 +185,7 @@ class FormData
     protected function rowIsEmpty(array $fields, array $row, mixed $files): bool
     {
         foreach ($fields as $f) {
-            if ($f['type'] === 'checkbox') {
+            if (in_array($f['type'], ['checkbox', 'uid', 'heading'], true)) {
                 continue;
             }
             $v = $row[$f['key']] ?? null;

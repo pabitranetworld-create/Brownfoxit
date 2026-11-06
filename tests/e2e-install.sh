@@ -80,4 +80,7 @@ php tests/admin-e2e.php "$BASE" admin@example.com 'Secret@12345'
 echo "== 10. content pages, forms, search, 404"
 php tests/content-e2e.php "$BASE" admin@example.com 'Secret@12345'
 
+echo "== 11. shop, payments, downloads, portfolio, blog, WordPress import"
+php tests/store-e2e.php "$BASE" admin@example.com 'Secret@12345'
+
 echo "ALL CHECKS PASSED"

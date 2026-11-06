@@ -13,7 +13,7 @@ class Post extends Model
 
     protected $fillable = [
         'post_category_id', 'user_id', 'title', 'slug', 'excerpt', 'body',
-        'image', 'status', 'published_at',
+        'image', 'status', 'published_at', 'seo_title', 'seo_description', 'tags', 'source_url',
     ];
 
     protected $casts = [
@@ -35,6 +35,16 @@ class Post extends Model
         return $query->where('status', self::STATUS_PUBLISHED)
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now());
+    }
+
+    public function link(): string
+    {
+        return url('/blog/'.$this->slug);
+    }
+
+    public function readingMinutes(): int
+    {
+        return max(1, (int) round(str_word_count(strip_tags((string) $this->body)) / 220));
     }
 
     public function getRouteKeyName(): string

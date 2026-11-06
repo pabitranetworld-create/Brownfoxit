@@ -314,4 +314,68 @@
         .then(function () { btn.disabled = false; form.classList.remove("is-busy"); });
     });
   });
+
+  /* ---------- store: add to cart, quantities, variants, gallery, checkout ---------- */
+  function toast(html) {
+    var t = document.querySelector(".st-toast") || document.body.appendChild(Object.assign(document.createElement("div"), { className: "st-toast", role: "status" }));
+    t.innerHTML = html; requestAnimationFrame(function () { t.classList.add("show"); });
+    clearTimeout(t._h); t._h = setTimeout(function () { t.classList.remove("show"); }, 4200);
+  }
+  function cartCount(n) {
+    var c = document.querySelector(".hdr-cart"); if (!c) return;
+    var b = c.querySelector("b"); if (!b) { b = document.createElement("b"); c.appendChild(b); }
+    b.textContent = n; c.classList.remove("bump"); void c.offsetWidth; c.classList.add("bump");
+  }
+  document.querySelectorAll("form[data-add-cart]").forEach(function (f) {
+    f.addEventListener("submit", function (e) {
+      var sub = e.submitter;
+      if (sub && sub.name === "buy_now") return; // normal submit → checkout
+      e.preventDefault();
+      var btn = f.querySelector("button[type=submit]"), msg = f.querySelector(".st-buy-msg");
+      btn.disabled = true;
+      fetch(f.action, { method: "POST", body: new FormData(f), headers: { "Accept": "application/json", "X-Requested-With": "XMLHttpRequest" }, credentials: "same-origin" })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (res.ok) {
+            cartCount(res.count);
+            btn.classList.add("added"); var span = btn.querySelector("span"), old = span && span.textContent; if (span) span.textContent = "Added";
+            setTimeout(function () { btn.classList.remove("added"); if (span) span.textContent = old; }, 1800);
+            var html = '<i class="fa-solid fa-circle-check"></i> ' + res.message.replace(/</g, "&lt;") + ' <a href="' + res.cart_url + '">View cart</a>';
+            if (msg) { msg.className = "st-buy-msg ok"; msg.innerHTML = html; } else toast(html);
+          } else {
+            if (msg) { msg.className = "st-buy-msg err"; msg.textContent = res.message; } else toast(res.message);
+          }
+        })
+        .catch(function () { f.submit(); })
+        .then(function () { btn.disabled = false; });
+    });
+  });
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-qty]"); if (!b) return;
+    var input = b.parentNode.querySelector("input"); var v = (parseInt(input.value, 10) || 1) + parseInt(b.getAttribute("data-qty"), 10);
+    input.value = Math.max(parseInt(input.min || "1", 10), Math.min(99, v));
+  });
+  document.querySelectorAll("input[name=variant]").forEach(function (r) {
+    r.addEventListener("change", function () { var p = document.querySelector("[data-price] .st-price"); if (p && r.dataset.priceHtml) { p.innerHTML = r.dataset.priceHtml; p.animate && p.animate([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 350 }); } });
+  });
+  document.querySelectorAll("[data-gallery]").forEach(function (g) {
+    var main = g.querySelector("[data-main]");
+    g.querySelectorAll(".st-thumbs button").forEach(function (b) {
+      b.addEventListener("click", function () {
+        g.querySelectorAll(".st-thumbs button").forEach(function (x) { x.classList.toggle("on", x === b); });
+        main.classList.add("swap"); setTimeout(function () { main.src = b.dataset.src; main.classList.remove("swap"); }, 200);
+      });
+    });
+  });
+  document.querySelectorAll("[data-toggle]").forEach(function (c) {
+    c.addEventListener("change", function () { var t = document.querySelector(c.getAttribute("data-toggle")); if (t) t.hidden = !c.checked; });
+  });
+  document.querySelectorAll("form[data-checkout], .st-gateways").forEach(function (f) {
+    var form = f.tagName === "FORM" ? f : f.closest("form"); if (!form || form._st) return; form._st = true;
+    form.addEventListener("submit", function () { form.classList.add("is-busy"); });
+    window.addEventListener("pageshow", function () { form.classList.remove("is-busy"); });
+    // only the reference box of the chosen manual method is sent
+    function refs() { form.querySelectorAll("[data-ref]").forEach(function (i) { var on = i.closest(".st-gateway").querySelector("input[type=radio]").checked; i.disabled = !on; }); }
+    form.addEventListener("change", refs); refs();
+  });
 })();
