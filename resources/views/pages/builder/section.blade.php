@@ -14,8 +14,23 @@
     @if ($s['divider_top'])
         <svg class="pb-wave top" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true"><path d="M0,40 C240,90 480,0 720,30 C960,60 1200,10 1440,40 L1440,0 L0,0 Z"/></svg>
     @endif
+    @if ($s['bg'] === 'aurora')
+        <div class="vb-aurora-bg" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    @endif
     @if ($s['fx'] === 'orbs')
         <div class="pb-fx pb-fx-orbs" aria-hidden="true"><span></span><span></span><span></span></div>
+    @elseif ($s['fx'] === 'aurora')
+        <div class="pb-fx vb-aurora" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+    @elseif ($s['fx'] === 'shapes')
+        @include('pages.builder.fx-shapes')
+    @elseif ($s['fx'] === 'waves')
+        <div class="pb-fx vb-waves" aria-hidden="true">@for ($i = 1; $i <= 3; $i++)<svg class="w{{ $i }}" viewBox="0 0 2880 120" preserveAspectRatio="none"><path d="M0,60 C240,110 480,10 720,60 C960,110 1200,10 1440,60 C1680,110 1920,10 2160,60 C2400,110 2640,10 2880,60 L2880,120 L0,120 Z"/></svg>@endfor</div>
+    @elseif ($s['fx'] === 'beams')
+        <div class="pb-fx vb-beams" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    @elseif ($s['fx'] === 'stars')
+        <div class="pb-fx vb-stars" aria-hidden="true">@for ($i = 0; $i < 18; $i++)<i style="--x:{{ ($i * 37 + 11) % 100 }}%;--y:{{ ($i * 53 + 7) % 100 }}%;--d:{{ ($i % 6) * .55 }}s;--c:{{ $i % 5 }}"></i>@endfor</div>
+    @elseif ($s['fx'] === 'confetti')
+        <div class="pb-fx vb-confetti" aria-hidden="true">@for ($i = 0; $i < 22; $i++)<i style="--x:{{ ($i * 41 + 3) % 100 }}%;--d:{{ ($i * 0.7) % 9 }}s;--t:{{ 9 + ($i % 5) * 2 }}s;--c:{{ $i % 5 }};--r:{{ ($i * 47) % 360 }}deg"></i>@endfor</div>
     @elseif ($s['fx'] !== 'none')
         <div class="pb-fx pb-fx-{{ $s['fx'] }}" aria-hidden="true">@if ($s['fx'] === 'lines')<i></i><i></i><i></i><i></i><i></i>@endif</div>
     @endif

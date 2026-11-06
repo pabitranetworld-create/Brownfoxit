@@ -10,6 +10,7 @@
 
 @section('content')
     @include('pages.builder.page-header', ['title' => $pageTitle ?? '', 'subtitle' => $pageSubtitle ?? null, 'crumbs' => $crumbs ?? []])
+    @yield('after_header')
     <section class="pb-section sc-light st-page" style="--pt:30px;--pb:110px">
         <div class="pb-container">
             @if (session('status'))<div class="st-alert ok" role="status"><i class="fa-solid fa-circle-check"></i> {{ session('status') }}</div>@endif

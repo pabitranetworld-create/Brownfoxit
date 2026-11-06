@@ -152,6 +152,29 @@ class Blocks
         return array_merge(['bg' => 'gradient', 'fx' => 'orbs', 'pt' => 170, 'pb' => 110], $extra);
     }
 
+    /** Top of a white page: colourful moving "aurora" with floating shapes (header text stays dark). */
+    public static function top(array $extra = []): array
+    {
+        return array_merge(['bg' => 'aurora', 'fx' => 'shapes', 'pt' => 190, 'pb' => 120], $extra);
+    }
+
+    /** A colourful, slowly moving gradient band (white text) — used for contrast between white sections. */
+    public static function vivid(array $extra = []): array
+    {
+        return array_merge(['bg' => 'vivid', 'fx' => 'stars', 'pt' => 100, 'pb' => 100], $extra);
+    }
+
+    /** A running strip of words with icons. $items: [[icon, text], …] or plain strings. */
+    public static function marquee(array $items, string $style = 'pills', int $speed = 35, string $rows = '1'): array
+    {
+        $icons = ['fa-solid fa-bolt', 'fa-solid fa-star', 'fa-solid fa-wand-magic-sparkles', 'fa-solid fa-rocket', 'fa-solid fa-gem', 'fa-solid fa-heart'];
+
+        return self::w('marquee', [
+            'items' => array_map(fn ($i, $k) => is_array($i) ? ['icon' => $i[0], 'text' => $i[1]] : ['icon' => $icons[$k % count($icons)], 'text' => $i], $items, array_keys($items)),
+            'style' => $style, 'speed' => $speed, 'direction' => 'left', 'rows' => $rows,
+        ], ['anim' => 'none']);
+    }
+
     public static function light(array $extra = []): array
     {
         return array_merge(['bg' => 'none', 'pt' => 90, 'pb' => 90], $extra);

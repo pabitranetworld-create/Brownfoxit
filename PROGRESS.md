@@ -84,3 +84,17 @@ Posts + portfolio are published with their original dates; products always arriv
 downloaded; nothing existing is overwritten; every item is listed in the import report.
 
 Tests: `tests/store-e2e.php` (added to `tests/e2e-install.sh`).
+
+## Design update – "landing page vibe" (after phase 3)
+- New `public/assets/css/vibe.css` + `public/assets/js/vibe.js`: colourful running animations on all inner pages
+  (aurora colour backgrounds, floating shapes, waves, light beams, stars, confetti, rainbow borders, cursor spotlight,
+  3D tilt, magnetic buttons). All continuous motion stops for visitors with "reduced motion" turned on, and
+  sections outside the screen pause their animations.
+- Builder: new section backgrounds (Aurora, Vivid) and effects (aurora, shapes, waves, beams, stars, confetti),
+  new "Marquee" (running strip) widget, new "pop" icon-box style (colourful numbered cards).
+- Service pages and core pages: new landing layout. The content seeder replaces only pages that are still exactly
+  as the installer created them (fingerprints in `database/content/fingerprints.php` + setting `content_fingerprints`);
+  pages edited in the builder are never touched.
+- Product page rebuilt as a sales landing page (hero with buy box, running feature band, feature cards,
+  sticky buy card, how-it-works, FAQ, colourful CTA, sticky buy bar). Shop page gets a running band.
+- Fix: shop card class clashed with the builder "card" style (service boxes had collapsed to one column).

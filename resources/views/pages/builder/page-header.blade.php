@@ -1,6 +1,8 @@
 <section class="pb-page-header">
     <div class="pb-fx pb-fx-orbs" aria-hidden="true"><span></span><span></span><span></span></div>
     <div class="pb-fx pb-fx-grid" aria-hidden="true"></div>
+    <div class="vb-aurora-bg" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    @include('pages.builder.fx-shapes')
     <div class="container">
         <nav class="pb-crumbs" aria-label="Breadcrumb" data-anim="fade" data-anim-dur="700">
             <a href="{{ route('home') }}">Home</a>

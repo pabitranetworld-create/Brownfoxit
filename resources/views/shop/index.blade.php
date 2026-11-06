@@ -9,6 +9,13 @@
 @section('meta_description', $category?->description ?: (store('shop_meta_description') ?: setting('site.meta_description')))
 @if ($q !== '')@section('robots', 'noindex, follow')@endif
 
+@section('after_header')
+    @php($band = array_merge($categories->pluck('name')->all(), ['Secure checkout', 'Instant downloads for digital products', 'Order updates by email']))
+    <div class="vp-shopwrap"><div class="vb-marquee st-band vp-shopband" style="--mq-speed: {{ max(25, count($band) * 4) }}s" aria-hidden="true">
+        <div class="vb-mq-row">@for ($copy = 0; $copy < 2; $copy++)<ul class="vb-mq-track">@foreach ($band as $i => $b)<li class="vb-mq-item"><span>{{ $b }}</span></li>@endforeach</ul>@endfor</div>
+    </div></div>
+@endsection
+
 @section('store')
     <div class="st-toolbar">
         <form method="get" action="{{ $category ? $category->link() : route('shop.index') }}" class="st-search" role="search">

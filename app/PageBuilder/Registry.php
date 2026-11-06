@@ -99,7 +99,7 @@ class Registry
                         ['key' => 'link_text', 'label' => 'লিংকের লেখা', 'type' => 'text', 'default' => 'Learn more'],
                     ], 'default' => [['icon' => 'fa-solid fa-bolt', 'title' => 'Feature title', 'text' => 'Short description.', 'url' => '', 'link_text' => 'Learn more']]],
                     ['key' => 'columns', 'label' => 'প্রতি সারিতে', 'type' => 'select', 'options' => $cols, 'default' => '3', 'group' => 'style'],
-                    ['key' => 'style', 'label' => 'ধরন', 'type' => 'select', 'options' => ['card' => 'কার্ড', 'glass' => 'কাচের মতো', 'plain' => 'সাধারণ'], 'default' => 'card', 'group' => 'style'],
+                    ['key' => 'style', 'label' => 'ধরন', 'type' => 'select', 'options' => ['card' => 'কার্ড', 'pop' => 'রঙিন কার্ড (নম্বরসহ)', 'glass' => 'কাচের মতো', 'plain' => 'সাধারণ'], 'default' => 'card', 'group' => 'style'],
                     ['key' => 'icon_color', 'label' => 'আইকনের রং', 'type' => 'select', 'options' => $colors, 'default' => 'cycle', 'group' => 'style'],
                     ['key' => 'align', 'label' => 'লেখা', 'type' => 'select', 'options' => ['left' => 'বাঁয়ে', 'center' => 'মাঝে'], 'default' => 'left', 'group' => 'style'],
                 ],
@@ -277,6 +277,20 @@ class Registry
                 ],
             ],
 
+            'marquee' => [
+                'label' => 'চলমান লেখা (Marquee)', 'icon' => 'fa-solid fa-arrows-left-right', 'category' => 'basic',
+                'fields' => [
+                    ['key' => 'items', 'label' => 'লেখা', 'type' => 'repeater', 'max' => 30, 'fields' => [
+                        ['key' => 'icon', 'label' => 'আইকন', 'type' => 'icon', 'default' => ''],
+                        ['key' => 'text', 'label' => 'লেখা', 'type' => 'text', 'default' => 'Item'],
+                    ], 'default' => [['icon' => 'fa-solid fa-star', 'text' => 'Websites'], ['icon' => 'fa-solid fa-robot', 'text' => 'AI Automation'], ['icon' => 'fa-solid fa-code', 'text' => 'Software']]],
+                    ['key' => 'style', 'label' => 'ধরন', 'type' => 'select', 'options' => ['pills' => 'রঙিন Pill', 'band' => 'বাঁকা রঙিন ব্যান্ড', 'big' => 'বড় Outline লেখা', 'plain' => 'সাধারণ'], 'default' => 'pills', 'group' => 'style'],
+                    ['key' => 'speed', 'label' => 'গতি (সেকেন্ড, কম = দ্রুত)', 'type' => 'number', 'min' => 8, 'max' => 120, 'default' => 35, 'group' => 'style'],
+                    ['key' => 'direction', 'label' => 'দিক', 'type' => 'select', 'options' => ['left' => 'বামে', 'right' => 'ডানে'], 'default' => 'left', 'group' => 'style'],
+                    ['key' => 'rows', 'label' => 'সারি', 'type' => 'select', 'options' => ['1' => '১টি', '2' => '২টি (উল্টো দিকে)'], 'default' => '1', 'group' => 'style'],
+                ],
+            ],
+
             'divider' => [
                 'label' => 'দাগ / ফাঁকা জায়গা', 'icon' => 'fa-solid fa-grip-lines', 'category' => 'basic',
                 'fields' => [
@@ -378,11 +392,11 @@ class Registry
             ['key' => 'content_pos', 'label' => 'উচ্চতার মধ্যে কন্টেন্টের অবস্থান', 'type' => 'select', 'options' => ['start' => 'ওপরে', 'center' => 'মাঝে', 'end' => 'নিচে'], 'default' => 'center', 'group' => 'style'],
             ['key' => 'pt', 'label' => 'ভেতরে ওপরের ফাঁক (px)', 'type' => 'number', 'min' => 0, 'max' => 400, 'default' => 90, 'group' => 'style'],
             ['key' => 'pb', 'label' => 'ভেতরে নিচের ফাঁক (px)', 'type' => 'number', 'min' => 0, 'max' => 400, 'default' => 90, 'group' => 'style'],
-            ['key' => 'bg', 'label' => 'ব্যাকগ্রাউন্ড', 'type' => 'select', 'options' => ['none' => 'নেই (পেজের রং)', 'dark' => 'গাঢ়', 'card' => 'হালকা বেগুনি', 'gradient' => 'Gradient', 'image' => 'ছবি', 'color' => 'নিজের রং'], 'default' => 'none', 'group' => 'style'],
+            ['key' => 'bg', 'label' => 'ব্যাকগ্রাউন্ড', 'type' => 'select', 'options' => ['none' => 'নেই (পেজের রং)', 'dark' => 'গাঢ়', 'card' => 'হালকা বেগুনি', 'gradient' => 'Gradient', 'image' => 'ছবি', 'color' => 'নিজের রং', 'aurora' => 'রঙিন Aurora (সাদা পেজের জন্য)', 'vivid' => 'চলমান রঙিন Gradient'], 'default' => 'none', 'group' => 'style'],
             ['key' => 'bg_color', 'label' => 'নিজের রং', 'type' => 'color', 'default' => '#1d1047', 'group' => 'style'],
             ['key' => 'bg_image', 'label' => 'ব্যাকগ্রাউন্ড ছবি', 'type' => 'image', 'default' => '', 'group' => 'style'],
             ['key' => 'overlay', 'label' => 'ছবির ওপর অন্ধকার (%)', 'type' => 'number', 'min' => 0, 'max' => 95, 'default' => 60, 'group' => 'style'],
-            ['key' => 'fx', 'label' => 'চলমান ব্যাকগ্রাউন্ড', 'type' => 'select', 'options' => ['none' => 'নেই', 'gradient' => 'চলমান Gradient', 'orbs' => 'আলোর গোলক', 'lines' => 'চলমান রেখা', 'grid' => 'আলোকিত গ্রিড', 'particles' => 'ভাসমান বিন্দু'], 'default' => 'none', 'group' => 'style'],
+            ['key' => 'fx', 'label' => 'চলমান ব্যাকগ্রাউন্ড', 'type' => 'select', 'options' => ['none' => 'নেই', 'gradient' => 'চলমান Gradient', 'orbs' => 'আলোর গোলক', 'lines' => 'চলমান রেখা', 'grid' => 'আলোকিত গ্রিড', 'particles' => 'ভাসমান বিন্দু', 'aurora' => 'রঙিন Aurora (হালকা)', 'shapes' => 'ভাসমান রঙিন আকৃতি', 'waves' => 'চলমান ঢেউ', 'beams' => 'আলোর রশ্মি', 'stars' => 'ঝিকিমিকি তারা', 'confetti' => 'রঙিন কনফেটি'], 'default' => 'none', 'group' => 'style'],
             ['key' => 'gap', 'label' => 'কলামের ফাঁক', 'type' => 'select', 'options' => ['none' => 'কোনো ফাঁক নেই', 's' => 'কম', 'm' => 'মাঝারি', 'l' => 'বেশি'], 'default' => 'l', 'group' => 'style'],
             ['key' => 'valign', 'label' => 'কলামের উল্লম্ব সারিবদ্ধতা', 'type' => 'select', 'options' => ['start' => 'ওপরে', 'center' => 'মাঝে', 'end' => 'নিচে'], 'default' => 'center', 'group' => 'style'],
             ['key' => 'reverse_mobile', 'label' => 'মোবাইলে কলামের ক্রম উল্টো', 'type' => 'checkbox', 'default' => false, 'group' => 'style'],

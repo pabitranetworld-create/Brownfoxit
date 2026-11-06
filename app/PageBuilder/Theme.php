@@ -39,7 +39,7 @@ class Theme
         }
 
         return match ($s['bg'] ?? 'none') {
-            'dark', 'gradient', 'image' => true,
+            'dark', 'gradient', 'image', 'vivid' => true,
             'color' => self::isDarkColor((string) ($s['bg_color'] ?? '')),
             default => false, // none, card (light lavender on white pages)
         };

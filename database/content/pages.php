@@ -20,7 +20,8 @@ return [
         'seo_description' => 'Brown Fox IT, powered by Pabitra.net, helps businesses with websites, custom software, AI automation, design and video — with clear communication and honest advice.',
         'template' => 'full_width',
         'layout' => fn () => B::layout(
-            B::section([B::hero('About us', 'Digital work done thoughtfully, from idea to launch', 'from idea to launch', 'Brown Fox IT helps businesses build websites, software, automations, designs and videos that are useful, well made and easy to maintain.', [$quote, B::btn('Our services', '/services', 'ghost')])], B::dark()),
+            B::section([B::hero('About us', 'Digital work done thoughtfully, from idea to launch', 'from idea to launch', 'Brown Fox IT helps businesses build websites, software, automations, designs and videos that are useful, well made and easy to maintain.', [$quote, B::btn('Our services', '/services', 'ghost')])], B::top()),
+            B::section([B::marquee(['AI Automation', 'n8n Workflows', 'AI Agents', 'Website Development', 'WordPress', 'E-commerce', 'Custom Software', 'Web Applications', 'APIs & Integrations', 'Motion Graphics', 'Video Editing', 'Graphic Design', 'UI/UX Design'], 'band', 40)], B::light(['pt' => 30, 'pb' => 40, 'width' => 'full'])),
 
             B::section([
                 [55, [
@@ -70,7 +71,7 @@ return [
                 B::w('testimonials', ['count' => 6, 'style' => 'slider'], ['anim' => 'fade-up']),
             ], B::light()),
 
-            B::section([B::cta('Let’s talk about your project', 'Tell us what you want to build or improve. We reply with questions, ideas and next steps.', [$quote, $contact])], B::light(['pt' => 20, 'pb' => 110]))
+            B::section([B::cta('Let’s talk about your project', 'Tell us what you want to build or improve. We reply with questions, ideas and next steps.', [$quote, $contact])], B::light(['fx' => 'confetti', 'pt' => 20, 'pb' => 110]))
         ),
     ],
 
@@ -81,7 +82,8 @@ return [
         'seo_description' => 'Explore Brown Fox IT services: AI automation and n8n, website and e-commerce development, custom software and web apps, UI/UX and graphic design, motion graphics and video.',
         'template' => 'full_width',
         'layout' => fn () => B::layout(
-            B::section([B::hero('What we do', 'Services for building and growing online', 'growing online', 'From automating repetitive work to launching websites, software and videos — choose a service or tell us the problem and we will recommend the right mix.', [$quote, B::btn('Not sure? Ask us', '/contact', 'ghost', 'fa-regular fa-comment')])], B::dark()),
+            B::section([B::hero('What we do', 'Services for building and growing online', 'growing online', 'From automating repetitive work to launching websites, software and videos — choose a service or tell us the problem and we will recommend the right mix.', [$quote, B::btn('Not sure? Ask us', '/contact', 'ghost', 'fa-regular fa-comment')])], B::top()),
+            B::section([B::marquee(['AI Automation', 'n8n Workflows', 'AI Agents', 'Website Development', 'WordPress', 'E-commerce', 'Custom Software', 'Web Applications', 'APIs & Integrations', 'Motion Graphics', 'Video Editing', 'Graphic Design', 'UI/UX Design'], 'band', 40)], B::light(['pt' => 30, 'pb' => 40, 'width' => 'full'])),
 
             B::section([B::heading('AI Automation', 'Automate & integrate', 'l'), B::services('ai')], B::light(['anchor' => 'ai'])),
             B::section([B::heading('Website Development', 'Websites & stores', 'l'), B::services('web')], B::soft(['anchor' => 'web'])),
@@ -99,7 +101,7 @@ return [
                 B::w('buttons', ['buttons' => [B::btn('Describe your project', '/start-a-project'), B::btn('Read the FAQ', '/faq', 'ghost')], 'size' => 'm'], ['anim' => 'fade-up', 'text_align' => 'center']),
             ], B::soft(['pt' => 80, 'pb' => 80])),
 
-            B::section([B::cta('Ready when you are', 'Share your idea, your deadline and your budget range. We will reply with a clear proposal.', [$quote, $contact])], B::light(['pt' => 60, 'pb' => 110]))
+            B::section([B::cta('Ready when you are', 'Share your idea, your deadline and your budget range. We will reply with a clear proposal.', [$quote, $contact])], B::light(['fx' => 'confetti', 'pt' => 60, 'pb' => 110]))
         ),
     ],
 
@@ -155,7 +157,7 @@ return [
                 ])], ['anim' => 'fade-left']],
             ], B::soft(['valign' => 'start'])),
 
-            B::section([B::cta('Start with a conversation', 'Tell us about your project. The first step is simply understanding what you need.', [$quote, $contact])], B::light(['pt' => 60, 'pb' => 110]))
+            B::section([B::cta('Start with a conversation', 'Tell us about your project. The first step is simply understanding what you need.', [$quote, $contact])], B::light(['fx' => 'confetti', 'pt' => 60, 'pb' => 110]))
         ),
     ],
 
@@ -206,7 +208,7 @@ return [
                 ])], ['anim' => 'fade-left']],
             ], B::soft(['valign' => 'start'])),
 
-            B::section([B::cta('Still have a question?', 'Ask us directly — we are happy to help, even if you are not sure yet what you need.', [B::btn('Contact us', '/contact'), B::btn('Start a project', '/start-a-project', 'ghost')])], B::light(['pt' => 60, 'pb' => 110]))
+            B::section([B::cta('Still have a question?', 'Ask us directly — we are happy to help, even if you are not sure yet what you need.', [B::btn('Contact us', '/contact'), B::btn('Start a project', '/start-a-project', 'ghost')])], B::light(['fx' => 'confetti', 'pt' => 60, 'pb' => 110]))
         ),
     ],
 
@@ -229,7 +231,7 @@ return [
                 [50, [B::heading('Automation & AI', '', 'm', 'h3'), B::list(['n8n (cloud and self-hosted)', 'Make and Zapier for existing setups', 'OpenAI and other language model APIs', 'Embeddings and vector search', 'Google Workspace and Microsoft 365 integrations'], 'dot')], ['box' => 'card', 'pad' => 30]],
                 [50, [B::heading('Design, motion & video', '', 'm', 'h3'), B::list(['Figma and FigJam', 'Adobe Illustrator, Photoshop and InDesign', 'Adobe After Effects and Premiere Pro', 'DaVinci Resolve for colour', 'Lottie for lightweight web animation'], 'dot')], ['box' => 'card', 'pad' => 30]],
             ], B::soft(['pt' => 0, 'valign' => 'start'])),
-            B::section([B::cta('Already have a stack?', 'We are happy to work with the tools you use today. Tell us what you have and what you need.', [B::btn('Talk to us', '/contact'), B::btn('All services', '/services', 'ghost')])], B::light(['pt' => 80, 'pb' => 110]))
+            B::section([B::cta('Already have a stack?', 'We are happy to work with the tools you use today. Tell us what you have and what you need.', [B::btn('Talk to us', '/contact'), B::btn('All services', '/services', 'ghost')])], B::light(['fx' => 'confetti', 'pt' => 80, 'pb' => 110]))
         ),
     ],
 

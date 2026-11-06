@@ -356,7 +356,7 @@
     input.value = Math.max(parseInt(input.min || "1", 10), Math.min(99, v));
   });
   document.querySelectorAll("input[name=variant]").forEach(function (r) {
-    r.addEventListener("change", function () { var p = document.querySelector("[data-price] .st-price"); if (p && r.dataset.priceHtml) { p.innerHTML = r.dataset.priceHtml; p.animate && p.animate([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 350 }); } });
+    r.addEventListener("change", function () { if (!r.dataset.priceHtml) return; document.querySelectorAll("[data-price] .st-price").forEach(function (p) { p.innerHTML = r.dataset.priceHtml; p.animate && p.animate([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 350 }); }); });
   });
   document.querySelectorAll("[data-gallery]").forEach(function (g) {
     var main = g.querySelector("[data-main]");

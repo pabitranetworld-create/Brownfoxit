@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Content\Fingerprint;
 use App\Content\ServicePage;
 use App\Models\Page;
 use App\Models\Service;
@@ -117,6 +118,7 @@ class ContentSeeder extends Seeder
 
     protected function page(string $slug, callable $data, LayoutValidator $validator, string $status = 'published'): void
     {
+        $this->upgrade($slug, $data, $validator);
         $this->once('page:'.$slug, function () use ($slug, $data, $validator, $status) {
             if (Page::where('slug', $slug)->exists()) {
                 return true; // you already have a page here: leave it alone
@@ -132,9 +134,39 @@ class ContentSeeder extends Seeder
                 'published_at' => $status === 'published' ? now() : null,
             ]));
             $this->log[] = '/'.$slug.($status === 'draft' ? ' (draft)' : '');
+            Setting::put('content_fingerprints', array_merge((array) Setting::get('content_fingerprints', []), [$slug => Fingerprint::of($layout)]));
 
             return true;
         });
+    }
+
+    /**
+     * Newer page designs: a page that is still exactly as the installer made it (its layout matches a
+     * known fingerprint) gets the current design. Pages edited in the builder never match — untouched.
+     */
+    protected function upgrade(string $slug, callable $data, LayoutValidator $validator): void
+    {
+        $page = Page::where('slug', $slug)->first();
+        if (! $page || $page->draft_layout) {
+            return;
+        }
+        static $known = null;
+        $known ??= require database_path('content/fingerprints.php');
+        $written = (array) Setting::get('content_fingerprints', []);
+        $current = Fingerprint::of($page->layout);
+        $ours = array_merge($known[$slug] ?? [], (array) ($written[$slug] ?? []));
+        if (! in_array($current, $ours, true)) {
+            return; // edited by the owner (or never ours)
+        }
+        $layout = $validator->clean($data()['layout']);
+        $new = Fingerprint::of($layout);
+        if ($new === $current) {
+            return;
+        }
+        $page->forceFill(['layout' => $layout])->save();
+        $written[$slug] = $new;
+        Setting::put('content_fingerprints', $written);
+        $this->log[] = '/'.$slug.' (new design)';
     }
 
     /** Run $fn once per key, ever. $fn returns false to try again next time. */

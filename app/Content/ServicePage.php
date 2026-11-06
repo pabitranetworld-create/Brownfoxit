@@ -18,95 +18,99 @@ class ServicePage
         $group = Service::GROUPS[$s['group']] ?? 'Services';
         $sections = [];
 
-        // 1. Hero
+        // 1. Hero — white page with moving colours and floating shapes
         $sections[] = B::section([B::hero($group, $s['hero']['title'], $s['hero']['highlight'] ?? '', $s['hero']['text'], [
             B::btn('Request a quote', $quote),
             B::btn('How it works', '#process', 'ghost', 'fa-solid fa-arrow-down'),
-        ], $s['image'] ?? '', 'split')], B::dark(['anchor' => 'top']));
+        ], $s['image'] ?? '', 'split')], B::top(['anchor' => 'top']));
 
-        // 2. Overview + who it is for
+        // 2. Running band with the tools we use
+        $tools = array_map(fn ($t) => trim(preg_split('/\s*[(,]|\s+when\s|\s+such as\s/i', $t)[0]), $s['tools']);
+        $sections[] = B::section([B::marquee($tools, 'band', 32)], B::light(['pt' => 30, 'pb' => 40, 'width' => 'full']));
+
+        // 3. Overview + who it is for
         $sections[] = B::section([
             [55, [B::heading($s['overview']['title'], 'Overview'), B::text($s['overview']['html'], 'large')]],
             [45, [B::heading('Who this is for', '', 'm', 'h3'), B::list($s['audience'])], ['box' => 'card', 'pad' => 34, 'anim' => 'fade-left']],
-        ], B::light(['valign' => 'start']));
+        ], B::light(['valign' => 'start', 'fx' => 'aurora']));
 
-        // 3. Problems
+        // 4. Problems — colourful numbered cards
         $sections[] = B::section([
             B::heading($s['problems_title'] ?? 'Problems this solves', 'The challenge', 'xl', 'h2', ['text_align' => 'center']),
-            B::boxes($s['problems'], count($s['problems']) >= 4 ? '4' : '3'),
-        ], B::soft());
+            B::boxes($s['problems'], count($s['problems']) >= 4 ? '4' : '3', 'pop'),
+        ], B::soft(['fx' => 'beams']));
 
-        // 4. Benefits + deliverables
+        // 5. Benefits + deliverables
         $sections[] = B::section([
             [55, [B::heading('Key benefits', 'Why it pays off'), B::list($s['benefits'])]],
             [45, [B::heading('What you receive', '', 'm', 'h3'), B::list($s['deliverables'], 'arrow')], ['box' => 'glass', 'pad' => 34, 'anim' => 'fade-left']],
-        ], B::light(['valign' => 'start']));
+        ], B::light(['valign' => 'start', 'fx' => 'shapes']));
 
-        // 5. Features
+        // 6. Features
         $sections[] = B::section([
             B::heading($s['features_title'] ?? 'What is included', 'Features', 'xl', 'h2', ['text_align' => 'center']),
             B::boxes($s['features'], '3', 'card'),
-        ], B::light(['pt' => 40]));
+        ], B::light(['pt' => 40, 'fx' => 'aurora']));
 
-        // 6. Use cases
+        // 7. Use cases
         $sections[] = B::section([
             B::heading('Practical use cases', 'Examples', 'xl', 'h2', ['text_align' => 'center']),
             B::tabs(array_map(fn ($u) => [$u[0], $u[1], $u[2] ?? ''], $s['use_cases'])),
-        ], B::soft());
+        ], B::soft(['fx' => 'stars']));
 
-        // 7. Workflow diagram (automation and integration services)
+        // 8. Workflow diagram (automation and integration services) on a moving colour band
         if (! empty($s['workflow'])) {
             $sections[] = B::section([
                 B::heading($s['workflow']['title'], 'How the pieces connect', 'xl', 'h2', ['text_align' => 'center']),
                 B::text('<p>'.$s['workflow']['text'].'</p>', 'normal', ['text_align' => 'center']),
                 B::flow($s['workflow']['nodes']),
-            ], B::dark(['pt' => 100, 'pb' => 100, 'fx' => 'lines']));
+            ], B::vivid(['fx' => 'lines']));
         }
 
-        // 8. Tools
+        // 9. Tools
         $sections[] = B::section([
             [40, [B::heading('Tools & technologies', 'Stack'), B::text('<p>'.($s['tools_note'] ?? 'We choose tools for each project based on what you already use, your budget and who will maintain the result. Typical choices:').'</p>')]],
-            [60, [B::list($s['tools'], 'dot', '2')], ['anim' => 'fade-left']],
+            [60, [B::list($s['tools'], 'dot', '2')], ['box' => 'card', 'pad' => 34, 'anim' => 'fade-left']],
         ], B::light(['valign' => 'center']));
 
-        // 9. Process
+        // 10. Process
         $sections[] = B::section([
             B::heading('How the project runs', 'Process', 'xl', 'h2', ['text_align' => 'center']),
             B::steps(array_map(fn ($p) => [$p[0], $p[1]], $s['process']), count($s['process']) > 4 ? 'vertical' : 'horizontal'),
-        ], B::soft(['anchor' => 'process']));
+        ], B::soft(['anchor' => 'process', 'fx' => 'waves', 'pb' => 150]));
 
-        // 10. Requirements + note
+        // 11. Requirements + note
         $right = [B::heading($s['note']['title'], '', 'm', 'h3'), B::text($s['note']['html'])];
         $sections[] = B::section([
             [50, [B::heading('What we need from you', 'Before we start'), B::list($s['requirements'])]],
-            [50, $right, ['box' => 'card', 'pad' => 34, 'anim' => 'fade-left']],
+            [50, $right, ['box' => 'glow', 'pad' => 34, 'anim' => 'fade-left']],
         ], B::light(['valign' => 'start']));
 
-        // 11. Related work (hidden automatically while there are no matching projects)
+        // 12. Related work (hidden automatically while there are no matching projects)
         if (! empty($s['project_category'])) {
             $sections[] = B::section([B::w('projects_grid', ['eyebrow' => 'Portfolio', 'heading' => 'Related work', 'count' => 3, 'filter' => false, 'category' => $s['project_category'], 'columns' => '3'], ['anim' => 'fade-up', 'anim_stagger' => 90])], B::light(['pt' => 30]));
         }
 
-        // 12. FAQ
+        // 13. FAQ
         $sections[] = B::section([
             [38, [B::heading('Questions clients ask', 'FAQ'), B::text('<p>Something else on your mind? <a href="/contact">Send us a message</a> and we will answer it directly.</p>')]],
             [62, [B::faq($s['faq'])], ['anim' => 'fade-left']],
-        ], B::soft(['valign' => 'start']));
+        ], B::soft(['valign' => 'start', 'fx' => 'aurora']));
 
-        // 13. Related services
+        // 14. Related services
         $related = array_values(array_filter(array_map(fn ($slug) => $all[$slug] ?? null, $s['related'])));
         if ($related) {
             $sections[] = B::section([
                 B::heading('Related services', 'Often combined with', 'l', 'h2', ['text_align' => 'center']),
                 B::boxes(array_map(fn ($r) => [$r['icon'], $r['title'], $r['short'], '/services/'.$r['slug'], 'View service'], $related), (string) min(3, count($related)), 'card'),
-            ], B::light());
+            ], B::light(['fx' => 'shapes']));
         }
 
-        // 14. CTA
+        // 15. CTA
         $sections[] = B::section([B::cta($s['cta']['title'], $s['cta']['text'], [
             B::btn('Request a quote', $quote),
             B::btn('Contact us', '/contact', 'ghost', 'fa-regular fa-envelope'),
-        ])], B::light(['pt' => 20, 'pb' => 110]));
+        ])], B::light(['pt' => 20, 'pb' => 110, 'fx' => 'confetti']));
 
         return B::layout(...$sections);
     }

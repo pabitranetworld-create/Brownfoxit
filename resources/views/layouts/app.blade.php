@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}?v={{ filemtime(public_path('assets/css/style.css')) }}">
     @if (! request()->routeIs('home'))
         <link rel="stylesheet" href="{{ asset('assets/css/pages.css') }}?v={{ filemtime(public_path('assets/css/pages.css')) }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/vibe.css') }}?v={{ filemtime(public_path('assets/css/vibe.css')) }}">
     @endif
     @stack('head')
     @stack('styles')
@@ -49,6 +50,7 @@
     <script src="{{ asset('assets/js/main.js') }}?v={{ filemtime(public_path('assets/js/main.js')) }}"></script>
     @if (! request()->routeIs('home'))
         <script src="{{ asset('assets/js/motion.js') }}?v={{ filemtime(public_path('assets/js/motion.js')) }}"></script>
+        <script src="{{ asset('assets/js/vibe.js') }}?v={{ filemtime(public_path('assets/js/vibe.js')) }}" defer></script>
     @endif
     @stack('scripts')
     @if (! empty($editor))
