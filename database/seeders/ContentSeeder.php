@@ -108,7 +108,7 @@ class ContentSeeder extends Seeder
             $seo += [
                 'production_host' => $prod, 'visibility' => 'auto', 'force_https' => true, 'title_separator' => '|',
                 'org_name' => Setting::get('site.name') ?: 'Brown Fox IT', 'contact_email' => Setting::get('site.email'),
-                'locale' => 'en_US',
+                'locale' => 'en_US', 'local_business' => false,
             ];
             Setting::put('seo', $seo);
             $int = (array) Setting::get('seo_integrations', []);
