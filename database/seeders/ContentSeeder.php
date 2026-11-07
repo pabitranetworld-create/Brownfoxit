@@ -95,6 +95,33 @@ class ContentSeeder extends Seeder
             }
         }
 
+        // Images downloaded by the WordPress import were not added to the media library — add them (once).
+        $this->once('media-backfill-imports', function () {
+            $n = 0;
+            foreach (\App\Models\Post::all() as $p) {
+                foreach (array_merge([$p->image], \App\Support\MediaRegistry::fromHtml($p->body)) as $img) {
+                    $n += (int) (bool) \App\Support\MediaRegistry::register($img, $p->title);
+                }
+            }
+            foreach (\App\Models\Project::all() as $p) {
+                $gallery = array_map(fn ($g) => is_array($g) ? ($g['image'] ?? null) : $g, (array) $p->gallery);
+                foreach (array_merge([$p->image], $gallery, \App\Support\MediaRegistry::fromHtml($p->description)) as $img) {
+                    $n += (int) (bool) \App\Support\MediaRegistry::register($img, $p->title);
+                }
+            }
+            foreach (\App\Models\Product::all() as $p) {
+                $gallery = array_map(fn ($g) => is_array($g) ? ($g['image'] ?? null) : $g, (array) $p->gallery);
+                foreach (array_merge([$p->image], $gallery, \App\Support\MediaRegistry::fromHtml($p->description), \App\Support\MediaRegistry::fromHtml($p->short_description)) as $img) {
+                    $n += (int) (bool) \App\Support\MediaRegistry::register($img, $p->name);
+                }
+            }
+            if ($n) {
+                $this->log[] = $n.' imported image(s) added to the media library';
+            }
+
+            return true;
+        });
+
         // SEO defaults (once): the real domain is known for the two planned installs, so the draft domain
         // (e.g. 1stdraft.brownfoxit.com) stays out of search results automatically.
         $this->once('seo-defaults', function () {

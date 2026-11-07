@@ -329,6 +329,8 @@ class WordPressImporter
         }
         $target = public_path($rel);
         if (is_file($target) && filesize($target) > 0) {
+            MediaRegistry::register($rel);
+
             return $rel;
         }
         try {
@@ -342,6 +344,7 @@ class WordPressImporter
             }
             File::ensureDirectoryExists(dirname($target));
             File::put($target, $body);
+            MediaRegistry::register($rel); // show it in the media library too
 
             return $rel;
         } catch (Throwable $e) {

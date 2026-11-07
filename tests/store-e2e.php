@@ -280,6 +280,7 @@ $ip = Post::where('slug', 'hello-'.$tag)->first();
 ok($ip && $ip->status === 'published' && $ip->title === 'Old & Gold '.$tag && $ip->published_at->format('Y-m-d') === '2025-03-01', 'post imported with title + original date');
 ok($ip && str_contains($ip->body, '/uploads/2025/03/pic-'.$tag.'.png') && ! str_contains($ip->body, 'srcset') && str_contains($ip->body, 'cdn.other.com') && is_file(public_path('uploads/2025/03/pic-'.$tag.'.png')), 'post images downloaded and relinked (external left alone)');
 ok($ip && $ip->image === 'uploads/2025/03/cover-'.$tag.'.png' && $ip->category?->name === 'News', 'featured image + category');
+ok(App\Models\Media::where('path', 'uploads/2025/03/cover-'.$tag.'.png')->exists() && App\Models\Media::where('path', 'uploads/2025/03/pic-'.$tag.'.png')->exists(), 'imported images appear in the media library');
 $iproj = Project::where('slug', 'shop-site-'.$tag)->first();
 ok($iproj && $iproj->image === 'uploads/2024/01/shot-'.$tag.'.png' && $iproj->category === 'Web Design', 'portfolio item imported');
 $iprod = Product::where('slug', 'theme-'.$tag)->first();
@@ -291,6 +292,7 @@ ok(ImportLog::where('source', $src)->count() === 3, 'inventory report has one ro
 echo "== Cleanup\n";
 foreach (['uploads/2025/03/pic-'.$tag.'.png', 'uploads/2025/03/cover-'.$tag.'.png', 'uploads/2024/01/shot-'.$tag.'.png', 'uploads/2024/02/p-'.$tag.'.png'] as $fpath) {
     @unlink(public_path($fpath));
+    App\Models\Media::where('path', $fpath)->delete();
 }
 ok(true, 'done');
 
