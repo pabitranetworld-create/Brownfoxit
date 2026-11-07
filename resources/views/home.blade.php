@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@php(seo()->subject('home'))
 @section('body_class', 'page-home')
 
 @section('content')

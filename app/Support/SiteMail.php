@@ -17,7 +17,12 @@ class SiteMail
     {
         $m = (array) setting('mail', []);
 
-        return ($m['mailer'] ?? 'off') === 'smtp' && filled($m['host'] ?? null) || ($m['mailer'] ?? 'off') === 'sendmail';
+        return match ($m['mailer'] ?? 'off') {
+            'smtp' => filled($m['host'] ?? null),
+            'gmail_api' => GmailOAuth::connected() && GmailOAuth::hasClient(),
+            'sendmail' => true,
+            default => false,
+        };
     }
 
     /** Apply the stored settings to Laravel's mail config. */
@@ -32,6 +37,18 @@ class SiteMail
             $password = rescue(fn () => Crypt::decryptString($m['password']), '', false);
         }
         $from = $m['from_address'] ?? null ?: setting('site.email') ?: config('mail.from.address');
+        if (($m['mailer'] ?? '') === 'gmail_api') {
+            config([
+                'mail.default' => 'gmail',
+                'mail.mailers.gmail' => ['transport' => 'gmail-api'],
+                'mail.from.address' => $m['gmail_email'] ?? $from, // Gmail sends from the connected address
+                'mail.from.name' => $m['from_name'] ?? null ?: setting('site.name', config('app.name')),
+            ]);
+            app()->forgetInstance('mail.manager');
+            Mail::clearResolvedInstances();
+
+            return true;
+        }
         config([
             'mail.default' => $m['mailer'],
             'mail.mailers.smtp.host' => $m['host'] ?? null,

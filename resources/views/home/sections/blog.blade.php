@@ -20,7 +20,7 @@
                                         <img src="{{ media($post->image) }}" alt="{{ $post->title }}" loading="lazy">
                                         @if ($post->author)
                                             <div class="blog-author">
-                                                <img src="{{ media($post->author->avatar, asset('uploads/avatars/admin1.jpg')) }}" alt="">
+                                                <img loading="lazy" decoding="async" src="{{ media($post->author->avatar, asset('uploads/avatars/admin1.jpg')) }}" alt="">
                                                 <span>by {{ $post->author->name }}</span>
                                             </div>
                                         @endif

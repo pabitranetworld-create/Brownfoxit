@@ -116,3 +116,15 @@ Tests: `tests/store-e2e.php` (added to `tests/e2e-install.sh`).
 - New running neon band of services (`home/sections/tech-band.blade.php`), neon borders on service boxes and
   counters, moving stripes on skill bars, orbit around the about photo, binary stream behind counters,
   travelling light between steps, scanning floor + neon edge in the contact box.
+
+## SEO system + Gmail email setup
+Full details, audit findings, limitations and launch checklist: **docs/SEO.md**.
+- Central SEO resolver (one title/description/robots/canonical/OG/X/JSON-LD per page), per-page SEO editor with
+  Google preview, keyword and link guidance, global SEO + Google/Bing/GA4 (consent mode) settings.
+- Dynamic robots.txt and split XML sitemaps; draft domains automatically noindex; preferred https host.
+- Redirect manager (loops/chains/duplicates handled), automatic 301 on URL change, WordPress URL mapper.
+- Structured data graph from real data only (no FAQPage, no ratings); visible breadcrumbs on nested pages.
+- On-site SEO audit + broken-link check in the admin dashboard.
+- Blog categories editable in admin; tag pages (noindex). Home LCP image preloaded; lazy images; gzip/caching.
+- Email: Gmail App Password (auto-config) or "Connect with Google" (OAuth, gmail.send, Gmail API).
+- Tests: tests/seo-e2e.php.

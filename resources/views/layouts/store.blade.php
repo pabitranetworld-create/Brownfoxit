@@ -3,10 +3,6 @@
 
 @section('body_class', 'page-inner tpl-default theme-dark top-dark')
 
-@push('head')
-    @hasSection('robots')<meta name="robots" content="@yield('robots')">@endif
-    @hasSection('canonical')<link rel="canonical" href="@yield('canonical')">@endif
-@endpush
 
 @section('content')
     @include('pages.builder.page-header', ['title' => $pageTitle ?? '', 'subtitle' => $pageSubtitle ?? null, 'crumbs' => $crumbs ?? []])

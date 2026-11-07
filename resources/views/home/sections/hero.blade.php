@@ -1,4 +1,5 @@
 @php($hero = setting('hero', []))
+@if (! empty($hero['person_image']))@push('head')<link rel="preload" as="image" href="{{ media($hero['person_image']) }}" fetchpriority="high">@endpush @endif
 <section class="hero has-particles" data-number="5" data-size="4" data-random="false" data-colors='["#FF6A59","#B3DB61","#0081FF","#FF5337"]'>
     <canvas class="particles"></canvas>
     @include('pages.builder.fx-tech', ['fx' => 'circuit'])
@@ -25,7 +26,7 @@
             <span class="hh-chip c2" aria-hidden="true"><i class="fa-solid fa-robot"></i></span>
             <span class="hh-chip c3" aria-hidden="true"><i class="fa-solid fa-pen-nib"></i></span>
             <span class="hh-chip c4" aria-hidden="true"><i class="fa-solid fa-clapperboard"></i></span>
-            <img class="hero-person" src="{{ media($hero['person_image'] ?? '') }}" alt="{{ $hero['title'] ?? '' }}">
+            <img class="hero-person" fetchpriority="high" width="450" height="585" src="{{ media($hero['person_image'] ?? '') }}" alt="{{ $hero['title'] ?? '' }}">
 
             <div class="rating-pill">
                 <div class="avatars">

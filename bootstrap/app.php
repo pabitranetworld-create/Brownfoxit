@@ -15,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: ['_deploy', 'admin/client-log', 'payment/*']); // gateways POST back to /payment/…
 
         $middleware->alias(['admin' => \App\Http\Middleware\EnsureAdmin::class]);
+        // Redirect manager, preferred domain and draft-domain noindex (see App\Http\Middleware\SeoRequests).
+        $middleware->prepend(\App\Http\Middleware\SeoRequests::class);
         $middleware->redirectGuestsTo(fn ($request) => $request->is('admin', 'admin/*') ? route('admin.login') : route('account.login'));
         $middleware->redirectUsersTo(fn ($request) => $request->user()?->isAdmin() && $request->is('admin', 'admin/*') ? route('admin.dashboard') : route('account.dashboard'));
     })

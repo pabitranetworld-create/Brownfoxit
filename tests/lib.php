@@ -40,7 +40,7 @@ function http(string $method, string $url, ?string $body = null, array $headers 
     $head = substr($raw, 0, $hsize);
     preg_match('/^Location:\s*(.+)$/mi', $head, $m);
 
-    return ['code' => $code, 'body' => substr($raw, $hsize), 'location' => isset($m[1]) ? trim($m[1]) : null];
+    return ['code' => $code, 'body' => substr($raw, $hsize), 'location' => isset($m[1]) ? trim($m[1]) : null, 'headers' => $head];
 }
 
 function get(string $url): array

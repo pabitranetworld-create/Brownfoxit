@@ -6,9 +6,8 @@
     $facts = array_filter(['Client' => $project->client, 'Year' => $project->year, 'Services' => $project->services, 'Category' => $project->category]);
 @endphp
 @extends('layouts.store')
-@section('title', ($project->seo_title ?: $project->title).' · Portfolio · '.setting('site.name'))
-@section('meta_description', $project->seo_description ?: \Illuminate\Support\Str::limit(strip_tags((string) ($project->summary ?: $project->description)), 155))
-@push('head')@if ($project->image)<meta property="og:image" content="{{ media($project->image) }}">@endif @endpush
+@php(seo()->subject($project))
+@section('title', $project->title)
 
 @section('store')
     <article class="st-case">

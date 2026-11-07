@@ -19,17 +19,30 @@ class BlogController extends Controller
         return $this->listing($request, PostCategory::where('slug', $slug)->firstOrFail());
     }
 
-    protected function listing(Request $request, ?PostCategory $category): View
+    /** Posts with one tag. Tag pages are shown to visitors but kept out of search results (noindex, follow). */
+    public function tag(Request $request, string $tag): View
+    {
+        $tag = trim(str_replace('-', ' ', urldecode($tag)));
+        abort_if($tag === '' || mb_strlen($tag) > 60, 404);
+
+        return $this->listing($request, null, $tag);
+    }
+
+    protected function listing(Request $request, ?PostCategory $category, ?string $tag = null): View
     {
         $q = trim((string) $request->query('q', ''));
         $posts = Post::published()->with(['category', 'author'])
             ->when($category, fn ($w) => $w->where('post_category_id', $category->id))
+            ->when($tag, fn ($w) => $w->where('tags', 'like', '%'.str_replace(['%', '_'], ['\\%', '\\_'], $tag).'%'))
             ->when($q !== '', fn ($w) => $w->where(fn ($x) => $x->where('title', 'like', "%{$q}%")->orWhere('excerpt', 'like', "%{$q}%")->orWhere('body', 'like', "%{$q}%")))
             ->latest('published_at')->paginate(9)->withQueryString();
+
+        abort_if($tag && $posts->isEmpty(), 404);
 
         return view('blog.index', [
             'posts' => $posts,
             'category' => $category,
+            'tag' => $tag,
             'categories' => PostCategory::whereHas('posts', fn ($w) => $w->published())->withCount(['posts' => fn ($w) => $w->published()])->orderBy('name')->get(),
             'q' => $q,
         ]);

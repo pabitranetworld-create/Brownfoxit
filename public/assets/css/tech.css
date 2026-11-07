@@ -337,3 +337,13 @@ body.page-inner.theme-dark::before { content: ""; position: fixed; inset: 0; z-i
 .theme-dark .st-buynow, .theme-dark .st-buy-row .pb-btn-ghost { color: #fff; border: 1.5px solid rgba(140,160,255,.4); background: rgba(255,255,255,.04); }
 .theme-dark .st-buynow:hover { border-color: var(--t-cyan); box-shadow: 0 0 22px rgba(34,211,238,.35); }
 .theme-dark .st-variant span { color: var(--t-ink); }
+
+/* Breadcrumb bar on nested full-width pages (e.g. /services/…) */
+.pb-crumbbar { position: absolute; left: 0; right: 0; top: 104px; z-index: 6; pointer-events: none; }
+.pb-crumbbar ol { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; max-width: var(--container, 1200px); margin: 0 auto; padding: 0 20px; list-style: none; font-size: 13px; }
+.pb-crumbbar li { pointer-events: auto; color: rgba(220,224,255,.55); }
+.pb-crumbbar li + li::before { content: "/"; margin-right: 6px; opacity: .5; }
+.pb-crumbbar a { color: rgba(220,224,255,.75); } .pb-crumbbar a:hover { color: #22d3ee; }
+.pb-crumbbar [aria-current] { color: #fff; }
+.theme-light .pb-crumbbar li, .theme-light .pb-crumbbar a { color: #6b6680; } .theme-light .pb-crumbbar [aria-current] { color: #17112e; }
+main, .page-inner main { position: relative; }

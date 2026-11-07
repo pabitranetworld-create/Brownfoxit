@@ -300,3 +300,56 @@ h1, h2, h3 { font-family: var(--head); color: var(--white); line-height: 1.25; }
 .imp-st-imported { background: rgba(46,204,113,.18); color: #7be3a6; }
 .imp-st-missing_images { background: rgba(241,196,15,.18); color: #f5d76e; }
 .imp-st-failed { background: rgba(255,82,102,.18); color: #ff8a98; }
+
+/* ===== SEO, redirects, mail ===== */
+.seo-run { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; margin-bottom: 18px; }
+.seo-run-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.seo-progress { grid-column: 1 / -1; position: relative; height: 26px; border-radius: 20px; background: rgba(255,255,255,.06); overflow: hidden; }
+.seo-progress span { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--grad); transition: width .3s; }
+.seo-progress em { position: relative; display: block; text-align: center; font: 600 12px/26px var(--font); color: #fff; font-style: normal; }
+.seo-stats .adm-card { display: flex; flex-direction: column; gap: 2px; }
+.seo-stats .adm-card strong { font: 700 26px var(--head); color: #fff; }
+.seo-stats .adm-card.bad strong { color: #ff8a98; }
+.seo-cols { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.seo-cols > div { display: grid; gap: 18px; }
+.seo-att { padding: 12px 0; border-bottom: 1px solid var(--line); }
+.seo-att ul { margin: 6px 0 0 18px; font-size: 13px; }
+.lv-error, li.lv-error { color: #ff8a98; } .lv-warn, li.lv-warn { color: #f5d76e; } .lv-info { color: var(--muted); }
+.seo-dup { margin: 6px 0; font-size: 13.5px; word-break: break-word; }
+.seo-help { margin-top: 18px; } .seo-help summary { cursor: pointer; } .seo-help ol { margin: 12px 0 0 20px; display: grid; gap: 6px; }
+.seo-help a, .seo-dup a, .seo-att a, .ml-steps a, .seo-head a { color: #ffb37a; }
+.seo-filter { display: flex; gap: 8px; } .seo-filter select, .rd-form input, .rd-form select, .rd-test input, .rd-inline input, .rd-inline select, .adm-table input { height: 38px; padding: 0 12px; border-radius: 9px; border: 1px solid var(--line); background: rgba(255,255,255,.04); color: inherit; }
+.seo-pill { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; background: rgba(255,255,255,.08); }
+.seo-pill.green { background: rgba(46,204,113,.16); color: #7be3a6; } .seo-pill.amber { background: rgba(241,196,15,.16); color: #f5d76e; } .seo-pill.red { background: rgba(255,82,102,.16); color: #ff8a98; } .seo-pill.gray { color: var(--muted); }
+i.ok, .ok > i { color: #4ade80; }
+.adm-table.compact td, .adm-table.compact th { padding: 7px 10px; }
+.seo-head { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+.seo-head .seo-pill { margin-left: 8px; }
+.seo-head-btns { display: flex; gap: 8px; }
+.seo-edit { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 18px; align-items: start; }
+.seo-side { display: grid; gap: 18px; position: sticky; top: 16px; }
+.seo-serp { padding: 16px 18px; border-radius: 12px; background: #fff; color: #202124; font-family: arial, sans-serif; margin-bottom: 8px; max-width: 640px; }
+.seo-serp .u { font-size: 13px; color: #4d5156; } .seo-serp .t { font-size: 20px; line-height: 1.3; color: #1a0dab; margin: 4px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .seo-serp .d { font-size: 14px; line-height: 1.55; color: #4d5156; }
+.seo-count { float: right; font-weight: 700; } .seo-count.ok { color: #4ade80; } .seo-count.warn { color: #f5d76e; } .seo-count.bad { color: #ff8a98; }
+.seo-slug { display: flex; align-items: center; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.seo-slug span { padding: 0 10px; color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 50%; }
+.seo-slug input { flex: 1; border: 0 !important; border-left: 1px solid var(--line) !important; border-radius: 0 !important; }
+.seo-edit .adm-card-h { margin: 22px 0 12px; } .seo-edit .adm-card-h:first-of-type { margin-top: 0; }
+.seo-adv { margin: 20px 0; } .seo-adv summary { cursor: pointer; font-weight: 700; color: #fff; } .seo-adv textarea { width: 100%; margin: 10px 0; }
+.seo-check { list-style: none; display: grid; gap: 7px; font-size: 13.5px; }
+.seo-check li { position: relative; padding-left: 24px; } .seo-check li::before { position: absolute; left: 0; font: 900 13px "Font Awesome 6 Free"; }
+.seo-check li.ok::before { content: "\f00c"; color: #4ade80; } .seo-check li.warn::before { content: "\f071"; color: #f5d76e; } .seo-check li.bad::before { content: "\f00d"; color: #ff8a98; } .seo-check li.info::before { content: "\f05a"; color: var(--muted); }
+.seo-chips { display: flex; flex-wrap: wrap; gap: 6px; } .seo-chips button { padding: 5px 11px; border-radius: 20px; border: 1px solid var(--line); background: rgba(255,255,255,.04); color: inherit; cursor: pointer; font-size: 12.5px; } .seo-chips button:disabled { opacity: .4; }
+.rd-form { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin: 14px 0; }
+.rd-form label { display: flex; flex-direction: column; gap: 5px; font-size: 13px; color: var(--muted); flex: 1 1 200px; } .rd-form label.wide { flex: 2 1 300px; }
+.rd-test { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding-top: 12px; border-top: 1px solid var(--line); font-size: 13px; }
+.rd-test label { display: flex; gap: 8px; align-items: center; }
+.rd-inline { display: flex; gap: 6px; } .rd-inline input { flex: 1; min-width: 160px; height: 34px; } .rd-inline select { height: 34px; padding: 0 6px; }
+.rd-actions { display: flex; gap: 6px; } .rd-off { opacity: .5; } .rd-done { opacity: .55; }
+.ml-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 18px; margin-bottom: 18px; }
+.ml-card { position: relative; } .ml-badge { position: absolute; top: 16px; right: 16px; padding: 3px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 700; background: rgba(46,204,113,.16); color: #7be3a6; } .ml-badge.blue { background: rgba(66,133,244,.18); color: #8ab4f8; }
+.ml-steps { margin: 12px 0 16px 20px; display: grid; gap: 7px; font-size: 13.5px; }
+.ml-uri { display: inline-block; margin-top: 6px; word-break: break-all; }
+.ml-google { background: #fff !important; color: #1f1f1f !important; }
+.ml-setup { margin-top: 10px; } .ml-setup summary { cursor: pointer; font-weight: 700; color: #fff; margin-bottom: 8px; }
+@media (max-width: 1100px) { .seo-edit, .seo-cols { grid-template-columns: 1fr; } .seo-side { position: static; } .seo-run { grid-template-columns: 1fr; } }

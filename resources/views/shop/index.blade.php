@@ -5,8 +5,9 @@
 @endphp
 @extends('layouts.store')
 
-@section('title', ($q !== '' ? 'Search: '.$q.' · ' : '').$pageTitle.' · '.setting('site.name'))
-@section('meta_description', $category?->description ?: (store('shop_meta_description') ?: setting('site.meta_description')))
+@php(seo()->subject($category ?: 'shop'))
+@section('title', ($q !== '' ? 'Search: '.$q.' · ' : '').$pageTitle)
+@if (! $category && store('shop_meta_description'))@section('meta_description', store('shop_meta_description'))@endif
 @if ($q !== '')@section('robots', 'noindex, follow')@endif
 
 @section('after_header')

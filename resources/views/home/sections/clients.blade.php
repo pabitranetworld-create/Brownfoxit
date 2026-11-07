@@ -9,9 +9,9 @@
                     @foreach ($clients as $client)
                         <div class="swiper-slide">
                             @if ($client->url)
-                                <a href="{{ $client->url }}" target="_blank" rel="noopener"><img src="{{ media($client->logo) }}" alt="{{ $client->name }}"></a>
+                                <a href="{{ $client->url }}" target="_blank" rel="noopener"><img loading="lazy" decoding="async" src="{{ media($client->logo) }}" alt="{{ $client->name }}"></a>
                             @else
-                                <img src="{{ media($client->logo) }}" alt="{{ $client->name }}">
+                                <img loading="lazy" decoding="async" src="{{ media($client->logo) }}" alt="{{ $client->name }}">
                             @endif
                         </div>
                     @endforeach

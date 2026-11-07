@@ -83,4 +83,7 @@ php tests/content-e2e.php "$BASE" admin@example.com 'Secret@12345'
 echo "== 11. shop, payments, downloads, portfolio, blog, WordPress import"
 php tests/store-e2e.php "$BASE" admin@example.com 'Secret@12345'
 
+echo "== 12. SEO: head tags, sitemap, robots, redirects, SEO editor, Gmail setup"
+php tests/seo-e2e.php "$BASE" admin@example.com 'Secret@12345'
+
 echo "ALL CHECKS PASSED"

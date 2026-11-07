@@ -21,9 +21,8 @@
     }
     $doc = count($widgets) === 1 && preg_match('/^\s*(<!--.*?-->\s*)*(<!doctype|<html)/is', (string) ($widgets[0]['w']['data']['code'] ?? ''));
 
-    $title = $page->seo_title ?: $page->title.' · '.setting('site.name');
+    seo()->subject($page)->set(['title' => $page->title, 'robots' => $preview ? 'noindex, nofollow' : null]);
     $headExtra = '';
-    if ($page->noindex || $preview) { $headExtra .= '<meta name="robots" content="noindex, nofollow">'; }
     if (filled($page->custom_head)) { $headExtra .= $page->custom_head; }
     if (filled($page->custom_css)) { $headExtra .= '<style>'.$page->custom_css.'</style>'; }
     $bodyExtra = filled($page->custom_js) ? '<script>'.$page->custom_js.'</script>' : '';
@@ -35,6 +34,16 @@
 @php
     $w = $widgets[0]['w'];
     $html = (string) $w['data']['code'];
+    // SEO tags from the central system — only those the custom document does not already have.
+    $S = seo()->resolve();
+    $seoTags = '';
+    if (! preg_match('#<title[\s>]#i', $html)) { $seoTags .= '<title>'.e($S['title']).'</title>'; }
+    if (! preg_match('#<meta[^>]+name=["\']description#i', $html) && $S['description']) { $seoTags .= '<meta name="description" content="'.e($S['description']).'">'; }
+    if (! preg_match('#<meta[^>]+name=["\']robots#i', $html)) { $seoTags .= '<meta name="robots" content="'.e($S['robots']).'">'; }
+    if (! preg_match('#<link[^>]+rel=["\']canonical#i', $html)) { $seoTags .= '<link rel="canonical" href="'.e($S['canonical']).'">'; }
+    if (! preg_match('#property=["\']og:title#i', $html)) { $seoTags .= '<meta property="og:title" content="'.e($S['og_title']).'"><meta property="og:url" content="'.e($S['canonical']).'"><meta property="og:type" content="website">'.($S['og_image'] ? '<meta property="og:image" content="'.e($S['og_image']).'">' : '').'<meta name="twitter:card" content="'.e($S['twitter_card']).'">'; }
+    if (! str_contains($html, 'application/ld+json')) { $seoTags .= '<script type="application/ld+json">'.$S['jsonld'].'</script>'; }
+    $headExtra = $seoTags.$headExtra;
     if (filled($w['data']['css'] ?? '')) { $headExtra .= '<style>'.$w['data']['css'].'</style>'; }
     $tail = (filled($w['data']['js'] ?? '') ? '<script>'.$w['data']['js'].'</script>' : '').$bodyExtra;
     if ($editor) {
@@ -51,13 +60,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title }}</title>
-    <meta name="description" content="{{ $page->seo_description ?: setting('site.meta_description') }}">
-    <link rel="canonical" href="{{ url()->current() }}">
+    @include('partials.seo-head')
     <link rel="icon" href="{{ media(setting('site.favicon')) }}">
-    <meta property="og:title" content="{{ $title }}">
-    <meta property="og:url" content="{{ url()->current() }}">
-    @if ($page->og_image)<meta property="og:image" content="{{ media($page->og_image) }}">@endif
     <style>:where(body){margin:0}</style>
     {!! $headExtra !!}
 </head>

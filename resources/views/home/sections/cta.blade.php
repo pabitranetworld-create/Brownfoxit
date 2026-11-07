@@ -4,7 +4,7 @@
         <div class="cta-box hh-cta reveal">
             <div class="hh-cta-fx" aria-hidden="true">@include('pages.builder.fx-tech', ['fx' => 'scan'])</div>
             @if (! empty($cta['image']))
-                <img class="cta-person" src="{{ media($cta['image']) }}" alt="">
+                <img loading="lazy" decoding="async" class="cta-person" src="{{ media($cta['image']) }}" alt="">
             @endif
             <div class="cta-content">
                 <h2 class="text-fill cta-title">{{ $cta['title'] ?? '' }}</h2>

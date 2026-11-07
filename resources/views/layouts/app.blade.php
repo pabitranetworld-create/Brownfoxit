@@ -8,16 +8,8 @@
         {{-- Hide animated elements only when JS runs; show everything if motion.js never loads. --}}
         <script>(function(d){var r=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;d.className+=' js-motion'+(r?' reduced':'');setTimeout(function(){if(!window.__motionReady){d.className=d.className.replace(/\bjs-motion\b/,'')}},2500)})(document.documentElement)</script>
     @endunless
-    <title>@yield('title', setting('site.meta_title', config('app.name')))</title>
-    <meta name="description" content="@yield('meta_description', setting('site.meta_description'))">
-    <link rel="canonical" href="{{ url()->current() }}">
+    @include('partials.seo-head')
     <link rel="icon" href="{{ media(setting('site.favicon')) }}">
-
-    <meta property="og:site_name" content="{{ setting('site.name', config('app.name')) }}">
-    <meta property="og:title" content="@yield('title', setting('site.meta_title', config('app.name')))">
-    <meta property="og:description" content="@yield('meta_description', setting('site.meta_description'))">
-    <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:type" content="website">
 
     <link rel="stylesheet" href="{{ asset('vendor/fonts/fonts.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/fontawesome/css/all.min.css') }}">

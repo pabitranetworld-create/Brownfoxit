@@ -97,3 +97,11 @@ if (! function_exists('store')) {
         return data_get((array) setting('store', []), $key, $default);
     }
 }
+
+if (! function_exists('seo')) {
+    /** The SEO tags of the current page (see App\Seo\Seo). */
+    function seo(): \App\Seo\Seo
+    {
+        return app(\App\Seo\Seo::class);
+    }
+}

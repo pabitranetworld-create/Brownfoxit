@@ -27,7 +27,7 @@
             <a href="{{ route('admin.messages.index') }}" @class(['on' => request()->routeIs('admin.messages.*')])><i class="fa-solid fa-inbox"></i> Messages @if ($newMsgs)<span class="adm-count">{{ $newMsgs }}</span>@endif</a>
 
             <p class="adm-nav-h">Home Page ও সেটিংস</p>
-            @foreach (array_diff_key(\App\Admin\Schema::sections(), ['store' => 1, 'store_emails' => 1]) as $sKey => $s)
+            @foreach (array_diff_key(\App\Admin\Schema::sections(), ['store' => 1, 'store_emails' => 1, 'seo' => 1, 'seo_integrations' => 1, 'mail' => 1]) as $sKey => $s)
                 <a href="{{ route('admin.settings.edit', $sKey) }}" @class(['on' => request()->route('section') === $sKey])><i class="{{ $s['icon'] }}"></i> {{ $s['title'] }}</a>
             @endforeach
 
@@ -37,6 +37,14 @@
                 <a href="{{ route('admin.resource.index', $rKey) }}" @class(['on' => request()->route('resource') === $rKey])><i class="{{ $r['icon'] }}"></i> {{ $r['title'] }}</a>
             @endforeach
             <a href="{{ route('admin.import.index') }}" @class(['on' => request()->routeIs('admin.import.*')])><i class="fa-brands fa-wordpress"></i> WordPress থেকে আনুন</a>
+
+            <p class="adm-nav-h">SEO</p>
+            <a href="{{ route('admin.seo.index') }}" @class(['on' => request()->routeIs('admin.seo.index', 'admin.seo.edit', 'admin.seo.audit*')])><i class="fa-solid fa-chart-line"></i> SEO ড্যাশবোর্ড</a>
+            <a href="{{ route('admin.seo.pages') }}" @class(['on' => request()->routeIs('admin.seo.pages')])><i class="fa-solid fa-list-check"></i> সব পেজের SEO</a>
+            <a href="{{ route('admin.redirects.index') }}" @class(['on' => request()->routeIs('admin.redirects.*')])><i class="fa-solid fa-diamond-turn-right"></i> Redirects</a>
+            <a href="{{ route('admin.settings.edit', 'seo') }}" @class(['on' => request()->route('section') === 'seo'])><i class="fa-solid fa-sliders"></i> SEO সেটিংস</a>
+            <a href="{{ route('admin.settings.edit', 'seo_integrations') }}" @class(['on' => request()->route('section') === 'seo_integrations'])><i class="fa-brands fa-google"></i> Google ও Bing</a>
+            <a href="{{ route('admin.mail.index') }}" @class(['on' => request()->routeIs('admin.mail.*') || request()->route('section') === 'mail'])><i class="fa-solid fa-envelope"></i> ইমেইল / Gmail</a>
 
             <p class="adm-nav-h">দোকান</p>
             @php($pendingOrders = rescue(fn () => \App\Models\Order::whereIn('status', ['on_hold', 'processing'])->count(), 0, false))

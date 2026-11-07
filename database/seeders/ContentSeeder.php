@@ -95,6 +95,28 @@ class ContentSeeder extends Seeder
             }
         }
 
+        // SEO defaults (once): the real domain is known for the two planned installs, so the draft domain
+        // (e.g. 1stdraft.brownfoxit.com) stays out of search results automatically.
+        $this->once('seo-defaults', function () {
+            $seo = (array) Setting::get('seo', []);
+            $host = strtolower((string) parse_url((string) config('app.url'), PHP_URL_HOST));
+            $prod = match (true) {
+                str_ends_with($host, 'brownfoxit.com') => 'brownfoxit.com',
+                str_ends_with($host, 'pabitra.net') => 'pabitra.net',
+                default => '',
+            };
+            $seo += [
+                'production_host' => $prod, 'visibility' => 'auto', 'force_https' => true, 'title_separator' => '|',
+                'org_name' => Setting::get('site.name') ?: 'Brown Fox IT', 'contact_email' => Setting::get('site.email'),
+                'locale' => 'en_US',
+            ];
+            Setting::put('seo', $seo);
+            $int = (array) Setting::get('seo_integrations', []);
+            Setting::put('seo_integrations', $int + ['consent_required' => true, 'privacy_url' => '/privacy-policy']);
+
+            return true;
+        });
+
         // The pabitra.net shop only had its theme's demo products (Hair Gel, Smart Watch …). They were
         // imported as drafts once; remove them again while still untouched (no fake products in the shop).
         $this->once('remove-pabitra-demo-products', function () {

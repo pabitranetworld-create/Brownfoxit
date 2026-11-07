@@ -3,8 +3,8 @@
     $pageSubtitle = setting('portfolio_page.subtitle') ?: 'A selection of websites, software, designs and videos we have worked on.';
 @endphp
 @extends('layouts.store')
-@section('title', $pageTitle.' · '.setting('site.name'))
-@section('meta_description', setting('portfolio_page.meta_description') ?: $pageSubtitle)
+@php(seo()->subject('portfolio'))
+@section('title', $pageTitle)
 
 @section('store')
     @if ($projects->isEmpty())

@@ -8,6 +8,8 @@
         @if ($item && ! empty($def['view_url']) && $item->slug)
             <a class="adm-btn ghost sm" href="{{ url(str_replace('{slug}', $item->slug, $def['view_url'])) }}" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> সাইটে দেখুন</a>
         @endif
+        @php($seoType = ['posts' => 'post', 'post_categories' => 'post_category', 'projects' => 'project', 'products' => 'product', 'product_categories' => 'product_category'][$key] ?? null)
+        @if ($item && $seoType)<a class="adm-btn ghost sm" href="{{ route('admin.seo.edit', [$seoType, $item->id]) }}"><i class="fa-solid fa-magnifying-glass-chart"></i> SEO</a>@endif
         @if ($item && ! empty($def['duplicate']))
             <form method="POST" action="{{ route('admin.resource.duplicate', [$key, $item->id]) }}">@csrf<button class="adm-btn ghost sm"><i class="fa-regular fa-copy"></i> কপি করুন</button></form>
         @endif

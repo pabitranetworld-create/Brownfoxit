@@ -3,7 +3,7 @@
 @section('title', 'Page not found · '.setting('site.name'))
 @section('body_class', 'page-inner tpl-default theme-dark top-dark')
 
-@push('head')<meta name="robots" content="noindex">@endpush
+@section('robots', 'noindex, follow')
 
 @section('content')
     @include('pages.builder.page-header', ['title' => 'Page not found', 'subtitle' => 'The page you were looking for has moved or no longer exists.'])

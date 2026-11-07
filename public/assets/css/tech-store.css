@@ -113,7 +113,8 @@
 .theme-dark .st-status.s-refunded { background: rgba(255,82,102,.12); color: #ff8a98; }
 .theme-dark .st-auth-row a { color: #ff8a5c; }
 .theme-dark .st-case-hero { box-shadow: 0 30px 70px rgba(0,0,0,0.26); }
-.theme-dark .st-tags span { background: rgba(255,255,255,.06); color: rgba(230,232,255,.8); }
+.theme-dark .st-tags span,
+.theme-dark .st-tags a { background: rgba(255,255,255,.06); color: rgba(230,232,255,.8); }
 .theme-dark .st-prevnext { border-top: 1px solid rgba(255,255,255,.08); }
 .theme-dark .st-prevnext small { color: rgba(220,224,255,.6); }
 .theme-dark .st-prevnext strong { color: #eef0ff; }

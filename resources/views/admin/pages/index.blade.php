@@ -36,6 +36,7 @@
                                 <td data-label="শেষ পরিবর্তন" class="adm-muted">{{ $p->updated_at->diffForHumans() }}</td>
                                 <td class="r adm-row-actions">
                                     <a href="{{ route('admin.pages.builder', $p) }}" class="adm-icon-btn" title="Builder-এ এডিট"><i class="fa-solid fa-pen-ruler"></i></a>
+                                    <a href="{{ route('admin.seo.edit', ['page', $p->id]) }}" class="adm-icon-btn" title="SEO"><i class="fa-solid fa-magnifying-glass-chart"></i></a>
                                     <form method="POST" action="{{ route('admin.pages.duplicate', $p) }}">@csrf<button class="adm-icon-btn" title="কপি বানান"><i class="fa-regular fa-copy"></i></button></form>
                                     @if ($p->isPublished() && ! $p->is_template)
                                         <form method="POST" action="{{ route('admin.pages.unpublish', $p) }}" data-confirm="পেজটা সাইট থেকে সরিয়ে Draft করবেন?">@csrf<button class="adm-icon-btn" title="Unpublish"><i class="fa-solid fa-eye-slash"></i></button></form>

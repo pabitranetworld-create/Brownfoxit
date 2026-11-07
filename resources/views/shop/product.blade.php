@@ -23,20 +23,9 @@
 @endphp
 @extends('layouts.app')
 
-@section('title', ($product->seo_title ?: $product->name).' · '.setting('site.name'))
-@section('meta_description', $product->seo_description ?: \Illuminate\Support\Str::limit(strip_tags((string) ($product->short_description ?: $product->description)), 155))
+@php(seo()->subject($product))
+@section('title', $product->name)
 @section('body_class', 'page-inner tpl-full_width theme-dark top-dark vp-page')
-@push('head')
-    @if ($product->status !== 'published')<meta name="robots" content="noindex, nofollow">@endif
-    <link rel="canonical" href="{{ $product->link() }}">
-    @if ($product->og_image || $product->image)<meta property="og:image" content="{{ media($product->og_image ?: $product->image) }}">@endif
-    <script type="application/ld+json">{!! json_encode(array_filter([
-        '@context' => 'https://schema.org', '@type' => 'Product', 'name' => $product->name, 'sku' => $product->sku,
-        'description' => \Illuminate\Support\Str::limit(strip_tags((string) ($product->short_description ?: $product->description)), 300),
-        'image' => $images ? array_map(fn ($i) => media($i), $images) : null,
-        'offers' => ['@type' => 'Offer', 'price' => number_format($product->fromPrice(), 2, '.', ''), 'priceCurrency' => store('currency', 'BDT'), 'availability' => $product->inStock($first) ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock', 'url' => $product->link()],
-    ]), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}</script>
-@endpush
 
 @section('content')
     {{-- ============ HERO ============ --}}

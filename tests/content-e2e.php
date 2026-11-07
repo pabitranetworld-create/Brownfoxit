@@ -33,7 +33,7 @@ foreach ($services as $slug => $s) {
     $p = get('/services/'.$slug);
     $html = html_entity_decode($p['body'], ENT_QUOTES);
     $text = preg_replace('/\s+/', ' ', strip_tags($html));
-    $ok = $p['code'] === 200 && str_contains($text, $s['hero']['title']) && str_contains($html, $s['faq'][0][0]) && str_contains($html, '"@type":"FAQPage"') && str_contains($html, '<title>'.$s['seo_title'].'</title>') && str_contains($html, 'start-a-project?service='.$slug);
+    $ok = $p['code'] === 200 && str_contains($text, $s['hero']['title']) && str_contains($html, $s['faq'][0][0]) && ! str_contains($html, '"@type":"FAQPage"') && str_contains($html, '"@type":"Service"') && str_contains($html, '<title>'.$s['seo_title'].'</title>') && str_contains($html, 'start-a-project?service='.$slug);
     ok($ok, "service page /services/{$slug}");
     $titles[] = $s['hero']['title'];
 }

@@ -14,6 +14,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
 
+// Search engines
+Route::get('/robots.txt', [\App\Http\Controllers\SeoController::class, 'robots'])->name('robots');
+Route::get('/sitemap.xml', [\App\Http\Controllers\SeoController::class, 'index'])->name('sitemap');
+Route::get('/sitemap-{section}.xml', [\App\Http\Controllers\SeoController::class, 'section'])->where('section', '[a-z]+')->name('sitemap.section');
+Route::get('/sitemap-{section}-{page}.xml', [\App\Http\Controllers\SeoController::class, 'section'])->where(['section' => '[a-z]+', 'page' => '[0-9]+'])->name('sitemap.page');
+
 // GitHub auto-deploy hook (see .github/workflows/deploy.yml). Protected by DEPLOY_TOKEN.
 Route::post('/_deploy', DeployController::class)->name('deploy.hook');
 
@@ -67,6 +73,7 @@ Route::get('/portfolio', [\App\Http\Controllers\PortfolioController::class, 'ind
 Route::get('/portfolio/{slug}', [\App\Http\Controllers\PortfolioController::class, 'show'])->name('portfolio.show');
 Route::get('/blog', [\App\Http\Controllers\BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/category/{slug}', [\App\Http\Controllers\BlogController::class, 'category'])->name('blog.category');
+Route::get('/blog/tag/{tag}', [\App\Http\Controllers\BlogController::class, 'tag'])->where('tag', '[^/]{1,80}')->name('blog.tag');
 Route::get('/blog/{slug}', [\App\Http\Controllers\BlogController::class, 'show'])->name('blog.show');
 
 Route::post('/forms/{type}', [\App\Http\Controllers\FormController::class, 'submit'])->where('type', 'contact|quote')->name('forms.submit');
@@ -145,6 +152,38 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::put('{gateway}', 'update')->where('gateway', '[a-z0-9_]+')->name('update');
             Route::post('{gateway}/toggle', 'toggle')->where('gateway', '[a-z0-9_]+')->name('toggle');
             Route::post('{gateway}/test', 'test')->where('gateway', '[a-z0-9_]+')->name('test');
+        });
+
+        // SEO
+        Route::prefix('seo')->name('seo.')->controller(Admin\SeoAdminController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('pages', 'pages')->name('pages');
+            Route::post('audit', 'audit')->name('audit');
+            Route::post('audit/links', 'auditLinks')->name('audit.links');
+            Route::post('validate-schema', 'validateSchema')->name('validate-schema');
+            Route::get('{type}/{key}', 'edit')->where(['type' => '[a-z_]+', 'key' => '[a-z0-9_-]+'])->name('edit');
+            Route::put('{type}/{key}', 'update')->where(['type' => '[a-z_]+', 'key' => '[a-z0-9_-]+'])->name('update');
+        });
+        Route::prefix('redirects')->name('redirects.')->controller(Admin\RedirectController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/', 'store')->name('store');
+            Route::put('{redirect}', 'update')->whereNumber('redirect')->name('update');
+            Route::post('{redirect}/toggle', 'toggle')->whereNumber('redirect')->name('toggle');
+            Route::delete('{redirect}', 'destroy')->whereNumber('redirect')->name('destroy');
+            Route::post('test', 'test')->name('test');
+            Route::post('wordpress', 'suggest')->name('suggest');
+            Route::post('wordpress/apply', 'apply')->name('apply');
+            Route::post('wordpress/clear', 'clearSuggestions')->name('clear');
+        });
+        Route::prefix('mail')->name('mail.')->controller(Admin\MailController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('gmail-app-password', 'appPassword')->name('app-password');
+            Route::post('google-client', 'saveClient')->name('client');
+            Route::get('google/connect', 'connect')->name('google.connect');
+            Route::get('google/callback', 'callback')->name('google.callback');
+            Route::post('google/disconnect', 'disconnect')->name('google.disconnect');
+            Route::post('test', 'test')->name('test');
+            Route::post('off', 'off')->name('off');
         });
 
         // WordPress import (Phase 3: portfolio + blog migration)

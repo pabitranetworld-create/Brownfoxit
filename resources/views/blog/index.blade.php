@@ -1,11 +1,13 @@
 @php
-    $pageTitle = $category ? $category->name : (setting('blog_page.title') ?: 'Blog & Insights');
-    $pageSubtitle = $category ? null : (setting('blog_page.subtitle') ?: 'Articles on websites, software, automation, design and video.');
-    $crumbs = $category ? [['label' => 'Blog', 'url' => route('blog.index')]] : [];
+    $tag = $tag ?? null;
+    $pageTitle = $category ? $category->name : ($tag ? 'Posts tagged “'.$tag.'”' : (setting('blog_page.title') ?: 'Blog & Insights'));
+    $pageSubtitle = $category ? ($category->description ?? null) : ($tag ? null : (setting('blog_page.subtitle') ?: 'Articles on websites, software, automation, design and video.'));
+    $crumbs = $category || $tag ? [['label' => 'Blog', 'url' => route('blog.index')]] : [];
 @endphp
 @extends('layouts.store')
-@section('title', ($q !== '' ? 'Search: '.$q.' · ' : '').$pageTitle.' · '.setting('site.name'))
-@section('meta_description', setting('blog_page.meta_description') ?: ($pageSubtitle ?: $pageTitle))
+@php(seo()->subject($category ?: (! empty($tag) ? null : 'blog')))
+@section('title', ($q !== '' ? 'Search: '.$q.' · ' : '').$pageTitle)
+@if (! empty($tag))@section('robots', 'noindex, follow')@endif
 @if ($q !== '')@section('robots', 'noindex, follow')@endif
 
 @section('store')

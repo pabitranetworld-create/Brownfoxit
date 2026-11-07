@@ -3,7 +3,7 @@
 @section('title', ($q !== '' ? 'Search: '.$q : 'Search').' · '.setting('site.name'))
 @section('body_class', 'page-inner tpl-default theme-dark top-dark')
 
-@push('head')<meta name="robots" content="noindex, follow">@endpush
+@section('robots', 'noindex, follow')
 
 @section('content')
     <section class="pb-page-header">
