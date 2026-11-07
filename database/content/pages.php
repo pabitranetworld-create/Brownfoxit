@@ -21,7 +21,6 @@ return [
         'template' => 'full_width',
         'layout' => fn () => B::layout(
             B::section([B::hero('About us', 'Digital work done thoughtfully, from idea to launch', 'from idea to launch', 'Brown Fox IT helps businesses build websites, software, automations, designs and videos that are useful, well made and easy to maintain.', [$quote, B::btn('Our services', '/services', 'ghost')], '', 'split', 'globe', ['from design to code', 'from plan to growth'])], B::top()),
-            B::section([B::marquee(['AI Automation', 'n8n Workflows', 'AI Agents', 'Website Development', 'WordPress', 'E-commerce', 'Custom Software', 'Web Applications', 'APIs & Integrations', 'Motion Graphics', 'Video Editing', 'Graphic Design', 'UI/UX Design'], 'band', 40)], B::light(['pt' => 30, 'pb' => 40, 'width' => 'full'])),
 
             B::section([
                 [55, [
@@ -83,7 +82,6 @@ return [
         'template' => 'full_width',
         'layout' => fn () => B::layout(
             B::section([B::hero('What we do', 'Services for building and growing online', 'growing online', 'From automating repetitive work to launching websites, software and videos — choose a service or tell us the problem and we will recommend the right mix.', [$quote, B::btn('Not sure? Ask us', '/contact', 'ghost', 'fa-regular fa-comment')], '', 'split', 'chip', ['automating work', 'launching faster', 'selling online'])], B::top()),
-            B::section([B::marquee(['AI Automation', 'n8n Workflows', 'AI Agents', 'Website Development', 'WordPress', 'E-commerce', 'Custom Software', 'Web Applications', 'APIs & Integrations', 'Motion Graphics', 'Video Editing', 'Graphic Design', 'UI/UX Design'], 'band', 40)], B::light(['pt' => 30, 'pb' => 40, 'width' => 'full'])),
 
             B::section([B::heading('AI Automation', 'Automate & integrate', 'l'), B::services('ai')], B::light(['anchor' => 'ai'])),
             B::section([B::heading('Website Development', 'Websites & stores', 'l'), B::services('web')], B::soft(['anchor' => 'web'])),

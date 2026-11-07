@@ -24,9 +24,6 @@ class ServicePage
             B::btn('How it works', '#process', 'ghost', 'fa-solid fa-arrow-down'),
         ], $s['image'] ?? '', 'split', self::visual($s))], B::top(['anchor' => 'top', 'fx' => self::backdrop($s)]));
 
-        // 2. Running band with the tools we use
-        $tools = array_map(fn ($t) => trim(preg_split('/\s*[(,]|\s+when\s|\s+such as\s/i', $t)[0]), $s['tools']);
-        $sections[] = B::section([B::marquee($tools, 'band', 32)], B::light(['pt' => 30, 'pb' => 40, 'width' => 'full']));
 
         // 3. Overview + who it is for
         $sections[] = B::section([

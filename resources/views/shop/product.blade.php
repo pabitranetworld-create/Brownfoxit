@@ -113,19 +113,6 @@
         </div>
     </section>
 
-    {{-- ============ RUNNING BAND ============ --}}
-    @if (count($features) >= 3)
-        <section class="pb-section sc-dark vp-band" style="--pt:24px;--pb:40px">
-            <div class="vb-marquee st-band" style="--mq-speed: {{ max(22, count($features) * 5) }}s">
-                <div class="vb-mq-row">
-                    @for ($copy = 0; $copy < 2; $copy++)
-                        <ul class="vb-mq-track" @if ($copy) aria-hidden="true" @endif>@foreach ($features as $i => $f)<li class="vb-mq-item"><i class="{{ $icons[$i % count($icons)] }}"></i><span>{{ \Illuminate\Support\Str::limit($f, 48) }}</span></li>@endforeach</ul>
-                    @endfor
-                </div>
-            </div>
-        </section>
-    @endif
-
     {{-- ============ FEATURES ============ --}}
     @if ($features)
         <section class="pb-section sc-dark bg-tech2 vp-section" style="--pt:90px;--pb:90px">

@@ -7,7 +7,6 @@
     {{-- Each section lives in its own file in resources/views/home/sections --}}
     @include('home.sections.hero')
     @include('home.sections.service-boxes')
-    @include('home.sections.tech-band')
     @include('home.sections.about')
     @include('home.sections.clients')
     @include('home.sections.service-cards')
