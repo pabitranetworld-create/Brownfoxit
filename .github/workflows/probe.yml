@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: "selftest, export-page or import"
+        description: "selftest, export-page, import or copy-uploads"
         default: selftest
       slug:
         description: "page slug (export-page) or site URL (import)"

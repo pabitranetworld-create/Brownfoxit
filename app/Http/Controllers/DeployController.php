@@ -43,6 +43,39 @@ class DeployController extends Controller
             return response()->json($result);
         }
 
+        if ($request->input('action') === 'copy-uploads') {
+            // Copy public/uploads from another Laravel copy of this site on the same hosting account
+            // (e.g. the draft domain). Without "slug": only lists candidates. Never overwrites existing files.
+            $home = dirname(base_path());
+            $candidates = [];
+            foreach (array_merge(glob($home.'/*/public/uploads', GLOB_ONLYDIR) ?: [], glob($home.'/*/*/public/uploads', GLOB_ONLYDIR) ?: []) as $dir) {
+                if (realpath($dir) === realpath(public_path('uploads'))) {
+                    continue;
+                }
+                $n = rescue(fn () => iterator_count(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS))), -1, false);
+                $candidates[substr($dir, strlen($home) + 1)] = $n;
+            }
+            $pick = (string) $request->input('slug');
+            if ($pick === '' || ! isset($candidates[$pick])) {
+                return response()->json(['home' => $home, 'candidates' => $candidates, 'hint' => 'run again with slug = one of the candidate keys']);
+            }
+            $src = $home.'/'.$pick;
+            $copied = $skipped = 0;
+            foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($src, \FilesystemIterator::SKIP_DOTS)) as $f) {
+                $rel = substr($f->getPathname(), strlen($src) + 1);
+                $dest = public_path('uploads/'.$rel);
+                if (is_file($dest) || str_contains($rel, '..') || preg_match('/\.(php\d?|phtml|phar)$/i', $rel)) {
+                    $skipped++;
+                    continue;
+                }
+                @mkdir(dirname($dest), 0755, true);
+                copy($f->getPathname(), $dest) ? $copied++ : $skipped++;
+            }
+            $missing = \App\Models\Media::query()->get(['path'])->filter(fn ($m) => ! is_file(public_path($m->path)))->count();
+
+            return response()->json(['from' => $pick, 'copied' => $copied, 'skipped' => $skipped, 'media_still_missing' => $missing]);
+        }
+
         if ($request->input('action') === 'selftest') {
             return response()->json($this->selfTest());
         }
