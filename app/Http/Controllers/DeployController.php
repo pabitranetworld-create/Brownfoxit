@@ -77,6 +77,19 @@ class DeployController extends Controller
     {
         $report = [
             'php' => PHP_VERSION,
+            'app_url' => config('app.url'),
+            'request_host' => request()->getHost(),
+            'request_secure' => request()->secure(),
+            'proxy_proto' => request()->header('X-Forwarded-Proto'),
+            'home' => rescue(function () {
+                $r = \App\Seo\PageFetcher::get('/');
+                preg_match_all('#<link rel="stylesheet" href="([^"]+)"#', $r['html'], $css);
+                preg_match('#<link rel="canonical" href="([^"]+)"#', $r['html'], $can);
+                preg_match('#<meta name="robots" content="([^"]+)"#', $r['html'], $rob);
+
+                return ['status' => $r['status'], 'bytes' => strlen($r['html']), 'css' => array_slice($css[1], 0, 6), 'canonical' => $can[1] ?? null, 'robots' => $rob[1] ?? null, 'error' => $r['error'] ?? null];
+            }, null, false),
+            'files' => ['root_htaccess' => is_file(base_path('.htaccess')), 'public_htaccess' => is_file(public_path('.htaccess')), 'style_css' => is_file(public_path('assets/css/style.css')), 'uploads' => is_dir(public_path('uploads')), 'wp_leftovers' => is_file(base_path('wp-config.php')) || is_dir(base_path('wp-content')), 'base' => base_path()],
             'db' => rescue(fn () => \Illuminate\Support\Facades\DB::select('select version() as v')[0]->v, 'n/a', false),
             'env' => app()->environment(),
             'config_cached' => app()->configurationIsCached(),
