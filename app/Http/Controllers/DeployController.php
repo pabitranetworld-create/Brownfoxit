@@ -87,7 +87,22 @@ class DeployController extends Controller
                 preg_match('#<link rel="canonical" href="([^"]+)"#', $r['html'], $can);
                 preg_match('#<meta name="robots" content="([^"]+)"#', $r['html'], $rob);
 
-                return ['status' => $r['status'], 'bytes' => strlen($r['html']), 'css' => array_slice($css[1], 0, 6), 'canonical' => $can[1] ?? null, 'robots' => $rob[1] ?? null, 'error' => $r['error'] ?? null];
+                return ['status' => $r['status'], 'location' => $r['location'], 'bytes' => strlen($r['html']), 'css' => array_slice($css[1], 0, 6), 'canonical' => $can[1] ?? null, 'robots' => $rob[1] ?? null, 'error' => $r['error'] ?? null];
+            }, null, false),
+            'seo_cfg' => rescue(fn () => ['production_host' => \App\Seo\Seo::cfg('production_host', ''), 'force_https' => \App\Seo\Seo::cfg('force_https', true), 'visibility' => \App\Seo\Seo::cfg('visibility', 'auto')], null, false),
+            'http' => rescue(function () {
+                $out = [];
+                foreach (['https://brownfoxit.com/', 'https://www.brownfoxit.com/', 'http://brownfoxit.com/', 'https://brownfoxit.com/assets/css/style.css', 'https://www.brownfoxit.com/assets/css/style.css', 'https://brownfoxit.com/vendor/fontawesome/css/all.min.css', 'https://brownfoxit.com/assets/js/main.js'] as $u) {
+                    $out[$u] = rescue(function () use ($u) {
+                        $res = \Illuminate\Support\Facades\Http::withOptions(['allow_redirects' => false, 'verify' => false])->timeout(15)->get($u);
+                        $body = $res->body();
+                        preg_match_all('#<link rel="stylesheet" href="([^"]+)"#', $body, $css);
+
+                        return ['status' => $res->status(), 'type' => $res->header('Content-Type'), 'location' => $res->header('Location'), 'bytes' => strlen($body), 'server' => $res->header('Server'), 'cache' => $res->header('X-LiteSpeed-Cache') ?: $res->header('X-Cache'), 'css' => array_slice($css[1] ?? [], 0, 8), 'head' => substr(preg_replace('/\s+/', ' ', $body), 0, 160)];
+                    }, fn ($e) => ['error' => substr($e->getMessage(), 0, 200)], false);
+                }
+
+                return $out;
             }, null, false),
             'files' => ['root_htaccess' => is_file(base_path('.htaccess')), 'public_htaccess' => is_file(public_path('.htaccess')), 'style_css' => is_file(public_path('assets/css/style.css')), 'uploads' => is_dir(public_path('uploads')), 'wp_leftovers' => is_file(base_path('wp-config.php')) || is_dir(base_path('wp-content')), 'base' => base_path()],
             'db' => rescue(fn () => \Illuminate\Support\Facades\DB::select('select version() as v')[0]->v, 'n/a', false),
