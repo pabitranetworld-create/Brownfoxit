@@ -17,6 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias(['admin' => \App\Http\Middleware\EnsureAdmin::class]);
         // Redirect manager, preferred domain and draft-domain noindex (see App\Http\Middleware\SeoRequests).
         $middleware->prepend(\App\Http\Middleware\SeoRequests::class);
+        // Behind Cloudflare / LiteSpeed proxies: believe the proxy about https (not about the host name).
+        $middleware->trustProxies(at: '*', headers: \Illuminate\Http\Request::HEADER_X_FORWARDED_FOR | \Illuminate\Http\Request::HEADER_X_FORWARDED_PORT | \Illuminate\Http\Request::HEADER_X_FORWARDED_PROTO);
         $middleware->redirectGuestsTo(fn ($request) => $request->is('admin', 'admin/*') ? route('admin.login') : route('account.login'));
         $middleware->redirectUsersTo(fn ($request) => $request->user()?->isAdmin() && $request->is('admin', 'admin/*') ? route('admin.dashboard') : route('account.dashboard'));
     })
