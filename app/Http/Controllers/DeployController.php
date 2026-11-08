@@ -104,6 +104,13 @@ class DeployController extends Controller
 
                 return $out;
             }, null, false),
+            'media' => rescue(function () {
+                $rows = \App\Models\Media::query()->latest('id')->get(['id', 'path']);
+                $missing = $rows->filter(fn ($m) => ! is_file(public_path($m->path)));
+                $disk = is_dir(public_path('uploads')) ? iterator_count(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(public_path('uploads'), \FilesystemIterator::SKIP_DOTS))) : -1;
+
+                return ['rows' => $rows->count(), 'missing_files' => $missing->count(), 'missing_sample' => $missing->take(5)->pluck('path'), 'present_sample' => $rows->diff($missing)->take(3)->pluck('path'), 'files_on_disk' => $disk, 'uploads_dirs' => is_dir(public_path('uploads')) ? array_values(array_diff(scandir(public_path('uploads')), ['.', '..'])) : []];
+            }, fn ($e) => ['error' => $e->getMessage()], false),
             'files' => ['root_htaccess' => is_file(base_path('.htaccess')), 'public_htaccess' => is_file(public_path('.htaccess')), 'style_css' => is_file(public_path('assets/css/style.css')), 'uploads' => is_dir(public_path('uploads')), 'wp_leftovers' => is_file(base_path('wp-config.php')) || is_dir(base_path('wp-content')), 'base' => base_path()],
             'db' => rescue(fn () => \Illuminate\Support\Facades\DB::select('select version() as v')[0]->v, 'n/a', false),
             'env' => app()->environment(),
