@@ -21,7 +21,6 @@
             @if (! empty($hero['badge_image']))
                 <img class="hero-badge float-y" src="{{ media($hero['badge_image']) }}" alt="">
             @endif
- <div class="hh-ring" aria-hidden="true"><i></i><i></i><i></i></div>
             <span class="hh-chip c1" aria-hidden="true"><i class="fa-solid fa-code"></i></span>
             <span class="hh-chip c2" aria-hidden="true"><i class="fa-solid fa-robot"></i></span>
             <span class="hh-chip c3" aria-hidden="true"><i class="fa-solid fa-pen-nib"></i></span>

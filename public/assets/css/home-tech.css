@@ -19,12 +19,6 @@
 /* ---------- hero ---------- */
 .hero { isolation: isolate; }
 .hero .tf-circuit { opacity: .55; -webkit-mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent); mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent); }
-/* neon rings behind the photo */
-.hh-ring { position: absolute; left: 50%; top: 48%; width: min(520px, 92%); aspect-ratio: 1; transform: translate(-50%, -50%); z-index: 0; pointer-events: none; }
-.hh-ring i { position: absolute; inset: 0; border-radius: 50%; }
-.hh-ring i:nth-child(1) { padding: 2px; background: conic-gradient(from var(--vb-a), transparent 0 50%, #22d3ee 65%, #a855f7 80%, #ff5266 92%, transparent); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: hh-spina 6s linear infinite; filter: drop-shadow(0 0 10px rgba(168,85,247,.7)); }
-.hh-ring i:nth-child(2) { inset: 9%; border: 1.5px dashed rgba(255,255,255,.14); animation: hh-spin 40s linear infinite reverse; }
-.hh-ring i:nth-child(3) { inset: -7%; border: 1px solid rgba(34,211,238,.12); border-top-color: rgba(34,211,238,.65); border-right-color: rgba(255,82,102,.5); animation: hh-spin 12s linear infinite; }
 /* floating glass icons around the photo */
 .hh-chip { position: absolute; z-index: 3; display: grid; place-items: center; width: 58px; height: 58px; border-radius: 18px; font-size: 22px; color: #fff; background: rgba(20,12,38,.55); border: 1px solid rgba(255,255,255,.16); backdrop-filter: blur(10px); box-shadow: 0 14px 34px -10px rgba(0,0,0,.6), inset 0 0 18px rgba(255,255,255,.05); animation: hh-float 6s ease-in-out infinite; }
 .hh-chip i { background: linear-gradient(135deg, var(--c1), var(--c2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
@@ -115,9 +109,9 @@
 }
 
 /* ---------- off screen / reduced motion ---------- */
-.vb-off .tf-circuit *, .vb-off .tf-binary i, .vb-off .tf-hex i, .vb-off .tf-scan *, .vb-off .hh-ring i, .vb-off .hh-chip, .vb-off .hh-band-track, .vb-off .hh-orbit i { animation-play-state: paused !important; }
+.vb-off .tf-circuit *, .vb-off .tf-binary i, .vb-off .tf-hex i, .vb-off .tf-scan *, .vb-off .hh-chip, .vb-off .hh-band-track, .vb-off .hh-orbit i { animation-play-state: paused !important; }
 @media (prefers-reduced-motion: reduce) {
-  .hh-ring i, .hh-chip, .hh-shine, .hh-typed .tx-rotate, .hh-tags li, .hh-band-row, .hh-band-track, .sbox::before, .sbox-icon, .hh-orbit i, .progress-bar .bar::after,
+  .hh-chip, .hh-shine, .hh-typed .tx-rotate, .hh-tags li, .hh-band-row, .hh-band-track, .sbox::before, .sbox-icon, .hh-orbit i, .progress-bar .bar::after,
   .counter-box::before, .counter-box .cnum, .step-num::after, .hh-line i, .hh-cta::after, .tf-circuit *, .tf-binary i, .tf-hex i, .tf-scan * { animation: none !important; }
   .hh-band-row { transform: none; } .hh-band-row.r2 { display: none; } .hh-band-row.r1 { overflow-x: auto; }
   .tf-binary, .hh-line i { display: none; }
