@@ -19,13 +19,6 @@
 /* ---------- hero ---------- */
 .hero { isolation: isolate; }
 .hero .tf-circuit { opacity: .55; -webkit-mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent); mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent); }
-/* floating glass icons around the photo */
-.hh-chip { position: absolute; z-index: 3; display: grid; place-items: center; width: 58px; height: 58px; border-radius: 18px; font-size: 22px; color: #fff; background: rgba(20,12,38,.55); border: 1px solid rgba(255,255,255,.16); backdrop-filter: blur(10px); box-shadow: 0 14px 34px -10px rgba(0,0,0,.6), inset 0 0 18px rgba(255,255,255,.05); animation: hh-float 6s ease-in-out infinite; }
-.hh-chip i { background: linear-gradient(135deg, var(--c1), var(--c2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.hh-chip.c1 { --c1: #00f0ff; --c2: #004eff; top: 14%; left: 2%; }
-.hh-chip.c2 { --c1: #ff9a3e; --c2: #ff5266; top: 6%; right: 8%; animation-delay: -1.5s; }
-.hh-chip.c3 { --c1: #dcf188; --c2: #1dae22; top: 48%; right: -2%; animation-delay: -3s; }
-.hh-chip.c4 { --c1: #ff00cc; --c2: #8400ff; bottom: 26%; left: -3%; animation-delay: -4.5s; }
 /* title: a light sweep passes across it */
 .hh-shine { background: linear-gradient(110deg, #fff 0 42%, #ffd9b8 47%, #ff9a3e 50%, #fff 55% 100%); background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: hh-shine 6s ease-in-out infinite; }
 /* typed services line + neon tags */
@@ -98,8 +91,6 @@
 
 /* ---------- responsive ---------- */
 @media (max-width: 991px) {
-  .hh-chip { width: 46px; height: 46px; font-size: 17px; border-radius: 14px; }
-  .hh-chip.c3 { right: 2%; } .hh-chip.c4 { left: 2%; }
   .hh-typed { justify-content: center; } .hh-tags { justify-content: center; }
 }
 @media (max-width: 575px) {
@@ -109,9 +100,9 @@
 }
 
 /* ---------- off screen / reduced motion ---------- */
-.vb-off .tf-circuit *, .vb-off .tf-binary i, .vb-off .tf-hex i, .vb-off .tf-scan *, .vb-off .hh-chip, .vb-off .hh-band-track, .vb-off .hh-orbit i { animation-play-state: paused !important; }
+.vb-off .tf-circuit *, .vb-off .tf-binary i, .vb-off .tf-hex i, .vb-off .tf-scan *, .vb-off .hh-band-track, .vb-off .hh-orbit i { animation-play-state: paused !important; }
 @media (prefers-reduced-motion: reduce) {
-  .hh-chip, .hh-shine, .hh-typed .tx-rotate, .hh-tags li, .hh-band-row, .hh-band-track, .sbox::before, .sbox-icon, .hh-orbit i, .progress-bar .bar::after,
+  .hh-shine, .hh-typed .tx-rotate, .hh-tags li, .hh-band-row, .hh-band-track, .sbox::before, .sbox-icon, .hh-orbit i, .progress-bar .bar::after,
   .counter-box::before, .counter-box .cnum, .step-num::after, .hh-line i, .hh-cta::after, .tf-circuit *, .tf-binary i, .tf-hex i, .tf-scan * { animation: none !important; }
   .hh-band-row { transform: none; } .hh-band-row.r2 { display: none; } .hh-band-row.r1 { overflow-x: auto; }
   .tf-binary, .hh-line i { display: none; }
