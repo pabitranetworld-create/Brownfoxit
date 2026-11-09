@@ -161,14 +161,26 @@
 
   /* ---------- 6. Mobile menu ---------- */
   var toggle = document.getElementById("menuToggle"), nav = document.getElementById("mainNav");
-  if (toggle && nav) toggle.addEventListener("click", function () { toggle.classList.toggle("open"); nav.classList.toggle("open"); });
+  function setNav(open) {
+    if (!toggle || !nav) return;
+    toggle.classList.toggle("open", open); nav.classList.toggle("open", open);
+    document.body.classList.toggle("nav-lock", open);
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+  if (toggle && nav) toggle.addEventListener("click", function () { setNav(!nav.classList.contains("open")); });
   if (nav) nav.querySelectorAll("a").forEach(function (a) {
     a.addEventListener("click", function (ev) {
       var li = a.parentElement;
       if (li.classList.contains("has-sub") && window.innerWidth < 992) { ev.preventDefault(); li.classList.toggle("open"); return; }
-      toggle.classList.remove("open"); nav.classList.remove("open");
+      setNav(false);
     });
   });
+  /* tap outside the drawer or press Esc to close it */
+  document.addEventListener("click", function (ev) {
+    if (nav && nav.classList.contains("open") && !nav.contains(ev.target) && !toggle.contains(ev.target)) setNav(false);
+  });
+  document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && nav && nav.classList.contains("open")) setNav(false); });
+  window.addEventListener("resize", function () { if (window.innerWidth >= 992 && nav && nav.classList.contains("open")) setNav(false); });
 
   /* ---------- 7. Video popup ---------- */
   var modal = document.getElementById("videoModal"), frame = document.getElementById("videoFrame");

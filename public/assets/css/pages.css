@@ -568,7 +568,9 @@ body.theme-light { --body-bg: #ffffff; background: #fff; color: #4b4763; }
 @media (max-width: 991px) {
   .theme-light .main-nav { background: #fff; }
   .theme-light .main-nav > ul > li > a { color: #17112e !important; }
-  .theme-light .main-nav.open { box-shadow: -20px 0 40px rgba(23,17,46,.15); }
+  .theme-light .main-nav.open { box-shadow: 0 0 0 100vmax rgba(23,17,46,.35), -20px 0 40px rgba(23,17,46,.15); }
+  .theme-light .main-nav > ul > li { border-color: rgba(23,17,46,.08); }
+  .theme-light .sub-menu a { color: #4a4566; border-left-color: rgba(23,17,46,.12); }
   .theme-light .site-header .menu-toggle.open span { background: #17112e; }
 }
 
