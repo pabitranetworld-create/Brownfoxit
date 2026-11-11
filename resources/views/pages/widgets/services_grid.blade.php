@@ -1,6 +1,6 @@
 @php
     $items = \App\Models\Service::active()->where('show_in_catalog', true)->ordered()
-        ->when(($d['group'] ?? '') === 'main', fn ($q) => $q->whereIn('group', ['ai', 'web', 'software', 'media']))
+        ->when(($d['group'] ?? '') === 'main', fn ($q) => $q->whereIn('group', array_keys(\App\Models\Service::GROUPS)))
         ->when(($d['group'] ?? '') === 'none', fn ($q) => $q->where(fn ($w) => $w->whereNull('group')->orWhere('group', '')))
         ->when(! in_array($d['group'] ?? '', ['', 'main', 'none'], true), fn ($q) => $q->where('group', $d['group']))
         ->when(filled($d['exclude'] ?? ''), fn ($q) => $q->where(fn ($w) => $w->whereNull('url')->orWhere('url', '!=', $d['exclude'])))

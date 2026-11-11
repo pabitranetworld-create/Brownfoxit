@@ -31,6 +31,7 @@
         <a href="{{ link_to_url(request()->routeIs('home') ? '/#contact' : '/contact') }}" class="btn btn-gradient btn-sm header-btn">
             <i class="fa-regular fa-comments"></i> Contact Us
         </a>
+        <a href="{{ auth()->check() && ! auth()->user()->isAdmin() ? route('account.dashboard') : route('account.login') }}" class="hdr-cart hdr-acc" aria-label="My Account" title="My Account"><i class="fa-solid fa-user"></i></a>
         @if (store('show_cart_icon', true))
             @php($cartCount = request()->cookie(\App\Store\CartService::COOKIE) || auth()->check() ? rescue(fn () => app(\App\Store\CartService::class)->count(), 0, false) : 0)
             <a href="{{ route('cart.show') }}" class="hdr-cart" aria-label="Cart ({{ $cartCount }})"><i class="fa-solid fa-bag-shopping"></i>@if ($cartCount)<b>{{ $cartCount }}</b>@endif</a>

@@ -367,6 +367,14 @@
       });
     });
   });
+  /* show / hide password */
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-pass-eye]"); if (!b) return;
+    var i = b.parentElement.querySelector("input"); if (!i) return;
+    var show = i.type === "password"; i.type = show ? "text" : "password";
+    b.innerHTML = show ? '<i class="fa-regular fa-eye-slash"></i>' : '<i class="fa-regular fa-eye"></i>';
+    b.setAttribute("aria-label", show ? "Hide password" : "Show password");
+  });
   /* Checkout coupon: applied / removed in place, the totals and the "Place order" amount update without a reload */
   var cp = document.querySelector("[data-coupon]");
   if (cp) {

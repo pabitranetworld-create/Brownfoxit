@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\DownloadPermission;
 use App\Models\Order;
 use App\Models\User;
+use App\Support\Phone;
 use App\Support\SiteMail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,9 +27,13 @@ class AccountController extends Controller
 
     public function login(Request $request): RedirectResponse
     {
-        $data = $request->validate(['email' => ['required', 'email'], 'password' => ['required', 'string']]);
-        if (! Auth::attempt($data, $request->boolean('remember'))) {
-            return back()->withInput($request->only('email'))->withErrors(['email' => 'The email or password is not correct.']);
+        $data = $request->validate(['login' => ['required', 'string', 'max:190'], 'password' => ['required', 'string']], [], ['login' => 'email or mobile number']);
+        $login = trim($data['login']);
+        $user = Phone::looksLikePhone($login)
+            ? User::where('phone', Phone::normalize($login))->first()
+            : User::where('email', $login)->first();
+        if (! $user || ! Auth::attempt(['id' => $user->id, 'password' => $data['password']], $request->boolean('remember'))) {
+            return back()->withInput($request->only('login'))->withErrors(['login' => 'The email/mobile number or password is not correct.']);
         }
         $request->session()->regenerate();
         $this->claimGuestOrders($request->user());
@@ -49,11 +54,17 @@ class AccountController extends Controller
         if (filled($request->input('website'))) {
             return redirect()->route('account.login'); // honeypot
         }
+        $request->merge(['phone' => Phone::normalize($request->input('phone'))]);
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email:filter', 'max:190', Rule::unique('users', 'email')],
-            'password' => ['required', 'string', 'min:8', 'max:100', 'confirmed'],
-        ], ['email.unique' => 'An account with this email already exists. Try logging in or resetting your password.']);
+            'phone' => ['required', 'string', 'min:7', 'max:20', Rule::unique('users', 'phone')],
+            'password' => ['required', 'string', 'min:8', 'max:100'],
+        ], [
+            'email.unique' => 'An account with this email already exists. Try logging in or resetting your password.',
+            'phone.unique' => 'An account with this mobile number already exists. Try logging in.',
+            'phone.required' => 'Please enter your mobile number.',
+        ], ['phone' => 'mobile number']);
         $user = User::create($data + ['role' => User::ROLE_CUSTOMER]);
         Auth::login($user);
         $request->session()->regenerate();
@@ -144,10 +155,11 @@ class AccountController extends Controller
     public function saveProfile(Request $request): RedirectResponse
     {
         $u = $request->user();
+        $request->merge(['phone' => Phone::normalize($request->input('phone'))]);
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email:filter', 'max:190', Rule::unique('users', 'email')->ignore($u->id)],
-            'phone' => ['nullable', 'string', 'max:40'],
+            'phone' => ['nullable', 'string', 'max:20', Rule::unique('users', 'phone')->ignore($u->id)],
             'address' => ['nullable', 'string', 'max:255'],
             'city' => ['nullable', 'string', 'max:100'],
             'postcode' => ['nullable', 'string', 'max:20'],

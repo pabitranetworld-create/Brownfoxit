@@ -16,32 +16,44 @@ return [
     /* ------------------------------------------------------------------ About */
     'about' => [
         'title' => 'About Brown Fox IT',
-        'seo_title' => 'About Brown Fox IT — Web, Software, AI Automation & Video',
-        'seo_description' => 'Brown Fox IT, powered by Pabitra.net, helps businesses with websites, custom software, AI automation, design and video — with clear communication and honest advice.',
+        'seo_title' => 'About Brown Fox IT — Arjun Kumar (Pabitra), CEO & Head of Technology',
+        'seo_description' => 'Brown Fox IT is led by Arjun Kumar (Pabitra), CEO & Head of Technology — AI automation, n8n, software & development, graphic & video and digital marketing.',
         'template' => 'full_width',
         'layout' => fn () => B::layout(
-            B::section([B::hero('About us', 'Digital work done thoughtfully, from idea to launch', 'from idea to launch', 'Brown Fox IT helps businesses build websites, software, automations, designs and videos that are useful, well made and easy to maintain.', [$quote, B::btn('Our services', '/services', 'ghost')], '', 'split', 'globe', ['from design to code', 'from plan to growth'])], B::top()),
-
+            // 1. Founder — first and large
             B::section([
-                [55, [
-                    B::heading('Who we are', 'Brown Fox IT'),
-                    B::text('<p>Brown Fox IT is a digital solutions studio powered by <a href="https://pabitra.net" target="_blank" rel="noopener">Pabitra.net</a>. It was founded by Arjun Kumar (Pabitra) — Pabitra Sarkar — a full stack web developer and digital solutions expert with more than 15 years of experience in web development, design and video.</p><p>We bring strategy, design and technology together: websites that explain your business clearly, software that fits your processes, automations that remove repetitive work, and visual content that makes your brand recognisable.</p><p>We work remotely, so your location and time zone are not a barrier, and we keep communication simple: clear proposals, regular updates and honest answers about what will and will not work.</p>', 'large'),
+                [42, [B::image('uploads/2026/05/Arjun-Kumar-Pabitra-007.png', 'Arjun Kumar (Pabitra), CEO & Head of Technology at Brown Fox IT', ['anim' => 'fade-right'])]],
+                [58, [
+                    B::heading('Arjun Kumar (Pabitra)', 'Founder · CEO & Head of Technology', 'xxl', 'h1'),
+                    B::heading('Next-Gen Digital Solutions Expert', '', 'l', 'p', ['color' => 'gradient']),
+                    B::text('<p>Arjun Kumar (Pabitra) founded Brown Fox IT and leads its technology work. He brings more than 15 years of experience helping businesses build and grow their digital presence — from websites and software to brand design and video.</p><p>Today he focuses on next-generation solutions: AI automation and n8n workflows that remove repetitive work, software that fits how a business runs, and creative work that makes a brand recognisable.</p>', 'large'),
+                    B::list(['15+ years of experience', 'AI Automation & n8n workflows', 'Software & Development', 'Graphic & Video', 'Digital Marketing', 'Based in Gazipur, Bangladesh — working with clients worldwide'], 'check', '2'),
+                    B::w('buttons', ['buttons' => [$quote, B::btn('Connect on LinkedIn', 'https://www.linkedin.com/in/pabitra-sarkar/', 'ghost', 'fa-brands fa-linkedin-in')], 'size' => 'm'], ['anim' => 'fade-up', 'mt' => 10]),
                 ]],
-                [45, [B::image('uploads/2026/05/Arjun-Kumar-Pabitra-007.png', 'Arjun Kumar (Pabitra), founder of Brown Fox IT')], ['anim' => 'fade-left']],
+            ], B::top(['valign' => 'center', 'css_class' => 'ab-founder'])),
+
+            // 2. The company
+            B::section([
+                [50, [
+                    B::heading('Who we are', 'Brown Fox IT'),
+                    B::text('<p>Brown Fox IT is a digital solutions studio powered by <a href="https://pabitra.net" target="_blank" rel="noopener">Pabitra.net</a>. We bring strategy, design and technology together: automations that save time, software and websites that fit your processes, and visual content that makes your brand stand out.</p><p>We work remotely, so your location and time zone are not a barrier, and we keep communication simple: clear proposals, regular updates and honest answers about what will and will not work.</p>', 'large'),
+                ]],
+                [50, [B::boxes([
+                    ['fa-solid fa-robot', 'AI Automation', 'AI workflows, assistants and AI features for existing software.', '/services/ai-automation'],
+                    ['fa-solid fa-diagram-project', 'n8n Automation', 'n8n workflows that connect your apps, APIs and AI.', '/services/n8n-automation'],
+                    ['fa-solid fa-code', 'Software & Development', 'Websites, web apps and custom business software.', '/services#software'],
+                    ['fa-solid fa-pen-ruler', 'Graphic & Video', 'Brand design, UI/UX, motion graphics and video.', '/services#creative'],
+                    ['fa-solid fa-bullhorn', 'Digital Marketing', 'Campaign creatives, social content and reporting.', '/services#marketing'],
+                ], '1', 'plain')], ['anim' => 'fade-left']],
             ], B::light(['valign' => 'center'])),
 
+            // 3. Team
             B::section([
-                B::heading('What we focus on', 'Services', 'xl', 'h2', ['text_align' => 'center']),
-                B::text('<p>Four main areas, plus design, marketing assets, data and support services around them.</p>', 'normal', ['text_align' => 'center']),
-                B::boxes([
-                    ['fa-solid fa-robot', 'AI Automation', 'Workflow automation, n8n integrations, AI agents and AI features for existing software.', '/services/ai-automation'],
-                    ['fa-solid fa-laptop-code', 'Website Development', 'Business websites, WordPress, e-commerce, landing pages and website care.', '/services/website-development'],
-                    ['fa-solid fa-code', 'Software Development', 'Custom software, web applications, business systems, APIs and MVPs.', '/services/custom-software-development'],
-                    ['fa-solid fa-film', 'Motion Graphics & Video', 'Motion graphics, video editing, explainer and product demo videos.', '/services/motion-graphics'],
-                ], '4'),
-                B::w('buttons', ['buttons' => [B::btn('See all services', '/services', 'ghost')], 'size' => 'm'], ['anim' => 'fade-up', 'text_align' => 'center', 'mt' => 30]),
-            ], B::soft()),
+                B::heading('Our Professional Team', 'The people behind the work', 'xl', 'h2', ['text_align' => 'center']),
+                B::w('team', ['count' => 0, 'columns' => '4'], ['anim' => 'fade-up', 'anim_stagger' => 90]),
+            ], B::soft(['anchor' => 'team'])),
 
+            // 4. How we work
             B::section([
                 B::heading('How we like to work', 'Our approach', 'xl', 'h2', ['text_align' => 'center']),
                 B::boxes([
@@ -55,20 +67,9 @@ return [
             ], B::light()),
 
             B::section([
-                B::heading('From first message to launch', 'Process', 'xl', 'h2', ['text_align' => 'center']),
-                B::steps([
-                    ['Talk', 'You tell us about the project; we ask questions and suggest options.'],
-                    ['Proposal', 'You receive scope, timeline and cost in writing.'],
-                    ['Build', 'We work in stages and share progress regularly.'],
-                    ['Launch & support', 'We launch, hand over and stay available for support.'],
-                ]),
-                B::w('buttons', ['buttons' => [B::btn('How we work in detail', '/our-process', 'link')], 'size' => 'm'], ['anim' => 'fade-up', 'text_align' => 'center', 'mt' => 20]),
-            ], B::soft()),
-
-            B::section([
                 B::heading('What clients say', 'Testimonials', 'xl', 'h2', ['text_align' => 'center']),
                 B::w('testimonials', ['count' => 6, 'style' => 'slider'], ['anim' => 'fade-up']),
-            ], B::light()),
+            ], B::soft()),
 
             B::section([B::cta('Let’s talk about your project', 'Tell us what you want to build or improve. We reply with questions, ideas and next steps.', [$quote, $contact])], B::light(['fx' => 'confetti', 'pt' => 20, 'pb' => 110]))
         ),
@@ -77,20 +78,17 @@ return [
     /* --------------------------------------------------------------- Services */
     'services' => [
         'title' => 'Services',
-        'seo_title' => 'Services — AI Automation, Websites, Software, Design & Video | Brown Fox IT',
-        'seo_description' => 'Explore Brown Fox IT services: AI automation and n8n, website and e-commerce development, custom software and web apps, UI/UX and graphic design, motion graphics and video.',
+        'seo_title' => 'Services — AI Automation, n8n, Software, Graphic & Video | Brown Fox IT',
+        'seo_description' => 'Brown Fox IT services: AI automation, n8n workflows, software and website development, graphic design and video, and digital marketing.',
         'template' => 'full_width',
         'layout' => fn () => B::layout(
             B::section([B::hero('What we do', 'Services for building and growing online', 'growing online', 'From automating repetitive work to launching websites, software and videos — choose a service or tell us the problem and we will recommend the right mix.', [$quote, B::btn('Not sure? Ask us', '/contact', 'ghost', 'fa-regular fa-comment')], '', 'split', 'chip', ['automating work', 'launching faster', 'selling online'])], B::top()),
 
             B::section([B::heading('AI Automation', 'Automate & integrate', 'l'), B::services('ai')], B::light(['anchor' => 'ai'])),
-            B::section([B::heading('Website Development', 'Websites & stores', 'l'), B::services('web')], B::soft(['anchor' => 'web'])),
-            B::section([B::heading('Software Development', 'Custom software', 'l'), B::services('software')], B::light(['anchor' => 'software'])),
-            B::section([B::heading('Motion Graphics & Video', 'Video & animation', 'l'), B::services('media')], B::soft(['anchor' => 'media'])),
-            B::section([
-                [50, [B::heading('Design', 'Brand & interface', 'l'), B::services('design', 0, '', '1')]],
-                [50, [B::heading('Marketing, data & support', 'Grow & improve', 'l'), B::services('growth', 0, '', '1')]],
-            ], B::light(['valign' => 'start', 'anchor' => 'more'])),
+            B::section([B::heading('n8n Automation', 'Workflows & integrations', 'l'), B::services('n8n')], B::soft(['anchor' => 'n8n'])),
+            B::section([B::heading('Software & Development', 'Websites, web apps & software', 'l'), B::services('software')], B::light(['anchor' => 'software'])),
+            B::section([B::heading('Graphic & Video', 'Design, motion & video', 'l'), B::services('creative')], B::soft(['anchor' => 'creative'])),
+            B::section([B::heading('Digital Marketing', 'Campaigns, content & data', 'l'), B::services('marketing')], B::light(['anchor' => 'marketing'])),
             B::section([B::services('none', 0, '', '3', 'More services', 'Also available')], B::light(['pt' => 0, 'pb' => 0])),
 
             B::section([
@@ -236,31 +234,23 @@ return [
     /* ----------------------------------------------------------------- Contact */
     'contact' => [
         'title' => 'Contact',
-        'header_subtitle' => 'Questions, ideas or a project in mind? Send a message and we will get back to you.',
-        'seo_title' => 'Contact Brown Fox IT',
-        'seo_description' => 'Contact Brown Fox IT by email, WhatsApp or the contact form. Tell us about your website, software, automation, design or video project.',
+        'header_subtitle' => 'Questions, ideas or a project in mind? The fastest way to reach us is WhatsApp.',
+        'seo_title' => 'Contact Brown Fox IT — WhatsApp, Email & Contact Form',
+        'seo_description' => 'Contact Brown Fox IT on WhatsApp, by phone or email, or with the contact form. Tell us about your AI automation, software, design, video or marketing project.',
         'layout' => fn () => B::layout(
+            B::section([B::w('contact_hub', ['heading' => 'Let’s talk about your project', 'text' => 'The quickest way to reach us is WhatsApp — send a message and we usually reply the same day. You can also call, email or use the form below.', 'button' => 'Chat on WhatsApp'], ['anim' => 'fade-up'])], B::light(['pt' => 40])),
             B::section([
                 [40, [
-                    B::heading('Get in touch', 'Contact'),
-                    B::text('<p>Use the form or reach us directly. For a new project, the <a href="/start-a-project">project form</a> helps us prepare a better first answer.</p>'),
+                    B::heading('Prefer to write?', 'Contact form', 'l'),
+                    B::text('<p>Send us a message and we will reply by email. For a new project, the <a href="/start-a-project">project form</a> helps us prepare a better first answer.</p>'),
                     B::boxes([
-                        ['fa-regular fa-envelope', 'Email', 'hello@pabitra.net', 'mailto:hello@pabitra.net', 'Write an email'],
-                        ['fa-brands fa-whatsapp', 'WhatsApp', '+880 1305 641548', 'https://wa.me/message/TFMPI57DW4PUM1', 'Chat on WhatsApp'],
-                        ['fa-solid fa-location-dot', 'Location', 'Noibari, Vadun, Pubail, Gazipur, Bangladesh — working remotely with clients worldwide.'],
-                        ['fa-brands fa-linkedin', 'LinkedIn', 'linkedin.com/in/pabitra-sarkar', 'https://www.linkedin.com/in/pabitra-sarkar/', 'View profile'],
+                        ['fa-solid fa-briefcase', 'Planning a project?', 'Share scope, budget range and timeline.', '/start-a-project', 'Start a project'],
+                        ['fa-solid fa-circle-question', 'Common questions', 'Pricing, ownership, revisions and support.', '/faq', 'Read the FAQ'],
+                        ['fa-solid fa-route', 'How we work', 'What happens after your first message.', '/our-process', 'See the process'],
                     ], '1', 'plain'),
                 ]],
-                [60, [B::form('contact', 'Send message')], ['anim' => 'fade-left']],
-            ], B::light(['valign' => 'start'])),
-            B::section([
-                B::heading('Before you write', 'Good to know', 'l', 'h2', ['text_align' => 'center']),
-                B::boxes([
-                    ['fa-solid fa-briefcase', 'Planning a project?', 'Use the project form to share scope, budget range and timeline.', '/start-a-project', 'Start a project'],
-                    ['fa-solid fa-circle-question', 'Common questions', 'Pricing, ownership, revisions and support are covered in the FAQ.', '/faq', 'Read the FAQ'],
-                    ['fa-solid fa-route', 'How we work', 'See what happens after your first message.', '/our-process', 'See the process'],
-                ], '3'),
-            ], B::soft())
+                [60, [B::form('contact', 'Send message')], ['anim' => 'fade-left', 'box' => 'card', 'pad' => 34]],
+            ], B::soft(['valign' => 'start', 'anchor' => 'form']))
         ),
     ],
 

@@ -68,7 +68,7 @@ class CheckoutController extends Controller
             if (\App\Models\User::where('email', $data['email'])->exists()) {
                 return back()->withInput()->withErrors(['email' => 'An account with this email already exists. Please log in first.']);
             }
-            $user = \App\Models\User::create(['name' => $data['name'], 'email' => $data['email'], 'password' => $data['password'], 'role' => 'customer', 'phone' => $data['phone'] ?? null]);
+            $user = \App\Models\User::create(['name' => $data['name'], 'email' => $data['email'], 'password' => $data['password'], 'role' => 'customer', 'phone' => ($ph = \App\Support\Phone::normalize($data['phone'] ?? null)) && ! \App\Models\User::where('phone', $ph)->exists() ? $ph : null]);
             auth()->login($user);
             $request->session()->regenerate();
         }

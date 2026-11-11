@@ -5,7 +5,7 @@
 return [
 
     'graphic-design' => [
-        'group' => 'design', 'icon' => 'fa-solid fa-pen-ruler', 'color' => 'orange',
+        'group' => 'creative', 'icon' => 'fa-solid fa-pen-ruler', 'color' => 'orange',
         'title' => 'Graphic Design & Brand Assets',
         'short' => 'Logos, brand identities and everyday design assets that keep your brand consistent everywhere.',
         'seo_title' => 'Graphic Design & Brand Assets | Brown Fox IT',
@@ -88,7 +88,7 @@ return [
     ],
 
     'ui-ux-design' => [
-        'group' => 'design', 'icon' => 'fa-solid fa-object-group', 'color' => 'purple',
+        'group' => 'creative', 'icon' => 'fa-solid fa-object-group', 'color' => 'purple',
         'title' => 'UI/UX Design & Prototyping',
         'short' => 'User-centred interfaces and clickable prototypes for websites, web apps and software.',
         'seo_title' => 'UI/UX Design & Prototyping | Brown Fox IT',
@@ -172,7 +172,7 @@ return [
     ],
 
     'digital-marketing-assets' => [
-        'group' => 'growth', 'icon' => 'fa-solid fa-bullhorn', 'color' => 'green',
+        'group' => 'marketing', 'icon' => 'fa-solid fa-bullhorn', 'color' => 'green',
         'title' => 'Digital Marketing & Creative Marketing Assets',
         'short' => 'Ad creatives, social content, email templates and campaign assets that are on-brand and ready to publish.',
         'seo_title' => 'Digital Marketing & Creative Marketing Assets | Brown Fox IT',
@@ -254,7 +254,7 @@ return [
     ],
 
     'data-dashboards' => [
-        'group' => 'growth', 'icon' => 'fa-solid fa-chart-column', 'color' => 'blue',
+        'group' => 'marketing', 'icon' => 'fa-solid fa-chart-column', 'color' => 'blue',
         'title' => 'Data Dashboards, Reporting & Business Intelligence',
         'short' => 'Dashboards and automated reports that turn scattered data into clear, trustworthy numbers.',
         'seo_title' => 'Data Dashboards, Reporting & Business Intelligence | Brown Fox IT',

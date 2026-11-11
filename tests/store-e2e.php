@@ -76,17 +76,27 @@ set($f['fields'], 'variant', 'pro');
 submit($f['action'], $f['fields']);
 $cart = get('/cart');
 ok(str_contains(text($cart['body']), 'E2E Guide '.$tag) && str_contains(text($cart['body']), 'Pro'), 'cart shows both items with the variant');
-$f = form($cart['body'], '/cart/coupon');
-set($f['fields'], 'code', 'E2E'.strtoupper($tag));
-follow(submit($f['action'], $f['fields']));
-$f = form(get('/cart')['body'], '/cart/coupon');
-$f = form(get('/cart')['body'], '/cart/coupon');
-set($f['fields'], 'code', 'NOPE-'.$tag);
-$bad = follow(submit($f['action'], $f['fields']));
+// the coupon lives inside the checkout form ("Do you have a coupon code?"), posted to /cart/coupon
+$couponPost = function (string $code) {
+    $cf = form(get('/checkout')['body'], '/checkout');
+    $tok = '';
+    foreach ($cf['fields'] as [$n, $v]) {
+        if ($n === '_token') {
+            $tok = $v;
+        }
+    }
+
+    return follow(submit(str_replace('/checkout', '/cart/coupon', $cf['action']), [['_token', $tok], ['code', $code]]));
+};
+$coPage = get('/checkout')['body'];
+ok(str_contains($coPage, 'Do you have a coupon code?') && ! str_contains(get('/cart')['body'], 'name="code"'), 'coupon is an optional box at checkout, not on the cart page');
+$couponPost('E2E'.strtoupper($tag));
+$bad = $couponPost('NOPE-'.$tag);
 ok(str_contains(text($bad['body']), 'oupon'), 'unknown coupon shows an error');
-$f = form(get('/cart')['body'], '/cart/coupon');
-set($f['fields'], 'code', 'E2E'.strtoupper($tag));
-follow(submit($f['action'], $f['fields']));
+$couponPost('E2E'.strtoupper($tag));
+$json = http('POST', str_replace('/checkout', '/cart/coupon', form(get('/checkout')['body'], '/checkout')['action']), http_build_query(['_token' => (function () { foreach (form(get('/checkout')['body'], '/checkout')['fields'] as [$n, $v]) { if ($n === '_token') { return $v; } } return ''; })(), 'code' => 'E2E'.strtoupper($tag)]), ['Content-Type: application/x-www-form-urlencoded', 'Accept: application/json']);
+$jd = json_decode($json['body'], true);
+ok(($jd['ok'] ?? false) && str_contains((string) ($jd['totals_html'] ?? ''), 'E2E'.strtoupper($tag)), 'coupon applies without a page reload (JSON totals)');
 
 $co = get('/checkout');
 ok($co['code'] === 200 && str_contains($co['body'], 'value="manual_bank"'), 'checkout offers the enabled gateway');
@@ -288,6 +298,36 @@ ok($iprod && $iprod->status === 'draft' && (float) $iprod->price === 2500.0 && (
 $again = $imp->all(true, 60);
 ok(($again['results']['posts']['imported'] ?? 1) === 0 && Post::where('slug', 'hello-'.$tag)->count() === 1, 're-running the import creates no duplicates');
 ok(ImportLog::where('source', $src)->count() === 3, 'inventory report has one row per source item');
+
+echo "== Customer account: sign up with email + mobile, log in with either\n";
+$jarBackup = $jar; $jar = tempnam(sys_get_temp_dir(), 'jar');
+$mob = '017'.substr((string) (time() + random_int(0, 99999)), -8);
+$rf = form(get('/account/register')['body'], '/account/register');
+foreach (['name' => 'Acc '.$tag, 'email' => "acc-{$tag}@example.com", 'phone' => $mob, 'password' => 'Secret-'.$tag] as $k => $v) {
+    set($rf['fields'], $k, $v);
+}
+$reg = submit($rf['action'], $rf['fields']);
+ok($reg['code'] === 302 && str_contains((string) $reg['location'], '/account'), 'sign up logs the customer in right away');
+ok(get('/account')['code'] === 200, 'dashboard opens after sign up');
+ok(App\Models\User::where('email', "acc-{$tag}@example.com")->value('phone') === $mob, 'mobile number saved');
+$jar = tempnam(sys_get_temp_dir(), 'jar');
+foreach (['+88'.$mob, "acc-{$tag}@example.com"] as $login) {
+    $jar = tempnam(sys_get_temp_dir(), 'jar');
+    $lf = form(get('/account/login')['body'], '/account/login');
+    set($lf['fields'], 'login', $login);
+    set($lf['fields'], 'password', 'Secret-'.$tag);
+    $in = submit($lf['action'], $lf['fields']);
+    ok($in['code'] === 302 && ! str_contains((string) $in['location'], '/login') && get('/account')['code'] === 200, "log in with {$login}");
+}
+$jar = tempnam(sys_get_temp_dir(), 'jar');
+$rf = form(get('/account/register')['body'], '/account/register');
+foreach (['name' => 'Dup', 'email' => "dup-{$tag}@example.com", 'phone' => '+88'.$mob, 'password' => 'Secret-'.$tag] as $k => $v) {
+    set($rf['fields'], $k, $v);
+}
+$dup = follow(submit($rf['action'], $rf['fields']));
+ok(str_contains(text($dup['body']), 'mobile number already exists'), 'same mobile number cannot sign up twice');
+App\Models\User::where('email', "acc-{$tag}@example.com")->delete();
+$jar = $jarBackup;
 
 echo "== Cleanup\n";
 foreach (['uploads/2025/03/pic-'.$tag.'.png', 'uploads/2025/03/cover-'.$tag.'.png', 'uploads/2024/01/shot-'.$tag.'.png', 'uploads/2024/02/p-'.$tag.'.png'] as $fpath) {

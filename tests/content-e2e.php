@@ -38,7 +38,7 @@ foreach ($services as $slug => $s) {
     $titles[] = $s['hero']['title'];
 }
 ok(count(array_unique($titles)) === 22, 'every service page has its own headline');
-foreach (['about' => 'Who we are', 'services' => 'Services for building and growing online', 'our-process' => 'Step by step', 'faq' => 'How do I start a project?', 'tools-and-technologies' => 'The right tool for the job', 'contact' => 'Get in touch', 'start-a-project' => 'What happens next'] as $slug => $needle) {
+foreach (['about' => 'Who we are', 'services' => 'Services for building and growing online', 'our-process' => 'Step by step', 'faq' => 'How do I start a project?', 'tools-and-technologies' => 'The right tool for the job', 'contact' => 'Prefer to write?', 'start-a-project' => 'What happens next'] as $slug => $needle) {
     $p = get('/'.$slug);
     ok($p['code'] === 200 && str_contains(preg_replace('/\s+/', ' ', strip_tags(html_entity_decode($p['body'], ENT_QUOTES))), $needle), "page /{$slug}");
 }
@@ -47,15 +47,15 @@ ok(! preg_match('/lorem ipsum/i', $about.get('/services')['body'].get('/faq')['b
 
 $svc = get('/services')['body'];
 ok(substr_count($svc, '/services/') >= 22, 'services overview links every service');
-ok(str_contains(get('/')['body'], 'href="'.$base.'/services/website-development"'), 'home service card links to its page');
-ok(substr_count(get('/')['body'], 'swiper-slide sbox') === 4, 'home still shows its 4 service cards');
+ok(str_contains(get('/')['body'], 'href="'.$base.'/services/ai-automation"') && str_contains(get('/')['body'], 'n8n Automation'), 'home slider shows the five main services');
+ok(substr_count(get('/')['body'], 'swiper-slide sbox') === 5, 'home shows the 5 main service cards');
 
 echo "== Legal drafts and menus\n";
 foreach (['privacy-policy', 'terms-and-conditions', 'refund-policy', 'digital-product-delivery-policy', 'shipping-policy'] as $slug) {
     ok(get('/'.$slug)['code'] === 404, "legal draft /{$slug} is not public yet");
 }
 ok(! str_contains($about, '/privacy-policy"'), 'menus hide links to unpublished pages');
-ok(str_contains($about, 'theme-dark') && str_contains($about, 'tv-s-'), 'inner pages are dark with an animated tech scene');
+ok(str_contains($about, 'theme-dark') && str_contains($about, 'Arjun Kumar (Pabitra)') && str_contains($about, 'Next-Gen Digital Solutions Expert') && str_contains(get('/services')['body'], 'tv-s-'), 'inner pages are dark; About leads with the founder; Services has its tech scene');
 
 echo "== Search and 404\n";
 $s = get('/search?q=n8n');

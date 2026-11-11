@@ -246,13 +246,32 @@ class Registry
                 ],
             ],
 
+            'contact_hub' => [
+                'label' => 'যোগাযোগ (WhatsApp সহ)', 'icon' => 'fa-brands fa-whatsapp', 'category' => 'dynamic',
+                'fields' => [
+                    ['key' => 'heading', 'label' => 'হেডিং', 'type' => 'text', 'default' => 'Let’s talk about your project'],
+                    ['key' => 'text', 'label' => 'লেখা', 'type' => 'textarea', 'default' => ''],
+                    ['key' => 'button', 'label' => 'WhatsApp বাটনের লেখা', 'type' => 'text', 'default' => 'Chat on WhatsApp'],
+                    ['key' => 'note', 'label' => '', 'type' => 'note', 'text' => 'নম্বর, ইমেইল, ঠিকানা ও লিংক আসে সেটিংস → সাইট ও যোগাযোগ থেকে।'],
+                ],
+            ],
+
+            'team' => [
+                'label' => 'Team', 'icon' => 'fa-solid fa-people-group', 'category' => 'dynamic',
+                'fields' => [
+                    ['key' => 'count', 'label' => 'কতজন (০ = সবাই)', 'type' => 'number', 'min' => 0, 'max' => 40, 'default' => 0],
+                    ['key' => 'columns', 'label' => 'প্রতি সারিতে', 'type' => 'select', 'options' => $cols, 'default' => '4', 'group' => 'style'],
+                    ['key' => 'note', 'label' => '', 'type' => 'note', 'text' => 'Admin → Team members-এর সক্রিয় সদস্যদের দেখায়।'],
+                ],
+            ],
+
             'services_grid' => [
                 'label' => 'Services তালিকা', 'icon' => 'fa-solid fa-laptop-code', 'category' => 'dynamic',
                 'fields' => [
                     ['key' => 'count', 'label' => 'কতগুলো (০ = সব)', 'type' => 'number', 'min' => 0, 'max' => 60, 'default' => 0],
                     ['key' => 'eyebrow', 'label' => 'ছোট লেখা (ঐচ্ছিক)', 'type' => 'text', 'default' => ''],
                     ['key' => 'heading', 'label' => 'হেডিং (ঐচ্ছিক — কোনো Service না থাকলে পুরো অংশ লুকানো থাকে)', 'type' => 'text', 'default' => ''],
-                    ['key' => 'group', 'label' => 'শুধু এই গ্রুপ', 'type' => 'select', 'options' => ['' => 'সব গ্রুপ', 'main' => 'প্রধান ৪টা গ্রুপ'] + \App\Models\Service::GROUPS + ['none' => 'গ্রুপ দেওয়া হয়নি এমন'], 'default' => ''],
+                    ['key' => 'group', 'label' => 'শুধু এই গ্রুপ', 'type' => 'select', 'options' => ['' => 'সব গ্রুপ', 'main' => 'প্রধান ৫টা সার্ভিস'] + \App\Models\Service::GROUPS + ['none' => 'গ্রুপ দেওয়া হয়নি এমন'], 'default' => ''],
                     ['key' => 'exclude', 'label' => 'এই লিংকের Service বাদ দিন (যেমন বর্তমান পেজ)', 'type' => 'text', 'default' => ''],
                     ['key' => 'columns', 'label' => 'প্রতি সারিতে', 'type' => 'select', 'options' => $cols, 'default' => '3', 'group' => 'style'],
                     ['key' => 'note', 'label' => '', 'type' => 'note', 'text' => 'Admin → Services থেকে আসে (যেগুলোতে "Services পেজ / তালিকায় দেখাবে" টিক আছে)।'],

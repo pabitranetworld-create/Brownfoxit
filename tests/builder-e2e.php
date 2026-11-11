@@ -145,7 +145,7 @@ ok(($r['json']['ok'] ?? false) && ($r['json']['status'] ?? '') === 'published', 
 $pub = get('/'.$slug);
 ok_page($pub, 'public page loads');
 $html = $pub['body'];
-foreach (['Automate the', 'grad-text', 'E2E eyebrow', 'Heading E2E', 'Safe <strong>text</strong> E2E', 'good link', 'Client logo E2E', 'Caption E2E', 'Button E2E', 'IconBox E2E', 'List item E2E', 'data-video-popup', 'Gallery E2E', 'FAQ question E2E?', 'Tab E2E', 'CTA E2E', 'Counter E2E', 'data-to="42"', 'Step E2E', 'Webhook E2E', 'Automated E2E', 'fa-circle-check yes', 'custom-html-e2e', 'Nested heading E2E', 'Left column E2E', 'SEO title E2E', 'SEO description E2E', 'Subtitle E2E', 'Web Design &amp; Development', 'Premium Real Estate', 'pb-post-body', 'Elizabeth K.', 'pb-fx-orbs', 'pb-fx-lines', 'box-glow', 'has-wave', 'motion.js', 'pages.css', 'data-filter="web-design"'] as $needle) {
+foreach (['Automate the', 'grad-text', 'E2E eyebrow', 'Heading E2E', 'Safe <strong>text</strong> E2E', 'good link', 'Client logo E2E', 'Caption E2E', 'Button E2E', 'IconBox E2E', 'List item E2E', 'data-video-popup', 'Gallery E2E', 'FAQ question E2E?', 'Tab E2E', 'CTA E2E', 'Counter E2E', 'data-to="42"', 'Step E2E', 'Webhook E2E', 'Automated E2E', 'fa-circle-check yes', 'custom-html-e2e', 'Nested heading E2E', 'Left column E2E', 'SEO title E2E', 'SEO description E2E', 'Subtitle E2E', 'AI Automation &amp; Workflow Automation', 'Premium Real Estate', 'pb-post-body', 'Elizabeth K.', 'pb-fx-orbs', 'pb-fx-lines', 'box-glow', 'has-wave', 'motion.js', 'pages.css', 'data-filter="web-design"'] as $needle) {
     ok(str_contains($html, $needle), 'renders: '.$needle);
 }
 ok(! str_contains($html, 'alert(') && ! str_contains($html, 'evil_widget'), 'no injected script on the public page');

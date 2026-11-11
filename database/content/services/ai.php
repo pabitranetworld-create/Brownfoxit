@@ -106,7 +106,7 @@ return [
     ],
 
     'n8n-automation' => [
-        'group' => 'ai', 'icon' => 'fa-solid fa-diagram-project', 'color' => 'orange',
+        'group' => 'n8n', 'icon' => 'fa-solid fa-diagram-project', 'color' => 'orange',
         'title' => 'n8n Workflow Automation & Integrations',
         'short' => 'Robust n8n workflows, cloud or self-hosted, that connect your apps, APIs and AI models.',
         'seo_title' => 'n8n Workflow Automation & Integration Services | Brown Fox IT',

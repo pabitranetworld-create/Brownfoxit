@@ -13,13 +13,13 @@ class Service extends Model
     public const ICON_COLORS = ['blue', 'orange', 'green', 'purple'];
 
     /** Service groups (the first four are the main ones in navigation). */
+    /** The five main services of Brown Fox IT, in display order. */
     public const GROUPS = [
         'ai' => 'AI Automation',
-        'web' => 'Website Development',
-        'software' => 'Software Development',
-        'media' => 'Motion Graphics & Video',
-        'design' => 'Design',
-        'growth' => 'Marketing, Data & Support',
+        'n8n' => 'n8n Automation',
+        'software' => 'Software & Development',
+        'creative' => 'Graphic & Video',
+        'marketing' => 'Digital Marketing',
     ];
 
     protected $fillable = [

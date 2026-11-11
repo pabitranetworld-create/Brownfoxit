@@ -39,7 +39,7 @@ class ContentSeeder extends Seeder
         unset($s);
 
         // 1. Service catalogue (Services page, menus, quote form)
-        $order = ['ai' => 100, 'web' => 200, 'software' => 300, 'media' => 400, 'design' => 500, 'growth' => 600];
+        $order = ['ai' => 100, 'n8n' => 150, 'software' => 200, 'creative' => 400, 'marketing' => 600];
         $i = 0;
         foreach ($services as $slug => $s) {
             $i++;
@@ -124,6 +124,113 @@ class ContentSeeder extends Seeder
 
         // SEO defaults (once): the real domain is known for the two planned installs, so the draft domain
         // (e.g. 1stdraft.brownfoxit.com) stays out of search results automatically.
+        // The five main services, written the same way everywhere (hero line, footer, home slider, menu, SEO).
+        $this->once('main-services-2026-11', function () {
+            $line = 'AI Automation | n8n | Software & Development | Graphic & Video | Digital Marketing';
+            $hero = (array) Setting::get('hero', []);
+            if ($hero) {
+                $hero['subtitle'] = $line;
+                Setting::put('hero', $hero);
+            }
+            $footer = (array) Setting::get('footer', []);
+            if ($footer) {
+                $footer['about_text'] = $line;
+                if (in_array($footer['about_title'] ?? '', ['', 'Full Stack Web Developer & Digital Solutions Expert'], true)) {
+                    $footer['about_title'] = 'Next-Gen Digital Solutions Expert';
+                }
+                // a link into the admin panel never belongs in the public footer
+                foreach (['links', 'support'] as $col) {
+                    $footer[$col] = array_values(array_filter((array) ($footer[$col] ?? []), fn ($l) => ! str_contains((string) ($l['url'] ?? ''), '/admin/')));
+                }
+                Setting::put('footer', $footer);
+            }
+            $site = (array) Setting::get('site', []);
+            if ($site) {
+                if (str_contains((string) ($site['meta_title'] ?? ''), 'Web Design, Graphic Design')) {
+                    $site['meta_title'] = 'Brown Fox IT — AI Automation, n8n, Software, Graphic & Video';
+                }
+                if (str_contains((string) ($site['meta_description'] ?? ''), 'Web Design & Development, Graphic Design')) {
+                    $site['meta_description'] = 'Brown Fox IT by Arjun Kumar (Pabitra): AI automation, n8n workflows, software & website development, graphic design & video, and digital marketing.';
+                }
+                Setting::put('site', $site);
+            }
+            $about = (array) Setting::get('about', []);
+            if ($about && in_array($about['title'] ?? '', ['Full Stack Digital Visualizer', 'Full Stack Digital Visulizer'], true)) {
+                $about['title'] = 'Next-Gen Digital Solutions Expert';
+                $about['intro'] = 'I’m <strong>Arjun Kumar (Pabitra)</strong>, CEO &amp; Head of Technology at Brown Fox IT — a Next-Gen Digital Solutions Expert with 15+ years of experience helping businesses build and grow their digital presence.';
+                $about['body'] = 'With our team I deliver AI automation, n8n workflows, software and website development, graphic design and video, and digital marketing — combining strategy, design and technology to improve user experience, increase conversions and support business growth.';
+                Setting::put('about', $about);
+            }
+
+            // Home page slider under the hero: the five main services
+            Service::query()->where(fn ($q) => $q->whereNull('group')->orWhere('group', ''))
+                ->whereIn('title', ['Web Design & Development', 'Graphic Design', 'Video Editing', 'Data Science & Analytics'])
+                ->update(['show_on_home' => false, 'show_in_catalog' => false]);
+            $cards = [
+                ['ai', 'AI Automation', 'fa-solid fa-robot', 'purple', '/services/ai-automation', 'AI-powered workflows and assistants that take repetitive work off your team.'],
+                ['n8n', 'n8n Automation', 'fa-solid fa-diagram-project', 'orange', '/services/n8n-automation', 'Reliable n8n workflows, cloud or self-hosted, connecting your apps, APIs and AI.'],
+                ['software', 'Software & Development', 'fa-solid fa-code', 'blue', '/services/custom-software-development', 'Websites, web apps and custom business software built around how you work.'],
+                ['creative', 'Graphic & Video', 'fa-solid fa-pen-ruler', 'green', '/services/graphic-design', 'Brand design, UI/UX, motion graphics and video editing that make you stand out.'],
+                ['marketing', 'Digital Marketing', 'fa-solid fa-bullhorn', 'purple', '/services/digital-marketing-assets', 'Ad creatives, social content and campaign assets that are on-brand and ready to publish.'],
+            ];
+            foreach ($cards as $n => [$group, $title, $icon, $color, $url, $text]) {
+                Service::updateOrCreate(['slug' => 'home-'.$group], [
+                    'title' => $title, 'group' => $group, 'icon' => $icon, 'icon_color' => $color, 'url' => $url,
+                    'short_description' => $text, 'sort_order' => $n + 1, 'is_active' => true, 'show_on_home' => true, 'show_in_catalog' => false,
+                ]);
+            }
+
+            // Services menu: only when it is still the menu the installer made
+            $menu = (array) Setting::get('menu', []);
+            foreach ($menu as &$item) {
+                $labels = array_map(fn ($c) => $c['label'] ?? '', (array) ($item['children'] ?? []));
+                if (($item['url'] ?? '') === '/services' && $labels === ['AI Automation', 'Website Development', 'Software Development', 'Motion Graphics & Video', 'All Services']) {
+                    $item['children'] = [
+                        ['label' => 'AI Automation', 'url' => '/services/ai-automation'],
+                        ['label' => 'n8n Automation', 'url' => '/services/n8n-automation'],
+                        ['label' => 'Software & Development', 'url' => '/services#software'],
+                        ['label' => 'Graphic & Video', 'url' => '/services#creative'],
+                        ['label' => 'Digital Marketing', 'url' => '/services#marketing'],
+                        ['label' => 'All Services', 'url' => '/services'],
+                    ];
+                }
+            }
+            unset($item);
+            Setting::put('menu', $menu);
+
+            return true;
+        });
+
+        // Team (from the pabitra.net "Our Professional Team" section); photos are copied to this site.
+        $this->once('team-members', function () {
+            if (\App\Models\TeamMember::query()->exists()) {
+                return true;
+            }
+            $team = [
+                ['Arjun Kumar (Pabitra)', 'CEO & Head of Technology', 'https://www.pabitra.net/wp-content/uploads/2026/05/Arjun-Kumar-Pabitra-.jpg', 'arjun-kumar-pabitra.jpg', [['type' => 'linkedin', 'url' => 'https://www.linkedin.com/in/pabitra-sarkar/'], ['type' => 'behance', 'url' => 'https://www.behance.net/pabitra_sarkar'], ['type' => 'dribbble', 'url' => 'https://dribbble.com/Pabitras_Galary']]],
+                ['Placid Rozario', 'Senior Graphic Designer', 'https://www.pabitra.net/wp-content/uploads/2026/05/Placid-Rozario-1-530x530-1.jpg', 'placid-rozario.jpg', []],
+                ['Andress Gomes', 'Senior Graphic Designer & Video Editor', 'https://www.pabitra.net/wp-content/uploads/2026/05/Dip-Gomes-530x530-1.jpg', 'andress-gomes.jpg', []],
+                ['Arpana Sarkar', 'Web Application Expert', 'https://www.pabitra.net/wp-content/uploads/2026/05/WhatsApp-Image-2024-03-21-at-22.48.09_6cbb48e9-copy-530x576-1.jpg', 'arpana-sarkar.jpg', []],
+            ];
+            foreach ($team as $n => [$name, $role, $src, $file, $links]) {
+                $photo = null;
+                try {
+                    $res = \Illuminate\Support\Facades\Http::timeout(20)->get($src);
+                    if ($res->successful() && str_starts_with((string) $res->header('Content-Type'), 'image/')) {
+                        @mkdir(public_path('uploads/team'), 0755, true);
+                        file_put_contents(public_path('uploads/team/'.$file), $res->body());
+                        $photo = 'uploads/team/'.$file;
+                        \App\Support\MediaRegistry::register($photo, $name);
+                    }
+                } catch (\Throwable) {
+                    // photo can be added later in Admin → Team members
+                }
+                \App\Models\TeamMember::create(['name' => $name, 'role' => $role, 'photo' => $photo, 'links' => $links, 'show_on_home' => true, 'sort_order' => $n + 1, 'is_active' => true]);
+            }
+
+            return true;
+        });
+
         // Floating chat button: start with the contact details the site already has (Messenger etc. are added in Admin).
         $this->once('chat-widget-defaults', function () {
             if (Setting::get('chat') !== null) {

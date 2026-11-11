@@ -14,6 +14,7 @@
     @include('home.sections.counters')
     @include('home.sections.projects')
     @include('home.sections.testimonials')
+    @include('home.sections.team')
     @include('home.sections.steps')
     @include('home.sections.cta')
     @include('home.sections.blog')

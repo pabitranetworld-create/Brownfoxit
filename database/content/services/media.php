@@ -10,7 +10,7 @@ $videoNote = [
 return [
 
     'motion-graphics' => [
-        'group' => 'media', 'icon' => 'fa-solid fa-film', 'color' => 'purple',
+        'group' => 'creative', 'icon' => 'fa-solid fa-film', 'color' => 'purple',
         'title' => 'Motion Graphics',
         'short' => 'Animated graphics, logo animations and kinetic typography that make your message move.',
         'seo_title' => 'Motion Graphics Design Services | Brown Fox IT',
@@ -91,7 +91,7 @@ return [
     ],
 
     'video-editing' => [
-        'group' => 'media', 'icon' => 'fa-solid fa-file-video', 'color' => 'green',
+        'group' => 'creative', 'icon' => 'fa-solid fa-file-video', 'color' => 'green',
         'title' => 'Video Editing & Video Production',
         'short' => 'Professional editing of your footage into polished videos for YouTube, social media, ads and events.',
         'seo_title' => 'Video Editing & Video Production Services | Brown Fox IT',
@@ -173,7 +173,7 @@ return [
     ],
 
     'explainer-videos' => [
-        'group' => 'media', 'icon' => 'fa-solid fa-circle-play', 'color' => 'orange',
+        'group' => 'creative', 'icon' => 'fa-solid fa-circle-play', 'color' => 'orange',
         'title' => 'Explainer Videos & Product Demo Videos',
         'short' => 'Short animated explainers and product demos that show what you offer and why it matters.',
         'seo_title' => 'Explainer Videos & Product Demo Videos | Brown Fox IT',

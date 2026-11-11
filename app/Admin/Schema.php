@@ -10,6 +10,7 @@ use App\Models\Post;
 use App\Models\PostCategory;
 use App\Models\Project;
 use App\Models\Service;
+use App\Models\TeamMember;
 use App\Models\Testimonial;
 
 /**
@@ -426,6 +427,24 @@ class Schema
                     ['key' => 'avatar', 'label' => 'ছবি', 'type' => 'image'],
                     ['key' => 'content', 'label' => 'মন্তব্য', 'type' => 'textarea', 'required' => true],
                     ['key' => 'rating', 'label' => 'রেটিং (১-৫)', 'type' => 'number', 'min' => 1, 'max' => 5, 'default' => 5],
+                    $order, $active,
+                ],
+            ],
+
+            'team' => [
+                'model' => TeamMember::class, 'title' => 'Team members', 'singular' => 'Team member', 'icon' => 'fa-solid fa-people-group',
+                'sortable' => true,
+                'columns' => [['key' => 'photo', 'type' => 'image'], ['key' => 'name', 'label' => 'নাম'], ['key' => 'role', 'label' => 'পদবি'], ['key' => 'show_on_home', 'label' => 'হোম পেজে', 'type' => 'bool'], ['key' => 'is_active', 'label' => 'সক্রিয়', 'type' => 'bool']],
+                'fields' => [
+                    ['key' => 'name', 'label' => 'নাম', 'type' => 'text', 'required' => true],
+                    ['key' => 'role', 'label' => 'পদবি', 'type' => 'text'],
+                    ['key' => 'photo', 'label' => 'ছবি (বর্গাকার বা লম্বা ছবি ভালো দেখায়)', 'type' => 'image'],
+                    ['key' => 'bio', 'label' => 'ছোট পরিচিতি (ঐচ্ছিক)', 'type' => 'textarea'],
+                    ['key' => 'links', 'label' => 'সোশ্যাল লিংক (খালি বা # লিংক দেখাবে না)', 'type' => 'repeater', 'fields' => [
+                        ['key' => 'type', 'label' => 'ধরন', 'type' => 'select', 'options' => array_map(fn ($v) => $v[0], TeamMember::LINK_TYPES), 'default' => 'linkedin'],
+                        ['key' => 'url', 'label' => 'লিংক', 'type' => 'url'],
+                    ]],
+                    ['key' => 'show_on_home', 'label' => 'হোম পেজের Team অংশে দেখাবে', 'type' => 'checkbox', 'default' => true],
                     $order, $active,
                 ],
             ],

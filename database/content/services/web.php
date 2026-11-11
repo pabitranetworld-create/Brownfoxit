@@ -5,7 +5,7 @@
 return [
 
     'website-development' => [
-        'group' => 'web', 'icon' => 'fa-solid fa-laptop-code', 'color' => 'blue',
+        'group' => 'software', 'icon' => 'fa-solid fa-laptop-code', 'color' => 'blue',
         'title' => 'Website Design & Development',
         'short' => 'Fast, responsive business websites designed around your goals and easy for your team to update.',
         'seo_title' => 'Website Design & Development Services | Brown Fox IT',
@@ -91,7 +91,7 @@ return [
     ],
 
     'ecommerce-development' => [
-        'group' => 'web', 'icon' => 'fa-solid fa-cart-shopping', 'color' => 'orange',
+        'group' => 'software', 'icon' => 'fa-solid fa-cart-shopping', 'color' => 'orange',
         'title' => 'E-commerce Website Development',
         'short' => 'Online stores for physical and digital products with smooth checkout, secure payments and easy management.',
         'seo_title' => 'E-commerce Website Development | Brown Fox IT',
@@ -176,7 +176,7 @@ return [
     ],
 
     'wordpress-development' => [
-        'group' => 'web', 'icon' => 'fa-brands fa-wordpress', 'color' => 'blue',
+        'group' => 'software', 'icon' => 'fa-brands fa-wordpress', 'color' => 'blue',
         'title' => 'WordPress Development, Customization & Migration',
         'short' => 'Custom themes, plugins, fixes and safe migrations for WordPress and WooCommerce websites.',
         'seo_title' => 'WordPress Development, Customization & Migration | Brown Fox IT',
@@ -260,7 +260,7 @@ return [
     ],
 
     'landing-pages' => [
-        'group' => 'web', 'icon' => 'fa-solid fa-bullseye', 'color' => 'green',
+        'group' => 'software', 'icon' => 'fa-solid fa-bullseye', 'color' => 'green',
         'title' => 'Landing Pages & Conversion-Focused Websites',
         'short' => 'Focused landing pages for campaigns and launches, designed to turn visitors into leads or buyers.',
         'seo_title' => 'Landing Page Design & Conversion-Focused Websites | Brown Fox IT',
@@ -344,7 +344,7 @@ return [
     ],
 
     'website-maintenance' => [
-        'group' => 'web', 'icon' => 'fa-solid fa-screwdriver-wrench', 'color' => 'purple',
+        'group' => 'software', 'icon' => 'fa-solid fa-screwdriver-wrench', 'color' => 'purple',
         'title' => 'Website Maintenance, Performance & Technical Support',
         'short' => 'Updates, backups, monitoring, speed optimisation and fixes so your website stays healthy.',
         'seo_title' => 'Website Maintenance, Performance & Technical Support | Brown Fox IT',
