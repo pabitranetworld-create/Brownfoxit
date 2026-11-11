@@ -42,7 +42,7 @@ echo "== 3. home page renders"
 HTML=$(curl -sS -w '\n%{http_code}' "$BASE/")
 CODE=${HTML##*$'\n'}
 [ "$CODE" = "200" ] || { echo "::error::home page returned $CODE"; echo "$HTML" | head -c 3000; exit 1; }
-for text in "Brown Fox IT" "Full Stack Digital Visualizer" "Elizabeth K." "Why Every Business Needs" "Project Planning" "hello@pabitra.net"; do
+for text in "Brown Fox IT" "Next-Gen Digital Solutions Expert" "Elizabeth K." "Why Every Business Needs" "Project Planning" "hello@pabitra.net"; do
   grep -qF "$text" <<< "$HTML" || { echo "::error::home page is missing: $text"; exit 1; }
 done
 echo "home page OK (${#HTML} bytes)"
