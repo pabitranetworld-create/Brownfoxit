@@ -32,20 +32,20 @@ return [
                 ]],
             ], B::top(['valign' => 'center', 'css_class' => 'ab-founder'])),
 
-            // 2. The company
-            B::section([
-                [50, [
-                    B::heading('Who we are', 'Brown Fox IT'),
-                    B::text('<p>Brown Fox IT is a digital solutions studio powered by <a href="https://pabitra.net" target="_blank" rel="noopener">Pabitra.net</a>. We bring strategy, design and technology together: automations that save time, software and websites that fit your processes, and visual content that makes your brand stand out.</p><p>We work remotely, so your location and time zone are not a barrier, and we keep communication simple: clear proposals, regular updates and honest answers about what will and will not work.</p>', 'large'),
-                ]],
-                [50, [B::boxes([
-                    ['fa-solid fa-robot', 'AI Automation', 'AI workflows, assistants and AI features for existing software.', '/services/ai-automation'],
-                    ['fa-solid fa-diagram-project', 'n8n Automation', 'n8n workflows that connect your apps, APIs and AI.', '/services/n8n-automation'],
-                    ['fa-solid fa-code', 'Software & Development', 'Websites, web apps and custom business software.', '/services#software'],
-                    ['fa-solid fa-pen-ruler', 'Graphic & Video', 'Brand design, UI/UX, motion graphics and video.', '/services#creative'],
-                    ['fa-solid fa-bullhorn', 'Digital Marketing', 'Campaign creatives, social content and reporting.', '/services#marketing'],
-                ], '1', 'plain')], ['anim' => 'fade-left']],
-            ], B::light(['valign' => 'center'])),
+            // 2. The company — text + bento of the five main services
+            B::section([B::w('studio_intro', [
+                'eyebrow' => 'Who we are',
+                'heading' => 'Brown Fox IT',
+                'content' => '<p>Brown Fox IT is a digital solutions studio powered by <a href="https://pabitra.net" target="_blank" rel="noopener">Pabitra.net</a>. We bring strategy, design and technology together: automations that save time, software and websites that fit your processes, and visual content that makes your brand stand out.</p><p>We work remotely, so your location and time zone are not a barrier, and we keep communication simple: clear proposals, regular updates and honest answers about what will and will not work.</p>',
+                'stats' => [['value' => '15+', 'label' => 'Years of experience'], ['value' => '5', 'label' => 'Core services'], ['value' => 'Global', 'label' => 'Remote clients']],
+                'items' => [
+                    ['icon' => 'fa-solid fa-robot', 'title' => 'AI Automation', 'text' => 'AI workflows, assistants and AI features for existing software.', 'url' => '/services/ai-automation'],
+                    ['icon' => 'fa-solid fa-diagram-project', 'title' => 'n8n Automation', 'text' => 'n8n workflows that connect your apps, APIs and AI.', 'url' => '/services/n8n-automation'],
+                    ['icon' => 'fa-solid fa-code', 'title' => 'Software & Development', 'text' => 'Websites, web apps and custom business software.', 'url' => '/services#software'],
+                    ['icon' => 'fa-solid fa-pen-ruler', 'title' => 'Graphic & Video', 'text' => 'Brand design, UI/UX, motion graphics and video.', 'url' => '/services#creative'],
+                    ['icon' => 'fa-solid fa-bullhorn', 'title' => 'Digital Marketing', 'text' => 'Campaign creatives, social content and reporting.', 'url' => '/services#marketing'],
+                ],
+            ], ['anim' => 'fade-up', 'anim_stagger' => 80])], B::light()),
 
             // 3. Team
             B::section([
@@ -53,7 +53,15 @@ return [
                 B::w('team', ['count' => 0, 'columns' => '4'], ['anim' => 'fade-up', 'anim_stagger' => 90]),
             ], B::soft(['anchor' => 'team'])),
 
-            // 4. How we work
+            // 4. Business license (A4 image is set in Admin → Pages → About → this section)
+            B::section([B::w('credential', [
+                'image' => '', 'alt' => 'Brown Fox IT business license',
+                'eyebrow' => 'Verified business', 'heading' => 'Licensed & registered',
+                'content' => '<p>Brown Fox IT is a registered business. Our license is shown here for transparency — click the document to see it in full size.</p>',
+                'details' => [], 'button' => 'View full size',
+            ], ['anim' => 'fade-up'])], B::light(['anchor' => 'license'])),
+
+            // 5. How we work
             B::section([
                 B::heading('How we like to work', 'Our approach', 'xl', 'h2', ['text_align' => 'center']),
                 B::boxes([

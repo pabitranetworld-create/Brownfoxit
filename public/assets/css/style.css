@@ -631,29 +631,36 @@ body:has(.cw-left) .back-top { right: 22px; }
 }
 @media (max-width: 380px) { .logo img { height: 30px; } .hdr-cart { width: 38px; height: 38px; margin-left: 6px; } .menu-toggle { width: 40px; height: 40px; } }
 /* ---------- team ---------- */
-.tm-grid { display: grid; gap: 28px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.tm-grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } .tm-grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .tm-grid.cols-1 { grid-template-columns: 1fr; }
-.tm-card { text-align: center; }
-.tm-photo { position: relative; aspect-ratio: 4 / 5; border-radius: 22px; overflow: hidden; padding: 2px; background: linear-gradient(140deg, #ff8a5c, #ff5266 35%, #7c5cff 70%, #22d3ee); box-shadow: 0 18px 40px rgba(10,4,30,.35); }
-.tm-photo img, .tm-initials { width: 100%; height: 100%; object-fit: cover; object-position: top center; border-radius: 20px; display: block; background: #140b33; transition: transform .6s var(--ease); }
-.tm-initials { display: grid; place-items: center; font-size: 46px; font-weight: 800; color: #fff; }
-.tm-card:hover .tm-photo img { transform: scale(1.04); }
-.tm-social { position: absolute; left: 50%; bottom: 14px; transform: translate(-50%, 12px); display: flex; gap: 8px; opacity: 0; transition: all .35s var(--ease); }
+.tm-grid { display: grid; gap: 24px; grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 1120px; margin: 0 auto; }
+.tm-grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 880px; } .tm-grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 600px; } .tm-grid.cols-1 { grid-template-columns: 1fr; max-width: 300px; }
+.tm-card { position: relative; text-align: center; padding: 16px 16px 22px; border-radius: 26px; background: linear-gradient(170deg, rgba(255,255,255,.07), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.09); transition: transform .45s var(--ease), border-color .45s, box-shadow .45s; }
+.tm-card:hover { transform: translateY(-8px); border-color: rgba(255,122,89,.45); box-shadow: 0 26px 50px -24px rgba(255,82,102,.55); }
+.tm-photo { position: relative; aspect-ratio: 1 / 1; border-radius: 20px; overflow: hidden; background: #1a0f3d; }
+.tm-photo::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(180deg, transparent 55%, rgba(12,5,30,.75)); opacity: 0; transition: opacity .4s; pointer-events: none; }
+.tm-card:hover .tm-photo::after { opacity: 1; }
+.tm-photo img, .tm-initials { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; transition: transform .7s var(--ease); }
+.tm-initials { display: grid; place-items: center; font-size: 42px; font-weight: 800; color: #fff; background: linear-gradient(140deg, #ff8a5c, #7c5cff); }
+.tm-card:hover .tm-photo img { transform: scale(1.06); }
+.tm-social { position: absolute; z-index: 2; left: 50%; bottom: 12px; transform: translate(-50%, 12px); display: flex; gap: 8px; opacity: 0; transition: all .35s var(--ease); }
 .tm-card:hover .tm-social, .tm-card:focus-within .tm-social { opacity: 1; transform: translate(-50%, 0); }
-.tm-social a { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.92); color: #17112e; font-size: 14px; }
+.tm-social a { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.95); color: #17112e; font-size: 13px; }
 .tm-social a:hover { background: var(--grad); color: #fff; }
-.tm-card h3 { margin: 20px 0 4px; font-size: 20px; }
-.tm-role { margin: 0; font-size: 14px; font-weight: 600; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.tm-bio { margin: 10px 0 0; font-size: 14px; opacity: .75; }
-.tm-compact { max-width: 1080px; margin: 0 auto; gap: 24px; }
-.tm-compact .tm-photo { aspect-ratio: 1 / 1; border-radius: 50%; max-width: 190px; margin: 0 auto; }
+.tm-card h3 { margin: 18px 0 8px; font-size: 18px; line-height: 1.25; color: #fff; }
+.tm-role { display: inline-block; margin: 0; padding: 5px 12px; border-radius: 20px; font-size: 12.5px; font-weight: 600; line-height: 1.35; color: #ffb38a; background: rgba(255,122,89,.1); border: 1px solid rgba(255,122,89,.22); }
+.tm-bio { margin: 12px 0 0; font-size: 14px; opacity: .75; }
+.tm-compact { max-width: 1000px; }
+.tm-compact .tm-card { padding: 0; background: none; border: 0; box-shadow: none; }
+.tm-compact .tm-card:hover { transform: translateY(-6px); box-shadow: none; }
+.tm-compact .tm-photo { border-radius: 50%; max-width: 170px; margin: 0 auto; padding: 3px; background: linear-gradient(140deg, #ff8a5c, #ff5266 35%, #7c5cff 70%, #22d3ee); }
 .tm-compact .tm-photo img, .tm-compact .tm-initials { border-radius: 50%; }
-.tm-compact .tm-social { bottom: 8px; } .tm-compact .tm-social a { width: 30px; height: 30px; font-size: 12px; }
-.tm-compact h3 { font-size: 18px; margin-top: 16px; }
+.tm-compact .tm-photo::after { display: none; }
+.tm-compact .tm-social { bottom: 6px; } .tm-compact .tm-social a { width: 28px; height: 28px; font-size: 11px; }
+.tm-compact h3 { font-size: 17px; margin-top: 14px; }
+.tm-compact .tm-role { background: none; border: 0; padding: 0; }
 .home-team { padding: 30px 0 110px; }
 .home-team .section-head { margin-bottom: 40px; }
 .home-team-more { text-align: center; margin-top: 36px; }
-@media (max-width: 991px) { .tm-grid, .tm-grid.cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 480px) { .tm-grid:not(.tm-compact) { grid-template-columns: 1fr; max-width: 340px; margin: 0 auto; } .tm-compact .tm-photo { max-width: 140px; } .tm-social { opacity: 1; transform: translate(-50%, 0); } }
+@media (max-width: 991px) { .tm-grid, .tm-grid.cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 560px; } }
+@media (max-width: 480px) { .tm-grid:not(.tm-compact) { gap: 14px; } .tm-card { padding: 10px 10px 16px; border-radius: 20px; } .tm-card h3 { font-size: 15px; } .tm-role { font-size: 11px; } .tm-compact .tm-photo { max-width: 140px; } .tm-social { opacity: 1; transform: translate(-50%, 0); } }
 
 @keyframes stBump { 30% { transform: scale(1.25); } }

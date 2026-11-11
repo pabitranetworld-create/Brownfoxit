@@ -246,6 +246,41 @@ class Registry
                 ],
             ],
 
+            'studio_intro' => [
+                'label' => 'পরিচিতি + সার্ভিস (Bento)', 'icon' => 'fa-solid fa-table-cells-large', 'category' => 'content',
+                'fields' => [
+                    ['key' => 'eyebrow', 'label' => 'ছোট লেখা', 'type' => 'text', 'default' => 'Who we are'],
+                    ['key' => 'heading', 'label' => 'হেডিং', 'type' => 'text', 'default' => 'Brown Fox IT'],
+                    ['key' => 'content', 'label' => 'লেখা', 'type' => 'richtext', 'default' => '<p>About the company.</p>'],
+                    ['key' => 'stats', 'label' => 'হাইলাইট (শুধু সত্যিকারের তথ্য)', 'type' => 'repeater', 'max' => 4, 'fields' => [
+                        ['key' => 'value', 'label' => 'বড় লেখা', 'type' => 'text', 'default' => '15+'],
+                        ['key' => 'label', 'label' => 'ছোট লেখা', 'type' => 'text', 'default' => 'Years of experience'],
+                    ], 'default' => []],
+                    ['key' => 'items', 'label' => 'সার্ভিস কার্ড', 'type' => 'repeater', 'max' => 6, 'fields' => [
+                        ['key' => 'icon', 'label' => 'আইকন', 'type' => 'icon', 'default' => 'fa-solid fa-star'],
+                        ['key' => 'title', 'label' => 'শিরোনাম', 'type' => 'text', 'default' => 'Service'],
+                        ['key' => 'text', 'label' => 'লেখা', 'type' => 'textarea', 'default' => ''],
+                        ['key' => 'url', 'label' => 'লিংক', 'type' => 'url', 'default' => ''],
+                    ], 'default' => []],
+                ],
+            ],
+
+            'credential' => [
+                'label' => 'লাইসেন্স / সার্টিফিকেট (A4)', 'icon' => 'fa-solid fa-certificate', 'category' => 'content',
+                'fields' => [
+                    ['key' => 'image', 'label' => 'লাইসেন্সের ছবি (A4, খাড়া)', 'type' => 'image', 'default' => ''],
+                    ['key' => 'alt', 'label' => 'ছবির Alt লেখা', 'type' => 'text', 'default' => 'Business license'],
+                    ['key' => 'eyebrow', 'label' => 'ছোট লেখা', 'type' => 'text', 'default' => 'Verified business'],
+                    ['key' => 'heading', 'label' => 'হেডিং', 'type' => 'text', 'default' => 'Licensed & registered'],
+                    ['key' => 'content', 'label' => 'লেখা', 'type' => 'richtext', 'default' => ''],
+                    ['key' => 'details', 'label' => 'তথ্য (খালি ঘর দেখাবে না)', 'type' => 'repeater', 'max' => 8, 'fields' => [
+                        ['key' => 'label', 'label' => 'নাম', 'type' => 'text', 'default' => ''],
+                        ['key' => 'value', 'label' => 'মান', 'type' => 'text', 'default' => ''],
+                    ], 'default' => []],
+                    ['key' => 'button', 'label' => 'বড় করে দেখার বাটন', 'type' => 'text', 'default' => 'View full size'],
+                ],
+            ],
+
             'contact_hub' => [
                 'label' => 'যোগাযোগ (WhatsApp সহ)', 'icon' => 'fa-brands fa-whatsapp', 'category' => 'dynamic',
                 'fields' => [
