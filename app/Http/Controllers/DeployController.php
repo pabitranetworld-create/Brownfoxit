@@ -43,6 +43,21 @@ class DeployController extends Controller
             return response()->json($result);
         }
 
+        if ($request->input('action') === 'inspect') {
+            // read-only snapshot of content settings, for checking wording across the site
+            $keys = array_filter(array_map('trim', explode(',', (string) $request->input('slug')))) ?: ['hero', 'about', 'menu', 'footer', 'site', 'counters', 'service_cards', 'chat'];
+            $out = [];
+            foreach ($keys as $k) {
+                $out['setting:'.$k] = \App\Models\Setting::get($k);
+            }
+            $out['services'] = \App\Models\Service::query()->orderBy('sort_order')->get()->map(fn ($s) => $s->only(['id', 'title', 'url', 'group', 'icon', 'short_description', 'show_on_home', 'show_on_services', 'is_active', 'sort_order']))->all();
+            $out['pages'] = \App\Models\Page::query()->get(['id', 'slug', 'status', 'title'])->map(fn ($p) => $p->only(['id', 'slug', 'status', 'title']))->all();
+            $out['fingerprints'] = \App\Models\Setting::get('content_fingerprints');
+            $out['current_fp'] = \App\Models\Page::query()->whereIn('slug', ['about', 'contact', 'services'])->get()->mapWithKeys(fn ($p) => [$p->slug => \App\Content\Fingerprint::of($p->layout).($p->draft_layout ? ' (has draft)' : '')])->all();
+
+            return response()->json($out, 200, [], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        }
+
         if ($request->input('action') === 'copy-uploads') {
             // Copy public/uploads from another Laravel copy of this site on the same hosting account
             // (e.g. the draft domain). Without "slug": only lists candidates. Never overwrites existing files.
