@@ -24,6 +24,20 @@
                     @endif
                     <div class="pb-field"><label for="co-country">Country</label><input id="co-country" name="country" autocomplete="country-name" value="{{ old('country', $u?->address['country'] ?? (store('currency', 'BDT') === 'BDT' ? 'Bangladesh' : '')) }}"></div>
                     <div class="pb-field pb-full"><label for="co-note">Order note (optional)</label><textarea id="co-note" name="note" rows="3">{{ old('note') }}</textarea></div>
+                    @if (store('coupons_enabled', true))
+                        <div class="pb-field pb-full st-co-coupon" data-coupon>
+                            @if ($t['coupon'])
+                                <p class="st-coupon-on"><i class="fa-solid fa-ticket"></i> Coupon <strong>{{ $t['coupon']->code }}</strong> applied <button type="submit" class="st-link-btn" formaction="{{ route('cart.coupon') }}" formnovalidate name="remove" value="1" data-coupon-remove>Remove</button></p>
+                            @else
+                                <div class="pb-check st-coupon-toggle"><label><input type="checkbox" data-toggle="#co-coupon-box" @checked($errors->has('coupon'))> <span>Do you have a coupon code?</span></label></div>
+                                <div class="st-coupon-box" id="co-coupon-box" @unless ($errors->has('coupon')) hidden @endunless>
+                                    <input name="code" placeholder="Enter coupon code" aria-label="Coupon code" maxlength="50" autocomplete="off" value="{{ old('code') }}">
+                                    <button type="submit" class="st-btn ghost sm" formaction="{{ route('cart.coupon') }}" formnovalidate data-coupon-apply>Apply</button>
+                                </div>
+                            @endif
+                            <p class="st-coupon-msg" role="status" @if ($errors->has('coupon')) data-err @endif>{{ $errors->first('coupon') }}</p>
+                        </div>
+                    @endif
                     @guest
                         @if (store('registration', true))
                             <div class="pb-field pb-full pb-check"><label><input type="checkbox" name="create_account" value="1" @checked(old('create_account')) data-toggle="#co-pass-wrap"> <span>Create an account for faster checkout and easy access to downloads</span></label></div>
@@ -62,7 +76,7 @@
             <ul class="st-mini">
                 @foreach ($t['lines'] as $l)<li><span>{{ $l['product']->name }}@if ($l['variant_name']) <small>({{ $l['variant_name'] }})</small>@endif × {{ $l['qty'] }}</span><strong>{{ money($l['total']) }}</strong></li>@endforeach
             </ul>
-            @include('shop.partials.totals')
+            <div data-totals>@include('shop.partials.totals')</div>
             @if (filled(store('terms_url')))
                 <label class="pb-check st-terms"><input type="checkbox" name="terms" value="1" @checked(old('terms')) required> <span>I have read and agree to the <a href="{{ link_to_url(store('terms_url')) }}" target="_blank">terms and conditions</a>.</span></label>
             @endif

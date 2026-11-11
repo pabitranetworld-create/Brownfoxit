@@ -1,7 +1,7 @@
 @php
     $pageTitle = $category ? $category->name : (store('shop_title') ?: 'Shop');
     $pageSubtitle = $category ? $category->description : (store('shop_subtitle') ?: null);
-    $crumbs = $category ? [['label' => 'Shop', 'url' => route('shop.index')]] : [];
+    $crumbs = $category ? array_merge([['label' => 'Shop', 'url' => route('shop.index')]], array_map(fn ($a) => ['label' => $a->name, 'url' => $a->link()], $ancestors)) : [];
 @endphp
 @extends('layouts.store')
 
@@ -18,7 +18,7 @@
         </form>
         <div class="st-cats" role="navigation" aria-label="Categories">
             <a href="{{ route('shop.index') }}" @class(['on' => ! $category])>All</a>
-            @foreach ($categories as $c)<a href="{{ $c->link() }}" @class(['on' => $category?->id === $c->id])>{{ $c->name }}</a>@endforeach
+            @foreach ($categories as $c)<a href="{{ $c->link() }}" @class(['on' => $activeTop === $c->id])>{{ $c->name }}</a>@endforeach
         </div>
         <form method="get" class="st-sort">
             @if ($q !== '')<input type="hidden" name="q" value="{{ $q }}">@endif
@@ -27,6 +27,12 @@
             </select>
         </form>
     </div>
+    @if ($subcategories->isNotEmpty())
+        <div class="st-subcats" role="navigation" aria-label="Sub-categories">
+            @if ($subParent)<a href="{{ $subParent->link() }}" @class(['on' => $category?->id === $subParent->id])>All {{ $subParent->name }}</a>@endif
+            @foreach ($subcategories as $c)<a href="{{ $c->link() }}" @class(['on' => $category?->id === $c->id])>{{ $c->name }}</a>@endforeach
+        </div>
+    @endif
 
     @if ($featured->isNotEmpty())
         <h2 class="st-h2" data-anim="fade-up">Featured products</h2>

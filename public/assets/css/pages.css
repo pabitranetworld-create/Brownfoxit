@@ -694,10 +694,10 @@ body.theme-light { --body-bg: #ffffff; background: #fff; color: #4b4763; }
 .st-cats small { opacity: .7; }
 
 /* product grid + cards */
-.st-grid { display: grid; gap: 26px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+.st-grid { display: grid; gap: 28px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .sp-card { display: flex; flex-direction: column; border-radius: 22px; overflow: hidden; background: #fff; border: 1px solid rgba(23,17,46,.08); box-shadow: 0 12px 34px rgba(23,17,46,.06); transition: transform .45s var(--ease), box-shadow .45s; }
 .sp-card:hover { transform: translateY(-6px); box-shadow: 0 24px 50px rgba(23,17,46,.11); }
-.sp-card-img { position: relative; display: block; aspect-ratio: 4 / 3; background: #f6f4fc; }
+.sp-card-img { position: relative; display: block; aspect-ratio: 1 / 1; background: #f6f4fc; overflow: hidden; }
 .sp-card-img img { width: 100%; height: 100%; object-fit: cover; }
 .st-badge { position: absolute; top: 14px; left: 14px; padding: 5px 12px; border-radius: 20px; background: var(--grad); color: #fff; font-size: 12px; font-weight: 700; }
 .st-badge.alt { background: #17112e; }
@@ -706,6 +706,34 @@ body.theme-light { --body-bg: #ffffff; background: #fff; color: #4b4763; }
 .sp-card h3 { font-size: 18px; line-height: 1.35; color: #17112e; }
 .sp-card h3 a:hover { color: #e8452f; }
 .sp-card p { font-size: 14px; color: #6b6680; }
+/* title: always two lines tall, so prices and buttons line up across a row whatever the title length */
+.sp-card h3 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: calc(2 * 1.35em); margin: 0; }
+.sp-card-price { margin-top: auto; padding-top: 4px; }
+.sp-card-actions { display: grid; grid-template-columns: auto 1fr 1fr; gap: 8px; padding-top: 6px; }
+.sp-act-form { display: contents; }
+.sp-act { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 40px; padding: 0 12px; border-radius: 12px; border: 1px solid rgba(23,17,46,.14); background: transparent; color: #17112e; font: 700 13px/1 var(--heading-font, inherit); white-space: nowrap; cursor: pointer; transition: transform .25s var(--ease), background .25s, color .25s, border-color .25s, box-shadow .25s; }
+.sp-act i { font-size: 13px; }
+.sp-act:hover { transform: translateY(-2px); border-color: #ff7a59; color: #e8452f; }
+.sp-act.buy { border: 0; background: var(--grad); color: #fff; box-shadow: 0 8px 18px rgba(255,82,102,.25); }
+.sp-act.buy:hover { color: #fff; box-shadow: 0 12px 24px rgba(255,82,102,.35); }
+.sp-act.cart.added { background: #16a34a; border-color: #16a34a; color: #fff; }
+.sp-act:disabled { opacity: .6; cursor: wait; }
+.sp-act.out { grid-column: span 2; border-style: dashed; color: #b4232f; cursor: default; }
+.sp-act.out:hover { transform: none; }
+.theme-dark .sp-act { border-color: rgba(255,255,255,.16); color: #eef0ff; }
+.theme-dark .sp-act:hover { border-color: #ff8a5c; color: #ff8a5c; }
+.theme-dark .sp-act.buy, .theme-dark .sp-act.buy:hover { color: #fff; }
+.theme-dark .sp-act.out { color: #ff8a8a; }
+.st-subcats { display: flex; flex-wrap: wrap; gap: 8px; margin: -8px 0 30px; padding: 12px 14px; border-radius: 16px; background: #fbfaff; border: 1px solid rgba(23,17,46,.06); }
+.st-subcats a { padding: 7px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; color: #4b4763; border: 1px solid rgba(23,17,46,.1); transition: all .3s var(--ease); }
+.st-subcats a:hover { border-color: #ff7a59; color: #17112e; }
+.st-subcats a.on { background: #17112e; border-color: #17112e; color: #fff; }
+.theme-dark .st-subcats { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.08); }
+.theme-dark .st-subcats a { color: rgba(230,232,255,.8); border-color: rgba(255,255,255,.14); }
+.theme-dark .st-subcats a.on { background: #fff; color: #17112e; }
+@media (max-width: 991px) { .st-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; } }
+@media (max-width: 575px) { .st-grid { grid-template-columns: 1fr; } }
+@media (min-width: 576px) and (max-width: 767px) { .sp-act span { display: none; } .sp-act.buy span, .sp-act.cart span { display: inline; } .sp-act { padding: 0 10px; font-size: 12px; } }
 .sp-card-foot { margin-top: auto; padding-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .st-price { font-family: var(--heading-font); font-weight: 800; color: #17112e; font-size: 18px; }
 .st-price del { color: #9a94b8; font-weight: 500; font-size: .8em; margin-right: 4px; }
@@ -918,3 +946,25 @@ body.theme-light { --body-bg: #ffffff; background: #fff; color: #4b4763; }
   .hdr-cart { margin-left: auto; margin-right: 10px; width: 40px; height: 40px; }
   .st-buy-row .pb-btn { flex: 1; justify-content: center; }
 }
+
+/* checkout: quiet coupon option inside "Your details" */
+.st-co-coupon { margin-top: 2px; }
+.st-coupon-toggle span { font-size: 14px; color: #6b6680; }
+.st-coupon-box { display: flex; gap: 10px; margin-top: 10px; max-width: 420px; }
+.st-coupon-box[hidden] { display: none; }
+.st-coupon-box input { flex: 1; min-width: 0; }
+.st-coupon-on { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px; color: #15803d; margin: 0; }
+.st-link-btn { background: none; border: 0; padding: 0; color: #e8452f; font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
+.st-coupon-msg { font-size: 13px; margin: 6px 0 0; min-height: 1em; color: #15803d; }
+.st-coupon-msg:empty { display: none; }
+.st-coupon-msg[data-err] { color: #b4232f; }
+.st-coupon-hint { margin-top: 12px; font-size: 13px; text-align: center; }
+.theme-dark .st-coupon-toggle span { color: rgba(220,224,255,.7); }
+.theme-dark .st-coupon-on, .theme-dark .st-coupon-msg { color: #4ade80; }
+.theme-dark .st-coupon-msg[data-err] { color: #ff8a8a; }
+.theme-dark .st-link-btn { color: #ff8a5c; }
+
+.pb-field[hidden], .st-coupon-box[hidden] { display: none !important; }
+/* dark theme: the selected payment method keeps a dark card so its text stays readable */
+.theme-dark .st-gateway:has(> input:checked) { background: rgba(255,82,102,.08); border-color: #ff5266; box-shadow: 0 0 0 4px rgba(255,82,102,.12); }
+.theme-dark .st-gateway .st-instr, .theme-dark .st-gateway .pb-field label { color: rgba(230,232,255,.85); }

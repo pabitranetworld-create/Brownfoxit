@@ -76,7 +76,7 @@
                 <select id="{{ $id }}" name="{{ $name }}">
                     <option value="">— বেছে নিন —</option>
                     @foreach ($field['model']::orderBy($field['display'])->get() as $opt)
-                        <option value="{{ $opt->id }}" @selected((string) $value === (string) $opt->id)>{{ $opt->{$field['display']} }}</option>
+                        <option value="{{ $opt->id }}" @selected((string) $value === (string) $opt->id)>{{ $opt->{$field['option_label'] ?? $field['display']} }}</option>
                     @endforeach
                 </select>
                 @if (! empty($field['allow_new']))

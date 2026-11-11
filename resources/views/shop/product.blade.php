@@ -41,7 +41,7 @@
                 <div class="vp-hero-text">
                     <nav class="vp-crumbs" aria-label="Breadcrumb" data-anim="fade-up">
                         <a href="{{ route('home') }}">Home</a><i class="fa-solid fa-angle-right"></i><a href="{{ route('shop.index') }}">Shop</a>
-                        @if ($product->category)<i class="fa-solid fa-angle-right"></i><a href="{{ $product->category->link() }}">{{ $product->category->name }}</a>@endif
+                        @if ($product->category)@foreach ($product->category->ancestors() as $a)<i class="fa-solid fa-angle-right"></i><a href="{{ $a->link() }}">{{ $a->name }}</a>@endforeach<i class="fa-solid fa-angle-right"></i><a href="{{ $product->category->link() }}">{{ $product->category->name }}</a>@endif
                     </nav>
                     <p class="vb-eyebrow" data-anim="fade-up">{{ $product->category?->name ?: ($digital ? 'Digital product' : 'Product') }}</p>
                     <h1 class="vp-title" data-words>{{ implode(' ', $words) }}@if ($lastWord) <span class="vb-grad">{{ $lastWord }}</span>@endif</h1>

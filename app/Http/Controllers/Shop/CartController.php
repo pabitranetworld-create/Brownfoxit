@@ -54,22 +54,43 @@ class CartController extends Controller
         return redirect()->route('cart.show')->with('status', 'Item removed.');
     }
 
-    public function coupon(Request $request): RedirectResponse
+    public function coupon(Request $request): JsonResponse|RedirectResponse
     {
         if ($request->boolean('remove')) {
             $this->cart->setCoupon(null);
 
-            return back()->with('status', 'Coupon removed.');
+            return $this->couponReply($request, true, 'Coupon removed.');
         }
         $code = trim((string) $request->input('code'));
-        $this->cart->setCoupon($code ?: null);
+        if ($code === '') {
+            return $this->couponReply($request, false, 'Please enter a coupon code.');
+        }
+        $this->cart->setCoupon($code);
         $t = $this->cart->totals();
         if ($t['coupon_error']) {
             $this->cart->setCoupon(null);
 
-            return back()->withErrors(['coupon' => $t['coupon_error']]);
+            return $this->couponReply($request, false, $t['coupon_error']);
         }
 
-        return back()->with('status', 'Coupon applied.');
+        return $this->couponReply($request, true, 'Coupon applied.');
+    }
+
+    /** JSON for the checkout page (totals refresh without reloading), a redirect otherwise. */
+    protected function couponReply(Request $request, bool $ok, string $message): JsonResponse|RedirectResponse
+    {
+        if ($request->expectsJson()) {
+            $t = $this->cart->totals();
+
+            return response()->json([
+                'ok' => $ok,
+                'message' => $message,
+                'coupon' => $t['coupon']?->code,
+                'totals_html' => view('shop.partials.totals', ['t' => $t])->render(),
+                'total' => money($t['total']),
+            ], $ok ? 200 : 422);
+        }
+
+        return $ok ? back()->with('status', $message) : back()->withInput()->withErrors(['coupon' => $message]);
     }
 }

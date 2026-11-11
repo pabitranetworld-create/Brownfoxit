@@ -33,18 +33,9 @@
 
             <aside class="st-side" data-anim="fade-left">
                 <h2>Order summary</h2>
-                @if (store('coupons_enabled', true))
-                    <form method="post" action="{{ route('cart.coupon') }}" class="st-coupon">
-                        @csrf
-                        @if ($coupon)
-                            <p>Coupon <strong>{{ $coupon }}</strong> applied.</p><button class="st-btn ghost sm" name="remove" value="1">Remove</button>
-                        @else
-                            <input name="code" placeholder="Coupon code" aria-label="Coupon code" maxlength="50"><button class="st-btn ghost sm">Apply</button>
-                        @endif
-                    </form>
-                @endif
                 @include('shop.partials.totals')
                 <a class="pb-btn pb-btn-primary st-wide" href="{{ route('checkout.show') }}">Proceed to checkout <i class="fa-solid fa-arrow-right"></i></a>
+                @if (store('coupons_enabled', true) && ! $coupon)<p class="st-muted st-coupon-hint"><i class="fa-solid fa-ticket"></i> Have a coupon? You can add it at checkout.</p>@endif
             </aside>
         </div>
     @endif

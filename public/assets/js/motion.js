@@ -331,7 +331,7 @@
       var sub = e.submitter;
       if (sub && sub.name === "buy_now") return; // normal submit → checkout
       e.preventDefault();
-      var btn = f.querySelector("button[type=submit]"), msg = f.querySelector(".st-buy-msg");
+      var btn = sub || f.querySelector("button[type=submit]:not([name=buy_now])") || f.querySelector("button[type=submit]"), msg = f.querySelector(".st-buy-msg");
       btn.disabled = true;
       fetch(f.action, { method: "POST", body: new FormData(f), headers: { "Accept": "application/json", "X-Requested-With": "XMLHttpRequest" }, credentials: "same-origin" })
         .then(function (r) { return r.json(); })
@@ -367,6 +367,60 @@
       });
     });
   });
+  /* Checkout coupon: applied / removed in place, the totals and the "Place order" amount update without a reload */
+  var cp = document.querySelector("[data-coupon]");
+  if (cp) {
+    var coForm = cp.closest("form"), token = coForm && coForm.querySelector("input[name=_token]");
+    var esc = function (t) { return String(t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+    var say = function (text, err) { var m = cp.querySelector(".st-coupon-msg"); if (!m) return; m.textContent = text || ""; if (err) m.setAttribute("data-err", ""); else m.removeAttribute("data-err"); };
+    var send = function (btn, body) {
+      btn.disabled = true;
+      body.append("_token", token ? token.value : "");
+      return fetch(btn.getAttribute("formaction"), { method: "POST", body: body, headers: { "Accept": "application/json", "X-Requested-With": "XMLHttpRequest" }, credentials: "same-origin" })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          var tot = document.querySelector("[data-totals]"); if (tot && res.totals_html) tot.innerHTML = res.totals_html;
+          var place = document.querySelector(".st-place .t"); if (place && res.total) place.textContent = "Place order — " + res.total;
+          return res;
+        })
+        .finally(function () { btn.disabled = false; });
+    };
+    var url = (cp.querySelector("[formaction]") || {}).getAttribute ? cp.querySelector("[formaction]").getAttribute("formaction") : "";
+    var showApplied = function (code) {
+      cp.innerHTML = '<p class="st-coupon-on"><i class="fa-solid fa-ticket"></i> Coupon <strong>' + esc(code) + '</strong> applied <button type="submit" class="st-link-btn" formaction="' + esc(url) + '" formnovalidate name="remove" value="1" data-coupon-remove>Remove</button></p><p class="st-coupon-msg" role="status"></p>';
+    };
+    var showToggle = function () {
+      cp.innerHTML = '<div class="pb-check st-coupon-toggle"><label><input type="checkbox" data-coupon-open> <span>Do you have a coupon code?</span></label></div>' +
+        '<div class="st-coupon-box" hidden><input name="code" placeholder="Enter coupon code" aria-label="Coupon code" maxlength="50" autocomplete="off"><button type="submit" class="st-btn ghost sm" formaction="' + esc(url) + '" formnovalidate data-coupon-apply>Apply</button></div>' +
+        '<p class="st-coupon-msg" role="status"></p>';
+    };
+    var apply = function (btn) {
+      var input = cp.querySelector("input[name=code]"), code = input ? input.value.trim() : "";
+      if (!code) { say("Please enter a coupon code.", true); if (input) input.focus(); return; }
+      var fd = new FormData(); fd.append("code", code);
+      send(btn, fd).then(function (res) {
+        if (res.ok) { showApplied(res.coupon || code); say(res.message); } else say(res.message, true);
+      }).catch(function () { say("Could not check the coupon. Please try again.", true); });
+    };
+    cp.addEventListener("click", function (e) {
+      var a = e.target.closest("[data-coupon-apply]"), r = e.target.closest("[data-coupon-remove]");
+      if (a) { e.preventDefault(); apply(a); }
+      if (r) {
+        e.preventDefault();
+        var fd = new FormData(); fd.append("remove", "1");
+        send(r, fd).then(function (res) { showToggle(); say(res.message); }).catch(function () { say("Could not remove the coupon. Please try again.", true); });
+      }
+    });
+    cp.addEventListener("change", function (e) {
+      if (!e.target.matches("[data-toggle], [data-coupon-open]")) return;
+      var box = cp.querySelector(".st-coupon-box"); if (!box) return;
+      box.hidden = !e.target.checked; if (e.target.checked) { var i = box.querySelector("input"); if (i) i.focus(); }
+    });
+    /* Enter inside the coupon box applies the coupon instead of placing the order */
+    cp.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && e.target.name === "code") { e.preventDefault(); var b = cp.querySelector("[data-coupon-apply]"); if (b) apply(b); }
+    });
+  }
   document.querySelectorAll("[data-toggle]").forEach(function (c) {
     c.addEventListener("change", function () { var t = document.querySelector(c.getAttribute("data-toggle")); if (t) t.hidden = !c.checked; });
   });

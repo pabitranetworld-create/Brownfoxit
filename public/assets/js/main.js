@@ -182,6 +182,24 @@
   document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && nav && nav.classList.contains("open")) setNav(false); });
   window.addEventListener("resize", function () { if (window.innerWidth >= 992 && nav && nav.classList.contains("open")) setNav(false); });
 
+  /* ---------- 6b. Floating chat button ---------- */
+  var cw = document.querySelector("[data-chat]");
+  if (cw) {
+    var cwMain = cw.querySelector(".cw-main"), cwIcons = cw.querySelectorAll(".cw-icons i:not(.cw-x)"), cwN = 0;
+    var cwShow = function () {
+      cwIcons.forEach(function (ic, k) { ic.classList.toggle("on", k === cwN); });
+      if (cwIcons[cwN]) cw.style.setProperty("--cw-now", cwIcons[cwN].style.getPropertyValue("--cw-c"));
+    };
+    cwShow();
+    if (cwIcons.length > 1 && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setInterval(function () { if (!cw.classList.contains("open")) { cwN = (cwN + 1) % cwIcons.length; cwShow(); } }, 2400);
+    }
+    var cwSet = function (open) { cw.classList.toggle("open", open); if (cwMain.tagName === "BUTTON") cwMain.setAttribute("aria-expanded", open ? "true" : "false"); };
+    if (cwMain.tagName === "BUTTON") cwMain.addEventListener("click", function () { cwSet(!cw.classList.contains("open")); });
+    document.addEventListener("click", function (e) { if (cw.classList.contains("open") && !cw.contains(e.target)) cwSet(false); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && cw.classList.contains("open")) { cwSet(false); cwMain.focus(); } });
+  }
+
   /* ---------- 7. Video popup ---------- */
   var modal = document.getElementById("videoModal"), frame = document.getElementById("videoFrame");
   document.querySelectorAll("[data-video]").forEach(function (b) {

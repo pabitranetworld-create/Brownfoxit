@@ -57,6 +57,21 @@ class Schema
                 ],
             ],
 
+            'chat' => [
+                'title' => 'চ্যাট বাটন (WhatsApp, Messenger…)', 'icon' => 'fa-solid fa-comments',
+                'intro' => 'সাইটের কোণে ভাসমান চ্যাট বাটন। ক্লিক করলে নিচের চ্যানেলগুলো খোলে। একটা চ্যানেল থাকলে বাটনে চাপলেই সরাসরি সেটা খুলবে।',
+                'fields' => [
+                    ['key' => 'enabled', 'label' => 'চ্যাট বাটন দেখাবে', 'type' => 'checkbox', 'default' => true],
+                    ['key' => 'cta', 'label' => 'বাটনের পাশের ছোট লেখা', 'type' => 'text', 'help' => 'যেমন: Chat with us — খালি রাখলে লেখা দেখাবে না'],
+                    ['key' => 'position', 'label' => 'কোন পাশে', 'type' => 'select', 'options' => ['right' => 'ডান দিকে', 'left' => 'বাঁ দিকে'], 'default' => 'right'],
+                    ['key' => 'channels', 'label' => 'চ্যানেল (ওপর থেকে নিচে যে ক্রমে দেখাবে)', 'type' => 'repeater', 'fields' => [
+                        ['key' => 'type', 'label' => 'চ্যানেল', 'type' => 'select', 'options' => \App\Support\ChatWidget::TYPES, 'default' => 'whatsapp'],
+                        ['key' => 'value', 'label' => 'নম্বর / ইউজারনেম / লিংক', 'type' => 'text', 'help' => 'WhatsApp, Phone, SMS, Viber: দেশের কোডসহ নম্বর (যেমন +8801XXXXXXXXX) অথবা পুরো লিংক। Messenger: Facebook পেজের ইউজারনেম (m.me/এর পরের অংশ)। Telegram/Instagram: ইউজারনেম। Email: ইমেইল ঠিকানা।'],
+                        ['key' => 'label', 'label' => 'লেখা (খালি = চ্যানেলের নাম)', 'type' => 'text'],
+                    ]],
+                ],
+            ],
+
             'menu' => [
                 'title' => 'মেনু', 'icon' => 'fa-solid fa-bars',
                 'root' => ['type' => 'repeater', 'label' => 'মেনুর আইটেম', 'fields' => array_merge($link, [
@@ -465,7 +480,7 @@ class Schema
                     ['key' => 'name', 'label' => 'প্রোডাক্টের নাম', 'type' => 'text', 'required' => true],
                     ['key' => 'status', 'label' => 'অবস্থা', 'type' => 'select', 'options' => Product::STATUSES, 'default' => 'draft', 'help' => 'যাচাই না করা প্রোডাক্ট Draft রাখুন — দোকানে দেখাবে না।'],
                     ['key' => 'type', 'label' => 'ধরন', 'type' => 'select', 'options' => Product::TYPES, 'default' => 'digital'],
-                    ['key' => 'product_category_id', 'label' => 'ক্যাটাগরি', 'type' => 'model_select', 'model' => ProductCategory::class, 'display' => 'name', 'allow_new' => true],
+                    ['key' => 'product_category_id', 'label' => 'ক্যাটাগরি', 'type' => 'model_select', 'model' => ProductCategory::class, 'display' => 'name', 'option_label' => 'path_name', 'allow_new' => true, 'help' => 'সাব-ক্যাটাগরি বানাতে: Product categories → ক্যাটাগরি খুলে "মূল ক্যাটাগরি" বেছে নিন।'],
                     ['key' => 'tags', 'label' => 'ট্যাগ (কমা দিয়ে)', 'type' => 'text'],
                     ['key' => 'short_description', 'label' => 'ছোট বিবরণ (দামের নিচে)', 'type' => 'html'],
                     ['key' => 'description', 'label' => 'পুরো বিবরণ', 'type' => 'html'],
@@ -526,9 +541,11 @@ class Schema
             'product_categories' => [
                 'model' => ProductCategory::class, 'title' => 'Product categories', 'singular' => 'Category', 'icon' => 'fa-solid fa-tags',
                 'slug_from' => 'name', 'sortable' => true, 'group' => 'store',
-                'columns' => [['key' => 'image', 'type' => 'image'], ['key' => 'name', 'label' => 'নাম'], ['key' => 'slug', 'label' => 'URL']],
+                'with' => ['parent'],
+                'columns' => [['key' => 'image', 'type' => 'image'], ['key' => 'name', 'label' => 'নাম'], ['key' => 'parent.name', 'label' => 'মূল ক্যাটাগরি'], ['key' => 'slug', 'label' => 'URL']],
                 'fields' => [
                     ['key' => 'name', 'label' => 'নাম', 'type' => 'text', 'required' => true],
+                    ['key' => 'parent_id', 'label' => 'মূল ক্যাটাগরি (সাব-ক্যাটাগরি বানাতে)', 'type' => 'model_select', 'model' => ProductCategory::class, 'display' => 'name', 'option_label' => 'path_name', 'help' => 'খালি রাখলে এটা প্রধান ক্যাটাগরি। কোনো ক্যাটাগরি বেছে নিলে এটা তার সাব-ক্যাটাগরি হবে।'],
                     ['key' => 'description', 'label' => 'বিবরণ', 'type' => 'textarea'],
                     ['key' => 'image', 'label' => 'ছবি', 'type' => 'image'],
                     ['key' => 'sort_order', 'label' => 'ক্রম', 'type' => 'number', 'default' => 0],

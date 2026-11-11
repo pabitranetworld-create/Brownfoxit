@@ -124,6 +124,26 @@ class ContentSeeder extends Seeder
 
         // SEO defaults (once): the real domain is known for the two planned installs, so the draft domain
         // (e.g. 1stdraft.brownfoxit.com) stays out of search results automatically.
+        // Floating chat button: start with the contact details the site already has (Messenger etc. are added in Admin).
+        $this->once('chat-widget-defaults', function () {
+            if (Setting::get('chat') !== null) {
+                return true;
+            }
+            $channels = [];
+            if ($wa = Setting::get('site.whatsapp_url')) {
+                $channels[] = ['type' => 'whatsapp', 'value' => $wa, 'label' => 'WhatsApp'];
+            }
+            if ($phone = Setting::get('site.phone')) {
+                $channels[] = ['type' => 'phone', 'value' => $phone, 'label' => 'Call us'];
+            }
+            if ($email = Setting::get('site.email')) {
+                $channels[] = ['type' => 'email', 'value' => $email, 'label' => 'Email'];
+            }
+            Setting::put('chat', ['enabled' => true, 'cta' => 'Chat with us', 'position' => 'right', 'channels' => $channels]);
+
+            return true;
+        });
+
         $this->once('seo-defaults', function () {
             $seo = (array) Setting::get('seo', []);
             $host = strtolower((string) parse_url((string) config('app.url'), PHP_URL_HOST));

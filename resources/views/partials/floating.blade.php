@@ -1,5 +1,5 @@
 {{-- Floating contact chip, back-to-top button and the video popup used by .play-btn links --}}
-<a href="{{ setting('site.whatsapp_url', '#') }}" class="float-contact" target="_blank" rel="noopener">Contact us</a>
+@include('partials.chat-widget')
 
 <button class="back-top" id="backTop" aria-label="Back to top">
     <svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" class="track"/><circle cx="22" cy="22" r="20" class="prog" id="backTopProg"/></svg>
