@@ -49,3 +49,11 @@
     ExpiresByType text/css "access plus 1 week"
     ExpiresByType application/javascript "access plus 1 week"
 </IfModule>
+
+# Pin PHP 8.2 for the Laravel app itself. cPanel rewrites the handler block in
+# public_html/.htaccess when the PHP version is changed in MultiPHP Manager (or by
+# server updates); this folder-level line takes priority over it, so the site keeps
+# running on a supported PHP. To move to a newer PHP later, change 82 here (e.g. 83).
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php82___lsphp .php .php8 .phtml
+</IfModule>

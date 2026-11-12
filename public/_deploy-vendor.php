@@ -27,6 +27,24 @@ function bfi_out(int $code, array $data): never
     exit;
 }
 
+/** Which PHP runs the site and what the .htaccess files ask for (diagnoses "Composer … PHP >= 8.2" errors). */
+function bfi_php(string $root): array
+{
+    $h = function (string $f): array {
+        preg_match_all('/^\s*AddHandler\s+(\S+)/mi', (string) @file_get_contents($f), $m);
+
+        return $m[1];
+    };
+
+    return [
+        'running' => PHP_VERSION,
+        'root_htaccess' => $h($root.'/.htaccess'),
+        'root_htaccess_changed' => is_file($root.'/.htaccess') ? date('c', (int) filemtime($root.'/.htaccess')) : null,
+        'public_htaccess' => $h($root.'/public/.htaccess'),
+        'installed' => array_values(array_map('basename', array_merge(glob('/opt/cpanel/ea-php*', GLOB_ONLYDIR) ?: [], glob('/opt/alt/php[0-9]*', GLOB_ONLYDIR) ?: []))),
+    ];
+}
+
 function bfi_env(string $root, string $key): string
 {
     foreach (@file($root.'/.env', FILE_IGNORE_NEW_LINES) ?: [] as $line) {
@@ -76,10 +94,10 @@ $newHash = trim((string) @file_get_contents($hashFile));
 $oldHash = trim((string) @file_get_contents($installed));
 
 if ($newHash === '' || ! is_file($zipFile)) {
-    bfi_out(200, ['ok' => true, 'vendor' => 'no bundle uploaded, nothing to do']);
+    bfi_out(200, ['ok' => true, 'vendor' => 'no bundle uploaded, nothing to do', 'php' => bfi_php($root)]);
 }
 if ($newHash === $oldHash && is_file($root.'/vendor/autoload.php')) {
-    bfi_out(200, ['ok' => true, 'vendor' => 'unchanged']);
+    bfi_out(200, ['ok' => true, 'vendor' => 'unchanged', 'php' => bfi_php($root)]);
 }
 if (! class_exists(ZipArchive::class)) {
     bfi_out(500, ['ok' => false, 'error' => 'PHP zip extension is missing (cPanel → Select PHP Version → Extensions → zip)']);
@@ -130,4 +148,4 @@ if (function_exists('opcache_reset')) {
     @opcache_reset();
 }
 
-bfi_out(200, ['ok' => true, 'vendor' => 'updated', 'hash' => $newHash]);
+bfi_out(200, ['ok' => true, 'vendor' => 'updated', 'hash' => $newHash, 'php' => bfi_php($root)]);
