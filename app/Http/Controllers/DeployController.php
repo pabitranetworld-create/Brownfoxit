@@ -152,6 +152,19 @@ class DeployController extends Controller
 
                 return $out;
             }, null, false),
+            'php_handler' => rescue(function () {
+                $root = base_path('.htaccess');
+                $txt = is_file($root) ? (string) file_get_contents($root) : '';
+                preg_match_all('/^\s*AddHandler\s+(\S+)/mi', $txt, $h);
+                preg_match_all('/^\s*AddHandler\s+(\S+)/mi', (string) @file_get_contents(public_path('.htaccess')), $hp);
+
+                return [
+                    'running' => PHP_VERSION, 'sapi' => PHP_SAPI, 'binary' => PHP_BINARY,
+                    'root_htaccess_handlers' => $h[1], 'root_htaccess_changed' => is_file($root) ? date('c', filemtime($root)) : null,
+                    'public_htaccess_handlers' => $hp[1],
+                    'installed' => array_values(array_map('basename', array_merge(glob('/opt/cpanel/ea-php*', GLOB_ONLYDIR) ?: [], glob('/opt/alt/php[0-9]*', GLOB_ONLYDIR) ?: []))),
+                ];
+            }, fn ($e) => ['error' => $e->getMessage()], false),
             'media' => rescue(function () {
                 $rows = \App\Models\Media::query()->latest('id')->get(['id', 'path']);
                 $missing = $rows->filter(fn ($m) => ! is_file(public_path($m->path)));
