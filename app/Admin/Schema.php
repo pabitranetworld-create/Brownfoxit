@@ -80,6 +80,18 @@ class Schema
                 ])],
             ],
 
+            'header_button' => [
+                'title' => 'হেডারের বাটন (Contact Us)', 'icon' => 'fa-solid fa-hand-pointer',
+                'intro' => 'হেডারের ডান পাশের রঙিন বাটন। লিংকে /contact এর মতো সাইটের পেইজ, পুরো লিংক (https://…), WhatsApp লিংক বা tel:/mailto: দিতে পারেন।',
+                'fields' => [
+                    ['key' => 'enabled', 'label' => 'বাটন দেখাবে', 'type' => 'checkbox', 'default' => true],
+                    ['key' => 'text', 'label' => 'বাটনের লেখা', 'type' => 'text', 'default' => 'Contact Us'],
+                    ['key' => 'url', 'label' => 'বাটনের লিংক', 'type' => 'text', 'default' => '/contact'],
+                    ['key' => 'icon', 'label' => 'আইকন', 'type' => 'icon', 'default' => 'fa-regular fa-comments'],
+                    ['key' => 'new_tab', 'label' => 'নতুন ট্যাবে খুলবে', 'type' => 'checkbox', 'default' => false],
+                ],
+            ],
+
             'hero' => [
                 'title' => 'Hero (প্রথম অংশ)', 'icon' => 'fa-solid fa-star',
                 'fields' => [
